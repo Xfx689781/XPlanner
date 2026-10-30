@@ -237,8 +237,172 @@ i1.GeneratedColumn<String> _column_13(String aliasedName) =>
       type: i1.DriftSqlType.string,
       $customConstraints: 'NOT NULL',
     );
+
+final class Schema3 extends i0.VersionedSchema {
+  Schema3({required super.database}) : super(version: 3);
+  @override
+  late final List<i1.DatabaseSchemaEntity> entities = [
+    tasks,
+    logEntries,
+    settingEntries,
+    taskReminders,
+    idxTasksDue,
+    idxTasksReminder,
+    idxLogCreated,
+    idxTaskRemindersTask,
+  ];
+  late final Shape3 tasks = Shape3(
+    source: i0.VersionedTable(
+      entityName: 'tasks',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_6,
+        _column_7,
+        _column_8,
+        _column_14,
+        _column_9,
+        _column_10,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape1 logEntries = Shape1(
+    source: i0.VersionedTable(
+      entityName: 'log_entries',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [_column_0, _column_11, _column_9],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape2 settingEntries = Shape2(
+    source: i0.VersionedTable(
+      entityName: 'setting_entries',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY("key")'],
+      columns: [_column_12, _column_13],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape4 taskReminders = Shape4(
+    source: i0.VersionedTable(
+      entityName: 'task_reminders',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['UNIQUE(task_id, offset_minutes)'],
+      columns: [_column_0, _column_15, _column_16, _column_17],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index idxTasksDue = i1.Index(
+    'idx_tasks_due',
+    'CREATE INDEX idx_tasks_due ON tasks (due_at)',
+  );
+  final i1.Index idxTasksReminder = i1.Index(
+    'idx_tasks_reminder',
+    'CREATE INDEX idx_tasks_reminder ON tasks (reminder_at)',
+  );
+  final i1.Index idxLogCreated = i1.Index(
+    'idx_log_created',
+    'CREATE INDEX idx_log_created ON log_entries (created_at)',
+  );
+  final i1.Index idxTaskRemindersTask = i1.Index(
+    'idx_task_reminders_task',
+    'CREATE INDEX idx_task_reminders_task ON task_reminders (task_id)',
+  );
+}
+
+class Shape3 extends i0.VersionedTable {
+  Shape3({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<int> get id =>
+      columnsByName['id']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get title =>
+      columnsByName['title']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get note =>
+      columnsByName['note']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get dueAt =>
+      columnsByName['due_at']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get dueHasTime =>
+      columnsByName['due_has_time']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get priority =>
+      columnsByName['priority']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get reminderAt =>
+      columnsByName['reminder_at']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get reminderRepeat =>
+      columnsByName['reminder_repeat']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get completedAt =>
+      columnsByName['completed_at']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get snoozedUntil =>
+      columnsByName['snoozed_until']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get createdAt =>
+      columnsByName['created_at']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get updatedAt =>
+      columnsByName['updated_at']! as i1.GeneratedColumn<int>;
+}
+
+i1.GeneratedColumn<int> _column_14(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'snoozed_until',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NULL',
+    );
+
+class Shape4 extends i0.VersionedTable {
+  Shape4({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<int> get id =>
+      columnsByName['id']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get taskId =>
+      columnsByName['task_id']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get offsetMinutes =>
+      columnsByName['offset_minutes']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get kind =>
+      columnsByName['kind']! as i1.GeneratedColumn<int>;
+}
+
+i1.GeneratedColumn<int> _column_15(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'task_id',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL REFERENCES tasks(id)ON DELETE CASCADE',
+    );
+i1.GeneratedColumn<int> _column_16(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'offset_minutes',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<int> _column_17(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'kind',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL DEFAULT 0',
+      defaultValue: const i1.CustomExpression('0'),
+    );
 i0.MigrationStepWithVersion migrationSteps({
   required Future<void> Function(i1.Migrator m, Schema2 schema) from1To2,
+  required Future<void> Function(i1.Migrator m, Schema3 schema) from2To3,
 }) {
   return (currentVersion, database) async {
     switch (currentVersion) {
@@ -247,6 +411,11 @@ i0.MigrationStepWithVersion migrationSteps({
         final migrator = i1.Migrator(database, schema);
         await from1To2(migrator, schema);
         return 2;
+      case 2:
+        final schema = Schema3(database: database);
+        final migrator = i1.Migrator(database, schema);
+        await from2To3(migrator, schema);
+        return 3;
       default:
         throw ArgumentError.value('Unknown migration from $currentVersion');
     }
@@ -255,6 +424,7 @@ i0.MigrationStepWithVersion migrationSteps({
 
 i1.OnUpgrade stepByStep({
   required Future<void> Function(i1.Migrator m, Schema2 schema) from1To2,
+  required Future<void> Function(i1.Migrator m, Schema3 schema) from2To3,
 }) => i0.VersionedSchema.stepByStepHelper(
-  step: migrationSteps(from1To2: from1To2),
+  step: migrationSteps(from1To2: from1To2, from2To3: from2To3),
 );

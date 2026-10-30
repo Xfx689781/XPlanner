@@ -31,9 +31,31 @@ class Tasks extends Table {
   /// 完成的时刻。重复任务只在它落在今天时算"今天已完成"
   DateTimeColumn get completedAt => dateTime().nullable()();
 
+  /// "稍后提醒"的再次响铃时刻（v3）。全量重建提醒时据此恢复，不会丢
+  DateTimeColumn get snoozedUntil => dateTime().nullable()();
+
   DateTimeColumn get createdAt => dateTime()();
 
   DateTimeColumn get updatedAt => dateTime()();
+}
+
+/// 一个任务的多个提醒（v3）：每行一个提前量 + 提醒方式。
+/// 实际触发时刻 = 任务的提醒锚点 reminderAt − offsetMinutes。删除任务时级联删除。
+@TableIndex(name: 'idx_task_reminders_task', columns: {#taskId})
+class TaskReminders extends Table {
+  IntColumn get id => integer().autoIncrement()();
+
+  IntColumn get taskId => integer().references(Tasks, #id, onDelete: KeyAction.cascade)();
+
+  /// 提前多少分钟（0 = 准时）
+  IntColumn get offsetMinutes => integer()();
+
+  IntColumn get kind => intEnum<ReminderKind>().withDefault(Constant(ReminderKind.notification.index))();
+
+  @override
+  List<Set<Column>> get uniqueKeys => [
+    {taskId, offsetMinutes},
+  ];
 }
 
 @TableIndex(name: 'idx_log_created', columns: {#createdAt})
