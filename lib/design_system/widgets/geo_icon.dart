@@ -29,6 +29,9 @@ enum GeoGlyph {
 
   /// 返回：左折线
   back,
+
+  /// 进入：右折线
+  forward,
 }
 
 class GeoIcon extends StatelessWidget {
@@ -125,6 +128,12 @@ class _GeoIconPainter extends CustomPainter {
           ..lineTo(box.left, top + h)
           ..close();
         canvas.drawPath(path, shapePaint..strokeJoin = StrokeJoin.miter);
+      case GeoGlyph.forward:
+        final path = Path()
+          ..moveTo(c.dx - box.width * 0.2, box.top)
+          ..lineTo(c.dx + box.width * 0.25, c.dy)
+          ..lineTo(c.dx - box.width * 0.2, box.bottom);
+        canvas.drawPath(path, stroke);
       case GeoGlyph.back:
         final path = Path()
           ..moveTo(c.dx + box.width * 0.2, box.top)

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/data/app_database.dart';
 import '../../core/data/enums.dart';
+import '../../core/data/settings/settings_provider.dart';
 import '../../core/data/task_repository.dart';
 import '../../core/notifications/notification_providers.dart';
 import '../../core/notifications/reminder_scheduler.dart';
@@ -13,6 +14,7 @@ import '../../core/utils/date_utils.dart';
 import '../../core/utils/format.dart';
 import '../../design_system/design_system.dart';
 import 'task_actions.dart';
+import 'reminder_defaults.dart';
 import 'reminder_permission.dart';
 import 'task_labels.dart';
 
@@ -141,17 +143,15 @@ class _TaskEditorSheetState extends ConsumerState<TaskEditorSheet> {
     }
   }
 
-  /// 默认提醒：有日期时间就用它；否则下一个整点（日期取任务日期或今天）。
+  /// 默认提醒时间（含"新建提醒时默认提前"设置），规则见 reminder_defaults.dart
   DateTime _defaultReminder() {
-    final due = _dueDate;
-    final t = _dueTime;
-    if (due != null && t != null) {
-      return DateTime(due.year, due.month, due.day, t.hour, t.minute);
-    }
-    final now = ref.read(clockProvider).now();
-    final base = due ?? _today;
-    final hour = due == null || due == _today ? now.hour + 1 : 9;
-    return DateTime(base.year, base.month, base.day, hour);
+    return defaultReminderTime(
+      dueDate: _dueDate,
+      dueHour: _dueTime?.hour,
+      dueMinute: _dueTime?.minute,
+      now: ref.read(clockProvider).now(),
+      leadMinutes: ref.read(settingsProvider).reminderLead.minutes,
+    );
   }
 
   Future<void> _editReminderTime() async {

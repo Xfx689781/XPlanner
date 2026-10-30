@@ -36,6 +36,12 @@ abstract final class Sizes {
   /// 确认框最大宽度
   static const double dialogMaxWidth = 360;
 
+  /// 设置中心两栏模式下左侧分组列表宽度
+  static const double settingsListWidth = 280;
+
+  /// 设置中心两栏模式下的总宽度上限
+  static const double settingsMaxWidth = 960;
+
   /// 首页大圆直径（窄屏）
   static const double dayCircle = 184;
 
