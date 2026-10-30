@@ -32,8 +32,10 @@ void main() {
   }
 
   Future<void> finish(WidgetTester tester) async {
-    await tester.disposeApp();
+    await tester.pumpWidget(const SizedBox.shrink());
+    // UncontrolledProviderScope 卸载时不会销毁 container：先销毁，让 drift 流查询在假时钟下收尾
     container.dispose();
+    await tester.pump(const Duration(seconds: 1));
     await tester.db(db.close);
   }
 

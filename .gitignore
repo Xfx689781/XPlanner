@@ -64,3 +64,6 @@ app.*.map.json
 # Local env / secrets
 .env
 .env.*
+
+# Kotlin / Gradle 编译临时文件
+**/android/.kotlin/
