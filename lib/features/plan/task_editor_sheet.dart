@@ -155,6 +155,16 @@ class _TaskEditorSheetState extends ConsumerState<TaskEditorSheet> {
     });
   }
 
+  /// 新加提醒：先选时间，取消选择就不加
+  Future<void> _addReminder() async {
+    final initial = _defaultReminder();
+    final picked = await _pickTime(TimeOfDay.fromDateTime(initial));
+    if (picked == null) return;
+    setState(() {
+      _reminderAt = DateTime(initial.year, initial.month, initial.day, picked.hour, picked.minute);
+    });
+  }
+
   Future<void> _editReminderDate() async {
     final current = _reminderAt ?? _defaultReminder();
     final picked = await _pickDate(startOfDay(current));
@@ -181,29 +191,39 @@ class _TaskEditorSheetState extends ConsumerState<TaskEditorSheet> {
   Future<void> _save() async {
     if (_title.text.trim().isEmpty || _saving) return;
     setState(() => _saving = true);
+    // 第一个 await 之前取好所有依赖：权限框弹出期间弹层可能被关掉
     final messenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
     final scheduler = ref.read(reminderSchedulerProvider);
+    final actions = ref.read(taskActionsProvider);
     final draft = _draft();
     final hasReminder = draft.reminderAt != null;
-    // 第一次设提醒时在这里申请通知权限
-    final granted = hasReminder ? await ensureNotificationPermission(ref) : true;
+    try {
+      // 第一次设提醒时在这里申请通知权限
+      final granted = hasReminder ? await ensureNotificationPermission(scheduler) : true;
+      if (hasReminder && mounted) ref.invalidate(reminderStatusProvider);
 
-    final actions = ref.read(taskActionsProvider);
-    final ScheduleMode? mode;
-    if (_isNew) {
-      (_, mode) = await actions.create(draft);
-    } else {
-      (_, mode) = await actions.update(widget.task!.id, draft);
+      final ScheduleMode? mode;
+      if (_isNew) {
+        (_, mode) = await actions.create(draft);
+      } else {
+        (_, mode) = await actions.update(widget.task!.id, draft);
+      }
+      if (hasReminder) {
+        showReminderOutcome(
+          messenger,
+          permissionGranted: granted,
+          mode: mode,
+          openExactSettings: scheduler.requestExactAlarmPermission,
+        );
+      }
+      if (mounted) navigator.pop();
+    } catch (e) {
+      debugPrint('保存任务失败：$e');
+      messenger.showSnackBar(const SnackBar(content: Text('保存失败，请重试')));
+    } finally {
+      if (mounted) setState(() => _saving = false);
     }
-    if (hasReminder) {
-      showReminderOutcome(
-        messenger,
-        permissionGranted: granted,
-        mode: mode,
-        openExactSettings: scheduler.requestExactAlarmPermission,
-      );
-    }
-    if (mounted) Navigator.of(context).pop();
   }
 
   Future<void> _delete() async {
@@ -329,10 +349,7 @@ class _TaskEditorSheetState extends ConsumerState<TaskEditorSheet> {
                 child: GeoButton(
                   label: '+ 添加提醒',
                   style: GeoButtonStyle.text,
-                  onPressed: () {
-                    setState(() => _reminderAt = _defaultReminder());
-                    _editReminderTime();
-                  },
+                  onPressed: _addReminder,
                 ),
               )
             else ...[
@@ -378,6 +395,8 @@ class _TaskEditorSheetState extends ConsumerState<TaskEditorSheet> {
               ),
               if (reminderPast)
                 _Hint('这个时间已经过去，不会提醒'),
+              if (_repeat == RepeatRule.none && widget.task?.completedAt != null)
+                _Hint('这个任务已完成，不会提醒；取消完成后才会提醒'),
               if (status?.supported == false)
                 _Hint('这个平台暂不支持提醒，会在手机上生效'),
               if (status?.exactMissing ?? false)

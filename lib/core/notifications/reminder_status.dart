@@ -16,6 +16,7 @@ class ReminderStatus {
     required this.exactAllowed,
     required this.timezone,
     this.batteryUnrestricted,
+    this.timezoneGuessed = false,
   });
 
   /// 平台是否支持提醒（Windows 为 false）
@@ -33,6 +34,9 @@ class ReminderStatus {
   /// 电池是否「不受限制」；null = 无法判断（非 Android）
   final bool? batteryUnrestricted;
 
+  /// 没取到设备时区名，按 UTC 偏移推测
+  final bool timezoneGuessed;
+
   bool get exactMissing => exactAllowed == false;
   bool get notificationsMissing => notificationsEnabled == false;
 }
@@ -45,6 +49,7 @@ final reminderStatusProvider = FutureProvider<ReminderStatus>((ref) async {
     exactAllowed: await s.canScheduleExact(),
     timezone: tz.local.name,
     batteryUnrestricted: await ref.watch(systemSettingsProvider).isIgnoringBatteryOptimizations(),
+    timezoneGuessed: timezoneIsFallback,
   );
 });
 

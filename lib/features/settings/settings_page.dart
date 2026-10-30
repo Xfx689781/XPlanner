@@ -139,7 +139,13 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                 action: '打开应用设置',
                 onAction: _openAppDetails,
               ),
-              _StatusRow(label: '时区', ok: true, okText: status.timezone),
+              _StatusRow(
+                label: '时区',
+                ok: !status.timezoneGuessed,
+                okText: status.timezone,
+                badText: '${status.timezone}（没取到系统时区，按时差推测，提醒可能差一小时）',
+              ),
+              const _Paragraph('提醒按当地钟点：换了时区后请打开一次 Facet，提醒会改按新时区的钟点响。'),
               Padding(
                 padding: const EdgeInsets.fromLTRB(Space.l, Space.m, Space.l, 0),
                 child: Align(
