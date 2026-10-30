@@ -38,7 +38,11 @@ abstract interface class ReminderScheduler {
 
   Future<void> cancel(int id);
 
+  /// 取消所有待触发的提醒，并移除通知栏里已显示的通知
   Future<void> cancelAll();
+
+  /// 只取消待触发的提醒，不动通知栏里已经弹出的通知（全量重建时用）
+  Future<void> cancelAllPending();
 
   /// null = 无法判断（平台不支持）
   Future<bool?> notificationsEnabled();

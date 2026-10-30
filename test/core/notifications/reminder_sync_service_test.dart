@@ -47,14 +47,15 @@ void main() {
     expect(req.title, '开会');
     expect(req.body, '带电脑');
     expect(parseTaskPayload(req.payload), t.id);
-    expect(scheduler.log, ['cancel ${t.id}', 'schedule ${t.id}']);
+    expect(scheduler.cancelledTaskIds, [t.id]);
+    expect(scheduler.log.last, 'schedule ${notificationIdForTask(t.id)}');
   });
 
   test('没有精确闹钟权限：降级为不精确', () async {
     scheduler.exactAllowed = false;
     final t = await make(TaskDraft(title: 'a', reminderAt: DateTime(2026, 10, 31, 9)));
     expect(await sync.syncTask(t), ScheduleMode.inexact);
-    expect(scheduler.pending, contains(t.id));
+    expect(scheduler.taskIds, contains(t.id));
   });
 
   test('不重复任务完成后：取消且不再安排', () async {
@@ -73,7 +74,7 @@ void main() {
     ));
     final done = await repo.setCompleted(t.id, clock.value, now: clock.value);
     await sync.syncTask(done!);
-    expect(scheduler.pending, contains(t.id));
+    expect(scheduler.taskIds, contains(t.id));
   });
 
   test('删除任务：取消提醒', () async {
@@ -96,12 +97,14 @@ void main() {
     await make(const TaskDraft(title: '无提醒'));
     final c = await make(TaskDraft(title: '已完成', reminderAt: DateTime(2026, 10, 31, 9)));
     await repo.setCompleted(c.id, clock.value, now: clock.value);
-    scheduler.pending[999] = scheduler.pending[a.id] ??
-        ReminderRequest(id: 999, title: '残留', at: tz.TZDateTime.now(tz.UTC));
+    scheduler.pending[999 * slotsPerTask] =
+        ReminderRequest(id: 999 * slotsPerTask, title: '残留', at: tz.TZDateTime.now(tz.UTC));
 
     await sync.resyncAll();
-    expect(scheduler.log.first, 'cancelAll');
-    expect(scheduler.pending.keys, [a.id]);
+    // 只取消待触发的，不清通知栏
+    expect(scheduler.log.first, 'cancelAllPending');
+    expect(scheduler.log, isNot(contains('cancelAll')));
+    expect(scheduler.taskIds, [a.id]);
   });
 
   test('平台不支持：什么都不做', () async {

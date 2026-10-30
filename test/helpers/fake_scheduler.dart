@@ -1,3 +1,4 @@
+import 'package:facet/core/notifications/notification_ids.dart';
 import 'package:facet/core/notifications/reminder_scheduler.dart';
 
 /// 记录调用的假调度器。[pending] 模拟系统里当前挂着的提醒。
@@ -12,6 +13,22 @@ class FakeScheduler implements ReminderScheduler {
   bool throwOnSchedule = false;
 
   final Map<int, ReminderRequest> pending = {};
+
+  /// 当前挂着提醒的任务 id（通知 id = taskId * slotsPerTask + slot）
+  List<int> get taskIds => {
+    for (final id in pending.keys)
+      if (id < reservedIdBase) id ~/ slotsPerTask,
+  }.toList();
+
+  /// 某个任务挂着的提醒，按通知 id 排序
+  List<ReminderRequest> requestsFor(int taskId) =>
+      [for (final id in notificationIdsForTask(taskId)) ?pending[id]];
+
+  /// 被取消过提醒的任务 id（去重，保持顺序）
+  List<int> get cancelledTaskIds => {
+    for (final l in log)
+      if (l.startsWith('cancel ')) int.parse(l.substring(7)) ~/ slotsPerTask,
+  }.toList();
   final List<String> log = [];
   void Function(String? payload)? onTap;
   String? launch;
@@ -41,6 +58,12 @@ class FakeScheduler implements ReminderScheduler {
   @override
   Future<void> cancelAll() async {
     log.add('cancelAll');
+    pending.clear();
+  }
+
+  @override
+  Future<void> cancelAllPending() async {
+    log.add('cancelAllPending');
     pending.clear();
   }
 

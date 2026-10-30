@@ -48,7 +48,7 @@ void main() {
 
   test('新建带提醒的任务会安排通知', () async {
     final (t, _) = await actions().create(TaskDraft(title: 'a', reminderAt: DateTime(2026, 10, 31, 9)));
-    expect(scheduler.pending, contains(t.id));
+    expect(scheduler.taskIds, contains(t.id));
   });
 
   test('完成不重复任务会取消通知，取消完成会重新安排', () async {
@@ -59,7 +59,7 @@ void main() {
 
     final undone = await actions().toggleDone(done);
     expect(undone!.completedAt, isNull);
-    expect(scheduler.pending, contains(t.id));
+    expect(scheduler.taskIds, contains(t.id));
   });
 
   test('完成重复任务：提醒保留（下一次）', () async {
@@ -69,7 +69,7 @@ void main() {
       reminderRepeat: RepeatRule.daily,
     ));
     await actions().toggleDone(t);
-    expect(scheduler.pending, contains(t.id));
+    expect(scheduler.taskIds, contains(t.id));
   });
 
   test('删除任务会取消通知', () async {
@@ -82,7 +82,8 @@ void main() {
     final (task, mode) = await actions().update(999, TaskDraft(title: 'x', reminderAt: DateTime(2026, 10, 31, 9)));
     expect(task, isNull);
     expect(mode, isNull);
-    expect(scheduler.log, ['cancel 999']);
+    expect(scheduler.cancelledTaskIds, [999]);
+    expect(scheduler.log.where((l) => l.startsWith('schedule')), isEmpty);
     expect(scheduler.pending, isEmpty);
   });
 
@@ -92,7 +93,8 @@ void main() {
     final (updated, mode) = await actions().update(t.id, const TaskDraft(title: 'a'));
     expect(updated!.reminderAt, isNull);
     expect(mode, isNull);
-    expect(scheduler.log, ['cancel ${t.id}']);
+    expect(scheduler.cancelledTaskIds, [t.id]);
+    expect(scheduler.log.where((l) => l.startsWith('schedule')), isEmpty);
     expect(scheduler.pending, isEmpty);
   });
 
@@ -100,13 +102,13 @@ void main() {
     final (t, _) = await actions().create(const TaskDraft(title: 'a'));
     final (_, mode) = await actions().update(t.id, TaskDraft(title: 'a', reminderAt: DateTime(2026, 11, 2, 9)));
     expect(mode, ScheduleMode.exact);
-    expect(scheduler.pending, contains(t.id));
+    expect(scheduler.taskIds, contains(t.id));
   });
 
   test('新建：提醒已经过去的一次性任务不安排，返回 null', () async {
     final (t, mode) = await actions().create(TaskDraft(title: 'a', reminderAt: DateTime(2020, 1, 1, 9)));
     expect(mode, isNull);
-    expect(scheduler.pending, isNot(contains(t.id)));
+    expect(scheduler.taskIds, isNot(contains(t.id)));
   });
 
   test('重复任务昨天完成过：今天点完成会把它标成今天完成', () async {
@@ -130,7 +132,7 @@ void main() {
     final done = await actions().toggleDone(t);
     final undone = await actions().toggleDone(done!);
     expect(undone!.completedAt, isNull);
-    expect(scheduler.pending, contains(t.id));
+    expect(scheduler.taskIds, contains(t.id));
   });
 
   test('toggleDone 的任务已被删除：返回 null，不安排提醒', () async {

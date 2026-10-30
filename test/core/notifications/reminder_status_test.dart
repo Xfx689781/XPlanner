@@ -88,7 +88,7 @@ void main() {
     );
     await monitor().onResume();
     await monitor().onResume();
-    expect(scheduler.log, isNot(contains('cancelAll')));
+    expect(scheduler.log, isNot(contains('cancelAllPending')));
   });
 
   test('首次 onResume 时精确权限是"无"：不算变化，不重建', () async {
@@ -108,8 +108,8 @@ void main() {
 
     scheduler.exactAllowed = true;
     await monitor().onResume();
-    expect(scheduler.log.first, 'cancelAll');
-    expect(scheduler.pending.keys, [t.id]);
+    expect(scheduler.log.first, 'cancelAllPending');
+    expect(scheduler.taskIds, [t.id]);
 
     // 再回到前台、权限没变：不再重建
     scheduler.log.clear();
@@ -121,7 +121,7 @@ void main() {
     await monitor().onResume();
     scheduler.exactAllowed = false;
     await monitor().onResume();
-    expect(scheduler.log, ['cancelAll']);
+    expect(scheduler.log, ['cancelAllPending']);
   });
 
   test('设备时区变化：更新 tz.local 并重建', () async {
@@ -131,14 +131,14 @@ void main() {
     _mockDeviceTimezone('Asia/Shanghai');
     await monitor().onResume();
     expect(tz.local.name, 'Asia/Shanghai');
-    expect(scheduler.log, ['cancelAll']);
+    expect(scheduler.log, ['cancelAllPending']);
   });
 
   test('首次 onResume 就发现时区与启动时不同：重建', () async {
     _mockDeviceTimezone('Europe/London');
     await monitor().onResume();
     expect(tz.local.name, 'Europe/London');
-    expect(scheduler.log, ['cancelAll']);
+    expect(scheduler.log, ['cancelAllPending']);
   });
 
   test('获取时区失败（平台通道不存在）：保留已设置的 tz.local，不重建', () async {
@@ -156,7 +156,7 @@ void main() {
     _mockDeviceTimezone('Asia/Tokyo');
     await monitor().onResume();
     expect(tz.local.name, 'Asia/Tokyo');
-    expect(scheduler.log, ['cancelAll']);
+    expect(scheduler.log, ['cancelAllPending']);
   });
 
   test('canScheduleExact 为 null（iOS 等不需要这个权限）：永远不因权限重建', () async {

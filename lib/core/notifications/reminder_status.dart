@@ -1,6 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:timezone/timezone.dart' as tz;
 
+import '../utils/clock.dart';
+import '../utils/date_utils.dart';
 import '../utils/system_settings.dart';
 import '../utils/timezone_setup.dart';
 import 'notification_providers.dart';
@@ -45,32 +48,44 @@ final reminderStatusProvider = FutureProvider<ReminderStatus>((ref) async {
   );
 });
 
-/// App 回到前台时检查：时区或精确闹钟权限变了就全量重建提醒。
+/// App 回到前台时检查，以下情况全量重建提醒：
+/// - 时区变了（提醒按当地钟点，要换算到新时区）
+/// - 精确闹钟权限变了（换调度方式）
+/// - 跨天了（补满"跳过今天 / 延后开始"用的一次性提醒窗口）
 class ReminderMonitor {
   ReminderMonitor(this._ref);
 
   final Ref _ref;
   String? _timezone;
   bool? _exact;
+  DateTime? _day;
   bool _initialized = false;
 
   Future<void> onResume() async {
-    final scheduler = _ref.read(reminderSchedulerProvider);
-    if (!scheduler.supported) return;
-    final previousTz = _timezone ?? tz.local.name;
-    final timezone = await initLocalTimezone() ?? previousTz;
-    final exact = await scheduler.canScheduleExact();
+    try {
+      final scheduler = _ref.read(reminderSchedulerProvider);
+      if (!scheduler.supported) return;
+      final previousTz = _timezone ?? tz.local.name;
+      final timezone = await initLocalTimezone() ?? previousTz;
+      final exact = await scheduler.canScheduleExact();
+      final day = startOfDay(_ref.read(clockProvider).now());
 
-    final tzChanged = timezone != previousTz;
-    final exactChanged = _initialized && exact != _exact;
-    _timezone = timezone;
-    _exact = exact;
-    _initialized = true;
+      final tzChanged = timezone != previousTz;
+      final exactChanged = _initialized && exact != _exact;
+      final dayChanged = _initialized && day != _day;
+      _timezone = timezone;
+      _exact = exact;
+      _day = day;
+      _initialized = true;
 
-    if (tzChanged || exactChanged) {
-      await _ref.read(reminderSyncProvider).resyncAll();
+      if (tzChanged || exactChanged || dayChanged) {
+        await _ref.read(reminderSyncProvider).resyncAll();
+      }
+    } catch (e, s) {
+      debugPrint('回到前台检查提醒失败：$e\n$s');
+    } finally {
+      _ref.invalidate(reminderStatusProvider);
     }
-    _ref.invalidate(reminderStatusProvider);
   }
 }
 

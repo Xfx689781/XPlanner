@@ -38,7 +38,7 @@ void main() {
   test('每天 9:00：今天纽约 08:00 → 今天纽约 09:00，按 time 重复', () async {
     final t = await make(TaskDraft(title: 'a', reminderAt: DateTime(2026, 10, 1, 9), reminderRepeat: RepeatRule.daily));
     await sync.syncTask(t);
-    final req = scheduler.pending[t.id]!;
+    final req = scheduler.requestsFor(t.id).first;
     expect(req.at.location.name, 'America/New_York');
     expect((req.at.month, req.at.day, req.at.hour, req.at.minute), (10, 30, 9, 0));
     expect(req.match, DateTimeComponents.time);
@@ -47,7 +47,7 @@ void main() {
   test('每周：按 dayOfWeekAndTime 重复，星期几正确', () async {
     final t = await make(TaskDraft(title: 'a', reminderAt: DateTime(2026, 10, 7, 9), reminderRepeat: RepeatRule.weekly)); // 周三
     await sync.syncTask(t);
-    final req = scheduler.pending[t.id]!;
+    final req = scheduler.requestsFor(t.id).first;
     expect(req.match, DateTimeComponents.dayOfWeekAndTime);
     expect((req.at.month, req.at.day, req.at.weekday), (11, 4, DateTime.wednesday));
   });
@@ -56,7 +56,7 @@ void main() {
     clock.value = DateTime.utc(2026, 10, 31, 15); // 纽约 11:00 EDT
     final t = await make(TaskDraft(title: 'a', reminderAt: DateTime(2026, 10, 1, 9), reminderRepeat: RepeatRule.daily));
     await sync.syncTask(t);
-    final at = scheduler.pending[t.id]!.at;
+    final at = scheduler.requestsFor(t.id).first.at;
     expect((at.month, at.day, at.hour), (11, 1, 9));
     expect(at.timeZoneOffset, const Duration(hours: -5));
     expect(at.toUtc(), DateTime.utc(2026, 11, 1, 14));
@@ -66,22 +66,22 @@ void main() {
     final t = await make(TaskDraft(title: 'a', reminderAt: DateTime(2026, 10, 1, 9), reminderRepeat: RepeatRule.daily));
     final done = await repo.setCompleted(t.id, clock.value, now: clock.value);
     await sync.syncTask(done!);
-    final at = scheduler.pending[t.id]!.at;
+    final at = scheduler.requestsFor(t.id).first.at;
     expect((at.month, at.day, at.hour), (10, 31, 9));
   });
 
   test('换时区后 resyncAll：同一任务改为新时区的当地 9:00', () async {
     final t = await make(TaskDraft(title: 'a', reminderAt: DateTime(2026, 10, 1, 9), reminderRepeat: RepeatRule.daily));
     await sync.resyncAll();
-    final inNy = scheduler.pending[t.id]!.at;
+    final inNy = scheduler.requestsFor(t.id).first.at;
 
     location = tz.getLocation('Asia/Tokyo'); // 此刻东京 21:00，今天的 9:00 已过
     await sync.resyncAll();
-    final inTokyo = scheduler.pending[t.id]!.at;
+    final inTokyo = scheduler.requestsFor(t.id).first.at;
     expect(inTokyo.location.name, 'Asia/Tokyo');
     expect((inTokyo.month, inTokyo.day, inTokyo.hour), (10, 31, 9));
     expect(inTokyo.toUtc(), isNot(inNy.toUtc()));
-    expect(scheduler.log.where((l) => l == 'cancelAll').length, 2);
+    expect(scheduler.log.where((l) => l == 'cancelAllPending').length, 2);
   });
 
   test('resyncAll 大量数据：300 个任务，只安排需要的那些', () async {
@@ -100,7 +100,7 @@ void main() {
       if (kind != 1) expected.add(t.id);
     }
     await sync.resyncAll();
-    expect(scheduler.pending.keys.toSet(), expected);
+    expect(scheduler.taskIds.toSet(), expected);
     expect(scheduler.pending.length, 200);
   });
 }

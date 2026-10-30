@@ -93,6 +93,9 @@ class LocalNotificationScheduler implements ReminderScheduler {
   Future<void> cancelAll() => _plugin.cancelAll();
 
   @override
+  Future<void> cancelAllPending() => _plugin.cancelAllPendingNotifications();
+
+  @override
   Future<bool?> notificationsEnabled() async {
     if (defaultTargetPlatform != TargetPlatform.android) return null;
     return _android?.areNotificationsEnabled();

@@ -277,8 +277,6 @@ void main() {
         expect(p.match, DateTimeComponents.time);
         expect((p.at.hour, p.at.minute), (2, 30));
       },
-      skip: '生产代码 bug：next_trigger.dart:31/52 对重复提醒用 TZDateTime 构造时把夏令时空档里的钟点'
-          '规范化成 03:30，交给系统按 time 重复后以后每天都在 03:30 响',
     );
 
     test(
@@ -289,7 +287,6 @@ void main() {
         expect(p.match, DateTimeComponents.dayOfWeekAndTime);
         expect((p.at.hour, p.at.minute), (2, 30));
       },
-      skip: '生产代码 bug：同上，每周重复在夏令时开始当天首次触发时钟点被改成 03:30 并一直保留',
     );
 
     test('一次性提醒在空档里规范化到跳变之后是预期行为（只响一次）', () {
