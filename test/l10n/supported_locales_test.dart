@@ -15,6 +15,14 @@ void main() {
       expect(resolve(const [Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans', countryCode: 'HK')]), 'zh-Hans');
     });
 
+    test('繁體中文：zh_TW、zh_HK、zh_MO、zh_Hant、zh_Hant_CN（按文字是繁体）', () {
+      expect(resolve(const [Locale('zh', 'TW')]), 'zh-Hant');
+      expect(resolve(const [Locale('zh', 'HK')]), 'zh-Hant');
+      expect(resolve(const [Locale('zh', 'MO')]), 'zh-Hant');
+      expect(resolve(const [Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant')]), 'zh-Hant');
+      expect(resolve(const [Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant', countryCode: 'CN')]), 'zh-Hant');
+    });
+
     test('英文：任何地区', () {
       expect(resolve(const [Locale('en', 'US')]), 'en');
       expect(resolve(const [Locale('en', 'GB')]), 'en');
@@ -34,6 +42,15 @@ void main() {
       expect(resolve(const [Locale('zh', 'CN')], stored: 'en'), 'en');
       expect(resolve(const [Locale('zh', 'CN')], stored: 'xx-Unknown'), 'zh-Hans');
     });
+  });
+
+  test('繁体界面用繁体文字和用词，不是简体', () {
+    final hant = lookupAppLocalizations(const Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant'));
+    final hans = lookupAppLocalizations(const Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans'));
+    expect(hant.settingsTitle, '設定');
+    expect(hans.settingsTitle, '设置');
+    expect(hant.taskEditorSave, '儲存');
+    expect(hant.repeatEveryWeekday('fri'), '每週五');
   });
 
   test('支持列表与生成的 ARB 语言、Material 本地化一一对应', () {

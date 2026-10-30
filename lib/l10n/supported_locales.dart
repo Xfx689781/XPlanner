@@ -32,6 +32,12 @@ const appLanguages = <AppLanguage>[
     autonym: '简体中文',
     intlLocale: 'zh_CN',
   ),
+  AppLanguage(
+    tag: 'zh-Hant',
+    locale: Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant'),
+    autonym: '繁體中文',
+    intlLocale: 'zh_TW',
+  ),
 ];
 
 AppLanguage get fallbackLanguage => appLanguages.first;
