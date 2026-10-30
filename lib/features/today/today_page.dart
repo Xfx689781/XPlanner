@@ -46,27 +46,43 @@ class TodayPage extends ConsumerWidget {
             child: DayCircle(
               done: progress?.done ?? 0,
               total: progress?.total ?? 0,
-              formatPercent: NumberFormat.percentPattern(AppDateFormat.of(context).intlLocale).format,
-              subtitle: progress == null ? '' : l10n.todayProgressDone(progress.done, progress.total),
+              // 向下取整到 1%：没全部完成时不会显示 100%
+              formatPercent: (r) => NumberFormat.percentPattern(
+                AppDateFormat.of(context).intlLocale,
+              ).format((r * 100).floor() / 100),
+              subtitle: progress == null
+                  ? ''
+                  : l10n.todayProgressDone(progress.done, progress.total),
+              // 空状态由圆心的文字自己读出，不再重复
               semanticLabel: progress == null || progress.total == 0
-                  ? l10n.todayNoTasks
+                  ? null
                   : l10n.todayProgressSemantics(progress.done, progress.total),
-              emptyChild: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(l10n.todayNoTasks, style: context.text.small),
-                  GeoButton(
-                    label: l10n.todayAddTask,
-                    style: GeoButtonStyle.text,
-                    onPressed: () => showTaskEditor(context, dueToday: true),
-                  ),
-                ],
-              ),
+              // 数据还没加载时只画空心圆，避免冷启动闪一下"今天没有任务"
+              emptyChild: progress == null
+                  ? null
+                  : Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(l10n.todayNoTasks, style: context.text.small),
+                        GeoButton(
+                          label: l10n.todayAddTask,
+                          style: GeoButtonStyle.text,
+                          onPressed: () =>
+                              showTaskEditor(context, dueToday: true),
+                        ),
+                      ],
+                    ),
             ),
           ),
           if (summary != null && summary.overdue.isNotEmpty) ...[
-            SectionHeader(l10n.todayOverdueHeader, glyph: GeoGlyph.square, glyphFilled: false, accent: true),
-            for (final t in summary.overdue) TaskTile(key: ValueKey('o${t.id}'), task: t),
+            SectionHeader(
+              l10n.todayOverdueHeader,
+              glyph: GeoGlyph.square,
+              glyphFilled: false,
+              accent: true,
+            ),
+            for (final t in summary.overdue)
+              TaskTile(key: ValueKey('o${t.id}'), task: t),
           ],
           SectionHeader(
             l10n.todayTasksHeader,
@@ -78,7 +94,8 @@ class TodayPage extends ConsumerWidget {
             ),
           ),
           if (summary != null)
-            for (final t in summary.tasks) TaskTile(key: ValueKey('t${t.id}'), task: t),
+            for (final t in summary.tasks)
+              TaskTile(key: ValueKey('t${t.id}'), task: t),
           SectionHeader(l10n.todayLogHeader),
           const LogInputBar(),
           for (final e in logs) LogRow(key: ValueKey(e.id), entry: e),

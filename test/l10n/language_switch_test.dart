@@ -35,31 +35,41 @@ void main() {
   }
 
   Future<void> settle(WidgetTester tester) async {
-    await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 50)));
+    await tester.runAsync(
+      () => Future<void>.delayed(const Duration(milliseconds: 50)),
+    );
     await tester.pumpAndSettle();
   }
 
   testWidgets('跟随系统：系统是英文时界面是英文，系统是中文时界面是中文', (tester) async {
-    await tester.pumpWidget(testApp(db, clock: clock, systemLocales: const [Locale('en', 'US')]));
+    await tester.pumpWidget(
+      testApp(db, clock: clock, systemLocales: const [Locale('en', 'US')]),
+    );
     await tester.pumpAndSettle();
     expect(find.text('Today'), findsWidgets);
     expect(find.text('Tasks'), findsWidgets);
     await tester.disposeApp();
 
-    await tester.pumpWidget(testApp(db, clock: clock, systemLocales: const [Locale('zh', 'CN')]));
+    await tester.pumpWidget(
+      testApp(db, clock: clock, systemLocales: const [Locale('zh', 'CN')]),
+    );
     await tester.pumpAndSettle();
     expect(find.text('今天'), findsWidgets);
     await finish(tester);
   });
 
   testWidgets('不支持的系统语言用 English 兜底', (tester) async {
-    await tester.pumpWidget(testApp(db, clock: clock, systemLocales: const [Locale('it', 'IT')]));
+    await tester.pumpWidget(
+      testApp(db, clock: clock, systemLocales: const [Locale('it', 'IT')]),
+    );
     await tester.pumpAndSettle();
     expect(find.text('Today'), findsWidgets);
     await finish(tester);
   });
 
-  testWidgets('设置里选 English：立即生效、写入数据库；重启后仍是 English；选回跟随系统后删除该行', (tester) async {
+  testWidgets('设置里选 English：立即生效、写入数据库；重启后仍是 English；选回跟随系统后删除该行', (
+    tester,
+  ) async {
     await tester.pumpWidget(testApp(db, clock: clock));
     await tester.tap(find.bySemanticsLabel('设置'));
     await tester.pumpAndSettle();
@@ -88,23 +98,48 @@ void main() {
     await tester.tap(find.text('Follow system').last);
     await settle(tester);
     expect(find.text('语言'), findsOneWidget);
-    expect(await tester.db(() => SettingsRepository(db).raw('language')), isNull);
+    expect(
+      await tester.db(() => SettingsRepository(db).raw('language')),
+      isNull,
+    );
     await finish(tester);
   });
 
   testWidgets('英文界面：日期、优先级读屏、复数、分组标题都用英文', (tester) async {
     await tester.db(() async {
       final repo = TaskRepository(db);
-      await repo.create(TaskDraft(title: 'Pay rent', dueAt: DateTime(2026, 10, 28), priority: Priority.high), now: clock.value);
-      await repo.create(TaskDraft(title: 'Call mom', dueAt: DateTime(2026, 10, 30)), now: clock.value);
+      await repo.create(
+        TaskDraft(
+          title: 'Pay rent',
+          dueAt: DateTime(2026, 10, 28),
+          priority: Priority.high,
+        ),
+        now: clock.value,
+      );
+      await repo.create(
+        TaskDraft(title: 'Call mom', dueAt: DateTime(2026, 10, 30)),
+        now: clock.value,
+      );
     });
-    await tester.pumpWidget(testApp(db, clock: clock, settings: const AppSettings(languageTag: 'en')));
+    await tester.pumpWidget(
+      testApp(
+        db,
+        clock: clock,
+        settings: const AppSettings(languageTag: 'en'),
+      ),
+    );
     await tester.pumpAndSettle();
 
     expect(find.text('Fri, Oct 30'), findsOneWidget); // 今天页副标题
     expect(find.text('Overdue'), findsOneWidget);
-    expect(find.bySemanticsLabel('0 of 1 task done today'), findsOneWidget); // 复数 =1
-    expect(find.bySemanticsLabel(RegExp(r'^Pay rent, high priority, overdue$')), findsOneWidget);
+    expect(
+      find.bySemanticsLabel('0 of 1 task done today'),
+      findsOneWidget,
+    ); // 复数 =1
+    expect(
+      find.bySemanticsLabel(RegExp(r'^Pay rent, high priority, overdue$')),
+      findsOneWidget,
+    );
     await finish(tester);
   });
 
@@ -121,20 +156,27 @@ void main() {
 
   test('切换语言：通知渠道名跟着变，已安排的提醒按新语言重排', () async {
     final scheduler = FakeScheduler();
-    final container = ProviderContainer(overrides: [
-      databaseProvider.overrideWithValue(db),
-      clockProvider.overrideWithValue(clock),
-      reminderSchedulerProvider.overrideWithValue(scheduler),
-      reminderSyncProvider.overrideWith((ref) => ReminderSyncService(
-        scheduler: scheduler,
-        repository: ref.watch(taskRepositoryProvider),
-        clock: clock,
-        location: () => tz.UTC,
-      )),
-      systemLocalesProvider.overrideWith(ZhSystemLocales.new),
-    ]);
+    final container = ProviderContainer(
+      overrides: [
+        databaseProvider.overrideWithValue(db),
+        clockProvider.overrideWithValue(clock),
+        reminderSchedulerProvider.overrideWithValue(scheduler),
+        reminderSyncProvider.overrideWith(
+          (ref) => ReminderSyncService(
+            scheduler: scheduler,
+            repository: ref.watch(taskRepositoryProvider),
+            clock: clock,
+            location: () => tz.UTC,
+          ),
+        ),
+        systemLocalesProvider.overrideWith(ZhSystemLocales.new),
+      ],
+    );
     addTearDown(container.dispose);
-    await TaskRepository(db).create(TaskDraft(title: 'a', reminderAt: DateTime(2026, 10, 31, 9)), now: clock.value);
+    await TaskRepository(db).create(
+      TaskDraft(title: 'a', reminderAt: DateTime(2026, 10, 31, 9)),
+      now: clock.value,
+    );
 
     await configureNotificationChannel(container);
     expect(scheduler.channelName, '任务提醒');
@@ -156,8 +198,17 @@ void main() {
   });
 
   testWidgets('24 小时制跟随系统设置：12 小时制时英文显示 AM/PM', (tester) async {
-    await tester.db(() => LogRepository(db).add('coffee', now: DateTime(2026, 10, 30, 7, 5)));
-    await tester.pumpWidget(testApp(db, clock: clock, settings: const AppSettings(languageTag: 'en'), use24h: false));
+    await tester.db(
+      () => LogRepository(db).add('coffee', now: DateTime(2026, 10, 30, 7, 5)),
+    );
+    await tester.pumpWidget(
+      testApp(
+        db,
+        clock: clock,
+        settings: const AppSettings(languageTag: 'en'),
+        use24h: false,
+      ),
+    );
     await tester.pumpAndSettle();
     expect(find.textContaining('7:05'), findsOneWidget);
     expect(find.textContaining('AM'), findsOneWidget);
@@ -165,4 +216,5 @@ void main() {
   });
 }
 
-AppLocalizations lookupAppLocalizationsFor(String code) => lookupAppLocalizations(Locale(code));
+AppLocalizations lookupAppLocalizationsFor(String code) =>
+    lookupAppLocalizations(Locale(code));

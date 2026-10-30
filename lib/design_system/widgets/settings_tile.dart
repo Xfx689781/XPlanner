@@ -40,7 +40,7 @@ class SettingsTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final label = [title, ?value, if (attention) ?attentionLabel].join('，');
+    final label = [title, ?value, if (attention) ?attentionLabel].join(', ');
     return Semantics(
       button: true,
       selected: selected,
@@ -71,45 +71,89 @@ class SettingsTile extends StatelessWidget {
             ),
           ),
           child: LayoutBuilder(
-            builder: (context, constraints) => Row(
-              children: [
-                // 标题不参与弹性分配（最多占一半），剩余宽度全部给右侧的当前值
-                ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxWidth: constraints.maxWidth / 2,
-                  ),
-                  child: Text(title, style: context.text.body),
-                ),
-                if (attention) ...[
-                  const SizedBox(width: Space.s),
-                  const StatusDot(StatusKind.attention),
+            builder: (context, constraints) {
+              final scaler = MediaQuery.textScalerOf(context);
+              final titleWidth = _measure(title, context.text.body, scaler);
+              final valueWidth = value == null
+                  ? 0.0
+                  : _measure(value!, context.text.small, scaler);
+              final fixed =
+                  (attention ? Space.s + Sizes.glyphInline : 0) +
+                  Space.m +
+                  (showChevron ? Space.s + Sizes.glyphInline : 0);
+              // 标题按自然宽度显示（不断词）；一行放不下标题 + 当前值时，当前值换到标题下面一行
+              final oneLine =
+                  titleWidth + valueWidth + fixed <= constraints.maxWidth;
+              final titleRow = Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Flexible(child: Text(title, style: context.text.body)),
+                  if (attention) ...[
+                    const SizedBox(width: Space.s),
+                    const StatusDot(StatusKind.attention),
+                  ],
                 ],
-                const SizedBox(width: Space.m),
-                Expanded(
-                  child: value == null
-                      ? const SizedBox.shrink()
-                      : Text(
-                          value!,
-                          textAlign: TextAlign.end,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: context.text.small,
-                        ),
-                ),
-                if (showChevron) ...[
-                  const SizedBox(width: Space.s),
-                  GeoIcon(
-                    GeoGlyph.forward,
-                    size: Sizes.glyphInline,
-                    color: colors.muted,
-                    strokeWidth: Stroke.regular,
+              );
+              final chevron = showChevron
+                  ? Padding(
+                      padding: const EdgeInsetsDirectional.only(start: Space.s),
+                      child: GeoIcon(
+                        GeoGlyph.forward,
+                        size: Sizes.glyphInline,
+                        color: colors.muted,
+                        strokeWidth: Stroke.regular,
+                      ),
+                    )
+                  : const SizedBox.shrink();
+              if (oneLine) {
+                return Row(
+                  children: [
+                    titleRow,
+                    const SizedBox(width: Space.m),
+                    Expanded(
+                      child: value == null
+                          ? const SizedBox.shrink()
+                          : Text(
+                              value!,
+                              textAlign: TextAlign.end,
+                              style: context.text.small,
+                            ),
+                    ),
+                    chevron,
+                  ],
+                );
+              }
+              return Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        titleRow,
+                        if (value != null)
+                          Text(value!, style: context.text.small),
+                      ],
+                    ),
                   ),
+                  chevron,
                 ],
-              ],
-            ),
+              );
+            },
           ),
         ),
       ),
     );
   }
+}
+
+double _measure(String text, TextStyle style, TextScaler scaler) {
+  final painter = TextPainter(
+    text: TextSpan(text: text, style: style),
+    textDirection: TextDirection.ltr,
+    textScaler: scaler,
+    maxLines: 1,
+  )..layout();
+  final w = painter.width;
+  painter.dispose();
+  return w.ceilToDouble() + 1;
 }

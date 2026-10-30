@@ -43,14 +43,14 @@ void main() {
     expect(FontSizes.display, greaterThan(FontSizes.title));
   });
 
-  testWidgets('跨过水位线的文字：水位以下那层用底色，并按水位裁切', (tester) async {
+  testWidgets('跨过水位线的文字：水位以下那层用 onAccent，两层都按水位裁切', (tester) async {
     await tester.pumpWidget(circle(1, 2, brightness: Brightness.dark));
     final layers = tester.widgetList<Text>(find.text('50%')).toList();
     final colorsUsed = {for (final t in layers) t.style!.color};
-    expect(colorsUsed, {FacetColors.dark.ink, FacetColors.dark.background});
-    // 底色那层在 ClipPath 里；前景层没有被裁切
+    expect(colorsUsed, {FacetColors.dark.ink, FacetColors.dark.onAccent});
+    // 两层都按水位裁切（水位以下 / 其余部分），互不重叠
     final clipped = find.ancestor(of: find.text('50%'), matching: find.byType(ClipPath));
-    expect(clipped, findsOneWidget);
+    expect(clipped, findsNWidgets(2));
     // 没有一层用主色（不会出现橙字压在橙底上）
     expect(colorsUsed.contains(FacetColors.dark.accent), isFalse);
   });

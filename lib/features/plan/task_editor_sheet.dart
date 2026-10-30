@@ -440,17 +440,21 @@ class _TaskEditorSheetState extends ConsumerState<TaskEditorSheet> {
                     ),
                   ),
                   const SizedBox(width: Space.m),
-                  if (_repeat != RepeatRule.daily)
-                    Flexible(
-                      child: GeoButton(
-                        label: _repeat == RepeatRule.weekly
-                            ? l10n.repeatEveryWeekday(weekdayKey(reminder))
-                            : dates.relative(reminder, today),
-                        style: GeoButtonStyle.text,
-                        onPressed: _editReminderDate,
-                      ),
-                    ),
-                  const Spacer(),
+                  // 按钮占满剩余宽度、靠左对齐：长文字（Every Wednesday）在这里换行，而不是被拆成字母
+                  Expanded(
+                    child: _repeat == RepeatRule.daily
+                        ? const SizedBox.shrink()
+                        : Align(
+                            alignment: AlignmentDirectional.centerStart,
+                            child: GeoButton(
+                              label: _repeat == RepeatRule.weekly
+                                  ? l10n.repeatEveryWeekday(weekdayKey(reminder))
+                                  : dates.relative(reminder, today),
+                              style: GeoButtonStyle.text,
+                              onPressed: _editReminderDate,
+                            ),
+                          ),
+                  ),
                   GeoIconButton(
                     glyph: GeoGlyph.close,
                     semanticLabel: l10n.taskEditorRemoveReminder,
@@ -497,8 +501,11 @@ class _TaskEditorSheetState extends ConsumerState<TaskEditorSheet> {
             ],
             const SizedBox(height: Space.l),
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                if (!_isNew)
+                if (_isNew)
+                  const SizedBox.shrink()
+                else
                   Flexible(
                     child: GeoButton(
                       label: l10n.commonDelete,
@@ -507,7 +514,7 @@ class _TaskEditorSheetState extends ConsumerState<TaskEditorSheet> {
                       onPressed: _delete,
                     ),
                   ),
-                const Spacer(),
+                const SizedBox(width: Space.m),
                 Flexible(
                   child: GeoButton(
                     label: l10n.taskEditorSave,

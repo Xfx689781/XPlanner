@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 
+import '../colors.dart';
 import '../metrics.dart';
 import '../motion.dart';
 import '../tokens.dart';
@@ -47,12 +48,12 @@ class _GeoButtonState extends State<GeoButton> {
     final (Color bg, Color fg, Color? border) = switch (widget.style) {
       GeoButtonStyle.primary => (colors.accent, colors.onAccent, null),
       GeoButtonStyle.outline => (
-        const Color(0x00000000),
+        FacetColors.transparent,
         widget.destructive ? colors.accent : colors.ink,
         colors.muted,
       ),
       GeoButtonStyle.text => (
-        const Color(0x00000000),
+        FacetColors.transparent,
         widget.destructive ? colors.accent : colors.ink,
         null,
       ),

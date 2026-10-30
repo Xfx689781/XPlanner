@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import '../core/data/settings/settings_enums.dart';
+import '../l10n/supported_locales.dart';
 
 /// 按"一周从哪天开始"设置提供 MaterialLocalizations（日期选择器等读 firstDayOfWeekIndex）。
 /// 跟随语言时原样返回 GlobalMaterialLocalizations。
@@ -30,8 +31,9 @@ class WeekStartMaterialDelegate
   @override
   Future<MaterialLocalizations> load(Locale locale) {
     final index = _overrideIndex;
+    // 繁体：用 zh_TW 加载，才有繁体的日期格式（週）和台湾习惯的一周第一天
     return GlobalMaterialLocalizations.delegate
-        .load(locale)
+        .load(materialLocaleFor(locale))
         .then((base) => index == null ? base : WeekStartMaterialLocalizations(base, index));
   }
 

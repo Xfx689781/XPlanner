@@ -24,7 +24,9 @@ void main() {
   for (final lang in appLanguages) {
     for (final width in [320.0, 390.0, 1024.0]) {
       for (final scale in [1.0, 1.3]) {
-        testWidgets('${lang.tag} 宽 ${width.toInt()} 字号 ×$scale：所有页面无溢出', (tester) async {
+        testWidgets('${lang.tag} 宽 ${width.toInt()} 字号 ×$scale：所有页面无溢出', (
+          tester,
+        ) async {
           tester.view.physicalSize = Size(width, 760);
           tester.view.devicePixelRatio = 1;
           tester.platformDispatcher.textScaleFactorTestValue = scale;
@@ -52,22 +54,38 @@ void main() {
               ),
               now: clock.value,
             );
-            await repo.create(TaskDraft(title: 'Next year', dueAt: DateTime(2027, 1, 2)), now: clock.value);
-            await LogRepository(db).add('A fairly long quick log entry to see how lines wrap here', now: clock.value);
+            await repo.create(
+              TaskDraft(title: 'Next year', dueAt: DateTime(2027, 1, 2)),
+              now: clock.value,
+            );
+            await LogRepository(db).add(
+              'A fairly long quick log entry to see how lines wrap here',
+              now: clock.value,
+            );
           });
 
-          final scheduler = FakeScheduler(exactAllowed: false)..notificationsOn = false;
-          await tester.pumpWidget(testApp(
-            db,
-            clock: clock,
-            settings: AppSettings(languageTag: lang.tag),
-            overrides: [reminderSchedulerProvider.overrideWithValue(scheduler)],
-          ));
+          final scheduler = FakeScheduler(exactAllowed: false)
+            ..notificationsOn = false;
+          await tester.pumpWidget(
+            testApp(
+              db,
+              clock: clock,
+              settings: AppSettings(languageTag: lang.tag),
+              overrides: [
+                reminderSchedulerProvider.overrideWithValue(scheduler),
+              ],
+            ),
+          );
           await tester.pumpAndSettle();
           final l10n = lookupAppLocalizations(lang.locale);
 
           Future<void> tapNav(String label) async {
-            await tester.tap(find.descendant(of: find.byType(GeoNavBar), matching: find.text(label)));
+            await tester.tap(
+              find.descendant(
+                of: find.byType(GeoNavBar),
+                matching: find.text(label),
+              ),
+            );
             await tester.pumpAndSettle();
           }
 
@@ -82,7 +100,12 @@ void main() {
           // 选一个具体日期，让日期分段显示完整日期
           await tester.tap(find.text(l10n.taskEditorDatePick));
           await tester.pumpAndSettle();
-          await tester.tap(find.text(MaterialLocalizations.of(tester.element(find.byType(Dialog))).okButtonLabel));
+          await tester.tap(
+            find.text(
+              MaterialLocalizations.of(tester.element(find.byType(Dialog)))
+                  .okButtonLabel,
+            ),
+          );
           await tester.pumpAndSettle();
           // 删除确认框
           await tester.ensureVisible(find.text(l10n.commonDelete).last);

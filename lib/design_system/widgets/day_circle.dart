@@ -64,7 +64,7 @@ class DayCircle extends StatelessWidget {
               total: 0,
               geometry: geometry,
               ring: colors.ink,
-              track: colors.line,
+              track: colors.muted,
               fillColor: colors.accent,
             ),
             child: Center(child: emptyChild),
@@ -88,8 +88,16 @@ class DayCircle extends StatelessWidget {
             child: FittedBox(
               fit: BoxFit.scaleDown,
               child: allDone
-                  ? _DoneContent(color: color, subtitle: subtitle, size: geometry.innerRadius)
-                  : _ProgressContent(color: color, percent: formatPercent(v.ratio), subtitle: subtitle),
+                  ? _DoneContent(
+                      color: color,
+                      subtitle: subtitle,
+                      size: geometry.innerRadius,
+                    )
+                  : _ProgressContent(
+                      color: color,
+                      percent: formatPercent(v.ratio),
+                      subtitle: subtitle,
+                    ),
             ),
           );
 
@@ -102,18 +110,21 @@ class DayCircle extends StatelessWidget {
                 total: total,
                 geometry: geometry,
                 ring: colors.ink,
-                track: colors.line,
+                track: colors.muted,
                 fillColor: colors.accent,
               ),
               child: Stack(
                 fit: StackFit.expand,
                 children: [
                   // 水位以上：前景色
-                  Center(child: content(colors.ink)),
-                  // 水位以下：底色，按水位裁切
                   ClipPath(
-                    clipper: _FillClipper(geometry, v.ratio),
-                    child: Center(child: content(colors.background)),
+                    clipper: _FillClipper(geometry, v.ratio, below: false),
+                    child: Center(child: content(colors.ink)),
+                  ),
+                  // 水位以下：主色上的文字色
+                  ClipPath(
+                    clipper: _FillClipper(geometry, v.ratio, below: true),
+                    child: Center(child: content(colors.onAccent)),
                   ),
                 ],
               ),
@@ -137,7 +148,11 @@ class DayCircleGeometry {
 }
 
 class _ProgressContent extends StatelessWidget {
-  const _ProgressContent({required this.color, required this.percent, required this.subtitle});
+  const _ProgressContent({
+    required this.color,
+    required this.percent,
+    required this.subtitle,
+  });
 
   final Color color;
   final String percent;
@@ -159,14 +174,22 @@ class _ProgressContent extends StatelessWidget {
             fontFeatures: const [FontFeature.tabularFigures()],
           ),
         ),
-        Text(subtitle, maxLines: 1, style: context.text.small.copyWith(color: color)),
+        Text(
+          subtitle,
+          maxLines: 1,
+          style: context.text.small.copyWith(color: color),
+        ),
       ],
     );
   }
 }
 
 class _DoneContent extends StatelessWidget {
-  const _DoneContent({required this.color, required this.subtitle, required this.size});
+  const _DoneContent({
+    required this.color,
+    required this.subtitle,
+    required this.size,
+  });
 
   final Color color;
   final String subtitle;
@@ -177,19 +200,29 @@ class _DoneContent extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        GeoIcon(GeoGlyph.check, color: color, size: size * 0.7, strokeWidth: Stroke.bold),
-        Text(subtitle, maxLines: 1, style: context.text.small.copyWith(color: color)),
+        GeoIcon(
+          GeoGlyph.check,
+          color: color,
+          size: size * 0.7,
+          strokeWidth: Stroke.bold,
+        ),
+        Text(
+          subtitle,
+          maxLines: 1,
+          style: context.text.small.copyWith(color: color),
+        ),
       ],
     );
   }
 }
 
-/// 裁出内圆里水位以下的部分
+/// 按水位裁切：[below] = 内圆里水位以下的部分，否则为其余部分（补集）
 class _FillClipper extends CustomClipper<Path> {
-  _FillClipper(this.geometry, this.ratio);
+  _FillClipper(this.geometry, this.ratio, {required this.below});
 
   final DayCircleGeometry geometry;
   final double ratio;
+  final bool below;
 
   @override
   Path getClip(Size size) {
@@ -197,12 +230,24 @@ class _FillClipper extends CustomClipper<Path> {
     final r = geometry.innerRadius;
     final top = center.dy + r - 2 * r * ratio;
     final circle = Path()..addOval(Rect.fromCircle(center: center, radius: r));
-    final below = Path()..addRect(Rect.fromLTRB(0, top, size.width, size.height));
-    return Path.combine(PathOperation.intersect, circle, below);
+    final water = Path.combine(
+      PathOperation.intersect,
+      circle,
+      Path()..addRect(Rect.fromLTRB(0, top, size.width, size.height)),
+    );
+    if (below) return water;
+    return Path.combine(
+      PathOperation.difference,
+      Path()..addRect(Offset.zero & size),
+      water,
+    );
   }
 
   @override
-  bool shouldReclip(_FillClipper old) => old.ratio != ratio || old.geometry.diameter != geometry.diameter;
+  bool shouldReclip(_FillClipper old) =>
+      old.ratio != ratio ||
+      old.below != below ||
+      old.geometry.diameter != geometry.diameter;
 }
 
 class DayCirclePainter extends CustomPainter {
@@ -235,9 +280,14 @@ class DayCirclePainter extends CustomPainter {
     // 内圆：水位填充
     if (progress > 0) {
       canvas.save();
-      canvas.clipPath(Path()..addOval(Rect.fromCircle(center: center, radius: inner)));
+      canvas.clipPath(
+        Path()..addOval(Rect.fromCircle(center: center, radius: inner)),
+      );
       final top = center.dy + inner - 2 * inner * progress;
-      canvas.drawRect(Rect.fromLTRB(0, top, size.width, size.height), Paint()..color = fillColor);
+      canvas.drawRect(
+        Rect.fromLTRB(0, top, size.width, size.height),
+        Paint()..color = fillColor,
+      );
       canvas.restore();
     }
 
@@ -254,7 +304,11 @@ class DayCirclePainter extends CustomPainter {
       return;
     }
 
-    // 内圆轮廓
+    // 内圆轮廓：只画在水位以上
+    canvas.save();
+    canvas.clipRect(
+      Rect.fromLTRB(0, 0, size.width, center.dy + inner - 2 * inner * progress),
+    );
     canvas.drawCircle(
       center,
       inner,
@@ -263,6 +317,7 @@ class DayCirclePainter extends CustomPainter {
         ..strokeWidth = Stroke.thin
         ..color = track,
     );
+    canvas.restore();
 
     final rect = Rect.fromCircle(center: center, radius: geometry.ringRadius);
     final trackPaint = Paint()

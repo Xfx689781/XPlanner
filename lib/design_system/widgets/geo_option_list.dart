@@ -69,7 +69,7 @@ class _OptionRow<T> extends StatelessWidget {
     return Semantics(
       inMutuallyExclusiveGroup: true,
       checked: selected,
-      label: [option.label, ?option.detail].join('，'),
+      label: [option.label, ?option.detail].join(', '),
       onTap: onTap,
       excludeSemantics: true,
       child: GestureDetector(

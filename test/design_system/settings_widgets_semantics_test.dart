@@ -34,7 +34,7 @@ void main() {
           hasTapAction: true,
         ),
       );
-      for (final label in ['跟随语言，当前：周一', '周日']) {
+      for (final label in ['跟随语言, 当前：周一', '周日']) {
         expect(
           tester.getSemantics(find.bySemanticsLabel(label)),
           isSemantics(
@@ -53,7 +53,7 @@ void main() {
     testWidgets('第二行说明拼进读屏标签，内部文字不重复朗读', (tester) async {
       final handle = tester.ensureSemantics();
       await tester.pumpWidget(themed(list('a', (_) {})));
-      expect(find.bySemanticsLabel('跟随语言，当前：周一'), findsOneWidget);
+      expect(find.bySemanticsLabel('跟随语言, 当前：周一'), findsOneWidget);
       // excludeSemantics：内部 Text 不再单独成为节点
       expect(find.bySemanticsLabel('当前：周一'), findsNothing);
       expect(find.bySemanticsLabel('跟随语言'), findsNothing);
@@ -66,7 +66,7 @@ void main() {
       await tester.pumpWidget(themed(list('a', chosen.add)));
 
       tester.semantics.tap(find.semantics.byLabel('周日'));
-      tester.semantics.tap(find.semantics.byLabel('跟随语言，当前：周一'));
+      tester.semantics.tap(find.semantics.byLabel('跟随语言, 当前：周一'));
       await tester.tap(find.text('周一'));
       expect(chosen, ['c', 'a', 'b']);
       handle.dispose();
@@ -76,7 +76,7 @@ void main() {
       final handle = tester.ensureSemantics();
       await tester.pumpWidget(themed(list('zzz', (_) {})));
       expect(tester.takeException(), isNull);
-      for (final label in ['跟随语言，当前：周一', '周一', '周日']) {
+      for (final label in ['跟随语言, 当前：周一', '周一', '周日']) {
         expect(tester.getSemantics(find.bySemanticsLabel(label)), isSemantics(isChecked: false), reason: label);
       }
       handle.dispose();
@@ -104,10 +104,10 @@ void main() {
         ),
       )));
 
-      final node = find.bySemanticsLabel('提醒，准时，需要处理');
+      final node = find.bySemanticsLabel('提醒, 准时, 需要处理');
       expect(node, findsOneWidget);
       expect(tester.getSemantics(node), isSemantics(isButton: true, hasTapAction: true));
-      tester.semantics.tap(find.semantics.byLabel('提醒，准时，需要处理'));
+      tester.semantics.tap(find.semantics.byLabel('提醒, 准时, 需要处理'));
       await tester.tap(find.text('提醒'));
       expect(taps, 2);
       handle.dispose();
@@ -125,7 +125,7 @@ void main() {
           ],
         ),
       )));
-      expect(find.bySemanticsLabel('外观，深色'), findsOneWidget);
+      expect(find.bySemanticsLabel('外观, 深色'), findsOneWidget);
       expect(find.bySemanticsLabel(RegExp('需要处理')), findsNothing);
       expect(find.bySemanticsLabel('关于'), findsOneWidget);
       handle.dispose();
@@ -137,7 +137,7 @@ void main() {
         width: 360,
         child: SettingsTile(title: '提醒', value: '准时', attention: true, onTap: () {}),
       )));
-      expect(find.bySemanticsLabel('提醒，准时'), findsOneWidget);
+      expect(find.bySemanticsLabel('提醒, 准时'), findsOneWidget);
       handle.dispose();
     });
 

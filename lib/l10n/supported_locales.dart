@@ -8,6 +8,7 @@ class AppLanguage {
     required this.locale,
     required this.autonym,
     required this.intlLocale,
+    this._materialLocale,
   });
 
   /// 存进设置表的标签（BCP-47，如 zh-Hans）
@@ -21,6 +22,12 @@ class AppLanguage {
 
   /// intl 日期数据的 locale 名（intl 没有 zh_Hant，要用 zh_TW）
   final String intlLocale;
+
+  final Locale? _materialLocale;
+
+  /// 加载 Flutter 系统组件文案（日期 / 时间选择器）用的 locale。
+  /// 通常同 [locale]；Flutter 对 zh_Hant 会回退到简体的日期格式和一周第一天，要用 zh_TW。
+  Locale get materialLocale => _materialLocale ?? locale;
 }
 
 /// 支持的语言（唯一来源）。第一项是兜底语言。
@@ -37,10 +44,19 @@ const appLanguages = <AppLanguage>[
     locale: Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant'),
     autonym: '繁體中文',
     intlLocale: 'zh_TW',
+    materialLocale: Locale('zh', 'TW'),
   ),
 ];
 
 AppLanguage get fallbackLanguage => appLanguages.first;
+
+/// App 的 locale → 加载系统组件文案用的 locale
+Locale materialLocaleFor(Locale locale) {
+  for (final l in appLanguages) {
+    if (l.locale == locale) return l.materialLocale;
+  }
+  return locale;
+}
 
 AppLanguage? languageByTag(String? tag) {
   for (final l in appLanguages) {
