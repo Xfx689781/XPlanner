@@ -2,6 +2,7 @@ import '../../core/data/app_database.dart';
 import '../../core/data/enums.dart';
 import '../../core/utils/format.dart';
 import '../../design_system/metrics.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 /// 优先级 → 方块描边粗细
 double strokeForPriority(Priority p) => switch (p) {
@@ -10,26 +11,26 @@ double strokeForPriority(Priority p) => switch (p) {
   Priority.high => Stroke.bold,
 };
 
-String priorityLabel(Priority p) => switch (p) {
-  Priority.low => '低',
-  Priority.medium => '中',
-  Priority.high => '高',
+String priorityLabel(AppLocalizations l10n, Priority p) => switch (p) {
+  Priority.low => l10n.priorityLow,
+  Priority.medium => l10n.priorityMedium,
+  Priority.high => l10n.priorityHigh,
 };
 
 /// 「09:00」「09:00 · 每天」「09:00 · 每周五」
-String reminderLabel(DateTime at, RepeatRule repeat) {
-  final time = formatTime(at);
+String reminderLabel(AppDateFormat f, DateTime at, RepeatRule repeat) {
+  final time = f.time(at);
   return switch (repeat) {
     RepeatRule.none => time,
-    RepeatRule.daily => '$time · 每天',
-    RepeatRule.weekly => '$time · 每${weekdayLabel(at)}',
+    RepeatRule.daily => f.l10n.reminderLabelWithRepeat(time, f.l10n.repeatEveryDay),
+    RepeatRule.weekly => f.l10n.reminderLabelWithRepeat(time, f.l10n.repeatEveryWeekday(weekdayKey(at))),
   };
 }
 
 /// 任务行里的日期说明，例如「明天 15:30」
-String? dueLabel(Task t, DateTime today) {
+String? dueLabel(AppDateFormat f, Task t, DateTime today) {
   final due = t.dueAt;
   if (due == null) return null;
-  final day = formatRelativeDate(due, today);
-  return t.dueHasTime ? '$day ${formatTime(due)}' : day;
+  final day = f.relative(due, today);
+  return t.dueHasTime ? f.l10n.dateWithTime(day, f.time(due)) : day;
 }

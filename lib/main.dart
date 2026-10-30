@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 import 'app/app.dart';
 import 'core/data/app_database.dart';
@@ -10,6 +11,7 @@ import 'core/data/settings/app_settings.dart';
 import 'core/data/settings/settings_provider.dart';
 import 'core/data/settings/settings_repository.dart';
 import 'core/notifications/notification_ids.dart';
+import 'core/notifications/notification_language.dart';
 import 'core/notifications/notification_providers.dart';
 import 'core/notifications/noop_reminder_scheduler.dart';
 import 'core/notifications/reminder_scheduler.dart';
@@ -17,6 +19,7 @@ import 'core/utils/timezone_setup.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await initializeDateFormatting();
   await initLocalTimezone();
 
   final scheduler = await _initScheduler();
@@ -46,10 +49,14 @@ Future<void> main() async {
     debugPrint('读取启动通知失败：$e');
   }
 
+  await configureNotificationChannel(container);
   runApp(UncontrolledProviderScope(container: container, child: const FacetApp()));
 
   // 兜底：按数据库重建所有提醒
   unawaited(container.read(reminderSyncProvider).resyncAll());
+
+  // 切换语言后：更新渠道名，按新语言重排已安排的提醒
+  listenLanguageForNotifications(container);
 }
 
 void Function(String? payload)? _onNotificationTap;

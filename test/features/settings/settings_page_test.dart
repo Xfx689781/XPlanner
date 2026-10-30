@@ -1,4 +1,3 @@
-import 'package:facet/app/theme.dart';
 import 'package:facet/core/data/app_database.dart';
 import 'package:facet/core/data/data_providers.dart';
 import 'package:facet/core/data/settings/settings_enums.dart';
@@ -26,7 +25,7 @@ void main() {
       databaseProvider.overrideWithValue(db),
       reminderSchedulerProvider.overrideWithValue(scheduler),
     ],
-    child: MaterialApp(theme: buildFacetTheme(Brightness.light), home: const SettingsPage()),
+    child: localizedApp(const SettingsPage()),
   );
 
   Future<void> setWidth(WidgetTester tester, double width) async {
@@ -121,7 +120,7 @@ void main() {
     await openSection(tester, '提醒');
 
     expect(find.text('未开启，提醒可能晚几分钟到十几分钟'), findsOneWidget);
-    await tester.tap(find.text('去开启'));
+    await tester.tap(find.text('开启'));
     expect(scheduler.log, contains('requestExactAlarmPermission'));
     await finish(tester);
   });

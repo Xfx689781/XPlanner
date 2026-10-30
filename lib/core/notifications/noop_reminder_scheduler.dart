@@ -26,6 +26,9 @@ class NoopReminderScheduler implements ReminderScheduler {
   Future<void> cancelAllPending() async {}
 
   @override
+  Future<void> configureChannel({required String name, required String description}) async {}
+
+  @override
   Future<bool?> notificationsEnabled() async => null;
 
   @override

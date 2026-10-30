@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/data/data_providers.dart';
 import '../../core/utils/clock.dart';
 import '../../design_system/design_system.dart';
+import '../../l10n/locale_providers.dart';
 
 /// 一句话记录：回车或点加号保存，时间戳自动取当前时间。
 class LogInputBar extends ConsumerStatefulWidget {
@@ -48,12 +49,12 @@ class _LogInputBarState extends ConsumerState<LogInputBar> {
                 _submit();
                 _focus.requestFocus();
               },
-              decoration: const InputDecoration(hintText: '记一句…', counterText: ''),
+              decoration: InputDecoration(hintText: context.l10n.logInputHint, counterText: ''),
             ),
           ),
           GeoIconButton(
             glyph: GeoGlyph.plus,
-            semanticLabel: '记录',
+            semanticLabel: context.l10n.logAddSemantics,
             color: context.colors.accent,
             onPressed: _submit,
           ),

@@ -45,6 +45,9 @@ abstract final class Sizes {
   /// 设置中心两栏模式下的总宽度上限
   static const double settingsMaxWidth = 960;
 
+  /// 分组标题右侧细线的最短长度（标题过长时换行，保证细线可见）
+  static const double sectionLineMin = 24;
+
   /// 首页大圆直径（窄屏）
   static const double dayCircle = 184;
 

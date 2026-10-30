@@ -23,7 +23,7 @@ void main() {
 
     expect(find.text('今天'), findsWidgets);
     expect(find.text('昨天'), findsOneWidget);
-    expect(find.text('2025年12月31日 周三'), findsOneWidget);
+    expect(find.text('2025年12月31日周三'), findsOneWidget);
     expect(find.text('07:05'), findsOneWidget);
 
     await tester.disposeApp();

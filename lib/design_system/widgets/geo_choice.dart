@@ -5,7 +5,11 @@ import '../motion.dart';
 import '../tokens.dart';
 
 class GeoChoiceOption<T> {
-  const GeoChoiceOption({required this.value, required this.label, this.leading});
+  const GeoChoiceOption({
+    required this.value,
+    required this.label,
+    this.leading,
+  });
 
   final T value;
   final String label;
@@ -58,11 +62,19 @@ class GeoChoice<T> extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      if (o.leading != null) ...[o.leading!, const SizedBox(width: Space.s)],
-                      Text(
-                        o.label,
-                        style: context.text.small.copyWith(
-                          color: o.value == value ? colors.ink : colors.muted,
+                      if (o.leading != null) ...[
+                        o.leading!,
+                        const SizedBox(width: Space.s),
+                      ],
+                      Flexible(
+                        child: Text(
+                          o.label,
+                          textAlign: TextAlign.center,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: context.text.small.copyWith(
+                            color: o.value == value ? colors.ink : colors.muted,
+                          ),
                         ),
                       ),
                     ],

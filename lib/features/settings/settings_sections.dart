@@ -2,9 +2,11 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/app_info.dart';
-import '../../app/app_locale.dart';
 import '../../core/data/settings/settings_provider.dart';
 import '../../core/notifications/reminder_status.dart';
+import '../../l10n/generated/app_localizations.dart';
+import '../../l10n/locale_providers.dart';
+import '../../l10n/supported_locales.dart';
 import 'sections/about_section.dart';
 import 'sections/appearance_section.dart';
 import 'sections/general_section.dart';
@@ -24,44 +26,51 @@ class SettingsSection {
   });
 
   final String id;
-  final String title;
+  final String Function(AppLocalizations l10n) title;
 
   /// 主页右侧显示的当前值
-  final String Function(WidgetRef ref) summary;
+  final String Function(AppLocalizations l10n, WidgetRef ref) summary;
 
   /// 主页上是否显示警示标记
   final bool Function(WidgetRef ref)? needsAttention;
 
   /// 警示的读屏文字：说明要处理什么
-  final String? attentionLabel;
+  final String Function(AppLocalizations l10n)? attentionLabel;
   final WidgetBuilder content;
+}
+
+String _generalSummary(AppLocalizations l10n, WidgetRef ref) {
+  final settings = ref.watch(settingsProvider);
+  final language = languageByTag(settings.languageTag)?.autonym ?? l10n.languageFollowSystem;
+  final intlLocale = ref.watch(appLanguageProvider).intlLocale;
+  return l10n.settingsGeneralSummary(language, weekStartSummary(l10n, settings.weekStart, intlLocale));
 }
 
 final settingsSections = <SettingsSection>[
   SettingsSection(
     id: 'general',
-    title: '通用',
-    summary: (ref) => weekStartSummary(ref.watch(settingsProvider.select((s) => s.weekStart)), appIntlLocale),
+    title: (l10n) => l10n.settingsSectionGeneral,
+    summary: _generalSummary,
     content: (_) => const GeneralSection(),
   ),
   SettingsSection(
     id: 'appearance',
-    title: '外观',
-    summary: (ref) => themeLabel(ref.watch(settingsProvider.select((s) => s.theme))),
+    title: (l10n) => l10n.settingsSectionAppearance,
+    summary: (l10n, ref) => themeLabel(l10n, ref.watch(settingsProvider.select((s) => s.theme))),
     content: (_) => const AppearanceSection(),
   ),
   SettingsSection(
     id: 'reminders',
-    title: '提醒',
-    summary: (ref) => reminderLeadLabel(ref.watch(settingsProvider.select((s) => s.reminderLead))),
+    title: (l10n) => l10n.settingsSectionReminders,
+    summary: (l10n, ref) => reminderLeadLabel(l10n, ref.watch(settingsProvider.select((s) => s.reminderLead))),
     needsAttention: (ref) => remindersNeedAttention(ref.watch(reminderStatusProvider).value),
-    attentionLabel: '通知或闹钟权限未开启',
+    attentionLabel: (l10n) => l10n.settingsRemindersAttention,
     content: (_) => const RemindersSection(),
   ),
   SettingsSection(
     id: 'about',
-    title: '关于',
-    summary: (_) => appVersion,
+    title: (l10n) => l10n.settingsSectionAbout,
+    summary: (_, _) => appVersion,
     content: (_) => const AboutSection(),
   ),
 ];

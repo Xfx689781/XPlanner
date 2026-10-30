@@ -3,9 +3,13 @@ import 'package:facet/core/data/app_database.dart';
 import 'package:facet/core/data/data_providers.dart';
 import 'package:facet/core/data/settings/app_settings.dart';
 import 'package:facet/core/data/settings/settings_provider.dart';
+import 'package:facet/app/theme.dart';
 import 'package:facet/core/utils/clock.dart';
+import 'package:facet/l10n/generated/app_localizations.dart';
+import 'package:facet/l10n/locale_providers.dart';
+import 'package:facet/l10n/supported_locales.dart';
 import 'package:facet/design_system/design_system.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -24,16 +28,57 @@ Widget testApp(
   AppDatabase db, {
   Clock? clock,
   AppSettings settings = AppSettings.defaults,
+  List<Locale> systemLocales = const [Locale('zh', 'CN')],
+  bool use24h = true,
   List<Override> overrides = const [],
 }) {
   return ProviderScope(
     overrides: [
       databaseProvider.overrideWithValue(db),
       initialSettingsProvider.overrideWithValue(settings),
+      systemLocalesProvider.overrideWith(() => _FixedSystemLocales(systemLocales)),
       if (clock != null) clockProvider.overrideWithValue(clock),
       ...overrides,
     ],
-    child: const FacetApp(),
+    child: Builder(
+      // 测试机默认 12 小时制；固定成 24 小时制，让断言里的时间与手机常见设置一致。
+      // 外层 MediaQuery.fromView 保持对系统明暗、窗口尺寸变化的响应
+      builder: (context) => MediaQuery.fromView(
+        view: View.of(context),
+        child: Builder(
+          builder: (context) => MediaQuery(
+            data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: use24h),
+            child: const FacetApp(),
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+/// 自建 ProviderContainer 的测试用：系统语言固定为简体中文
+class ZhSystemLocales extends SystemLocales {
+  @override
+  List<Locale> build() => const [Locale('zh', 'CN')];
+}
+
+class _FixedSystemLocales extends SystemLocales {
+  _FixedSystemLocales(this._initial);
+
+  final List<Locale> _initial;
+
+  @override
+  List<Locale> build() => _initial;
+}
+
+/// 单独测试某个页面时用的 MaterialApp：带 Facet 主题和本地化，默认简体中文。
+Widget localizedApp(Widget home, {Locale locale = const Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans')}) {
+  return MaterialApp(
+    theme: buildFacetTheme(Brightness.light),
+    locale: locale,
+    supportedLocales: [for (final l in appLanguages) l.locale],
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    home: home,
   );
 }
 

@@ -10,6 +10,7 @@ import '../features/log/log_page.dart';
 import '../features/plan/task_editor_sheet.dart';
 import '../features/plan/tasks_page.dart';
 import '../features/today/today_page.dart';
+import '../l10n/locale_providers.dart';
 
 /// 三栏外壳：今天 / 任务 / 日志。窄屏底部导航，宽屏左侧导航。
 /// 同时负责：点通知后打开对应任务；回到前台时刷新"今天"并检查提醒。
@@ -25,12 +26,6 @@ class _HomeShellState extends ConsumerState<HomeShell> {
 
   int _index = 0;
   late final AppLifecycleListener _lifecycle;
-
-  static const _items = [
-    GeoNavItem(glyph: GeoGlyph.circle, label: '今天'),
-    GeoNavItem(glyph: GeoGlyph.square, label: '任务'),
-    GeoNavItem(glyph: GeoGlyph.lines, label: '日志'),
-  ];
 
   @override
   void initState() {
@@ -63,7 +58,9 @@ class _HomeShellState extends ConsumerState<HomeShell> {
     final task = await ref.read(taskRepositoryProvider).getById(id);
     if (!mounted) return;
     if (task == null) {
-      messenger.showSnackBar(const SnackBar(content: Text('这个任务已经删除')));
+      messenger.showSnackBar(
+        SnackBar(content: Text(context.l10n.taskDeletedNotice)),
+      );
       return;
     }
     // 关掉设置页等上层页面，回到外壳再打开任务
@@ -85,7 +82,11 @@ class _HomeShellState extends ConsumerState<HomeShell> {
       children: const [TodayPage(), TasksPage(), LogPage()],
     );
     final nav = GeoNavBar(
-      items: _items,
+      items: [
+        GeoNavItem(glyph: GeoGlyph.circle, label: context.l10n.navToday),
+        GeoNavItem(glyph: GeoGlyph.square, label: context.l10n.navTasks),
+        GeoNavItem(glyph: GeoGlyph.lines, label: context.l10n.navLog),
+      ],
       selectedIndex: _index,
       onSelected: _select,
       vertical: wide,
@@ -100,7 +101,9 @@ class _HomeShellState extends ConsumerState<HomeShell> {
               child: Align(
                 alignment: Alignment.topCenter,
                 child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: Sizes.contentMaxWidth),
+                  constraints: const BoxConstraints(
+                    maxWidth: Sizes.contentMaxWidth,
+                  ),
                   child: pages,
                 ),
               ),

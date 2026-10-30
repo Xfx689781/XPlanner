@@ -67,3 +67,6 @@ app.*.map.json
 
 # Kotlin / Gradle 编译临时文件
 **/android/.kotlin/
+
+# gen-l10n 漏翻清单（每次生成后检查应为空）
+l10n_untranslated.json

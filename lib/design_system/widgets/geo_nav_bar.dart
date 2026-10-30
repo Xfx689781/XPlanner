@@ -72,9 +72,7 @@ class GeoNavBar extends StatelessWidget {
         top: false,
         child: SizedBox(
           height: Sizes.navBar,
-          child: Row(
-            children: [for (final c in children) Expanded(child: c)],
-          ),
+          child: Row(children: [for (final c in children) Expanded(child: c)]),
         ),
       ),
     );

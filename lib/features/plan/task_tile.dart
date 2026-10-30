@@ -5,6 +5,9 @@ import '../../core/data/app_database.dart';
 import '../../core/data/task_rules.dart';
 import '../../core/utils/current_day.dart';
 import '../../design_system/design_system.dart';
+import '../../core/utils/format.dart';
+import '../../l10n/generated/app_localizations.dart';
+import '../../l10n/locale_providers.dart';
 import 'task_actions.dart';
 import 'task_editor_sheet.dart';
 import 'task_labels.dart';
@@ -21,7 +24,9 @@ class TaskTile extends ConsumerWidget {
     final today = ref.watch(currentDayProvider);
     final done = task.isDoneOn(today);
     final overdue = task.isOverdue(today);
-    final due = dueLabel(task, today);
+    final l10n = context.l10n;
+    final dates = AppDateFormat.of(context);
+    final due = dueLabel(dates, task, today);
     final reminder = task.reminderAt;
 
     return Padding(
@@ -33,17 +38,15 @@ class TaskTile extends ConsumerWidget {
             done: done,
             strokeWidth: strokeForPriority(task.priority),
             overdue: overdue,
-            semanticLabel: [
-              task.title,
-              '${priorityLabel(task.priority)}优先级',
-              if (overdue) '逾期',
-            ].join('，'),
+            semanticLabel: overdue
+                ? l10n.taskSquareSemanticsOverdue(task.title, task.priority.name)
+                : l10n.taskSquareSemantics(task.title, task.priority.name),
             onTap: () => ref.read(taskActionsProvider).toggleDone(task),
           ),
           Expanded(
             child: Semantics(
               button: true,
-              hint: '编辑',
+              hint: l10n.taskTileEditHint,
               child: GestureDetector(
                 behavior: HitTestBehavior.opaque,
                 onTap: () => showTaskEditor(context, task: task),
@@ -78,12 +81,10 @@ class TaskTile extends ConsumerWidget {
                                 ),
                               ),
                             if (reminder != null)
-                              ReminderMark(
-                                label: reminderLabel(
-                                  reminder,
-                                  task.reminderRepeat,
-                                ),
+                              _reminderMark(
+                                reminderLabel(dates, reminder, task.reminderRepeat),
                                 active: !done && !overdue,
+                                l10n: l10n,
                               ),
                           ],
                         ),
@@ -99,3 +100,9 @@ class TaskTile extends ConsumerWidget {
     );
   }
 }
+
+Widget _reminderMark(String label, {required bool active, required AppLocalizations l10n}) => ReminderMark(
+  label: label,
+  active: active,
+  semanticLabel: active ? l10n.reminderSemantics(label) : l10n.reminderSemanticsInactive(label),
+);

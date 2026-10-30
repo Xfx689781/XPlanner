@@ -63,6 +63,8 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
+  # gen-l10n：由 lib/l10n/*.arb 生成 lib/l10n/generated/
+  generate: true
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

@@ -75,9 +75,15 @@ class _GeoButtonState extends State<GeoButton> {
             alignment: Alignment.center,
             decoration: BoxDecoration(
               color: bg,
-              border: border == null ? null : Border.all(color: border, width: Stroke.thin),
+              border: border == null
+                  ? null
+                  : Border.all(color: border, width: Stroke.thin),
             ),
-            child: Text(widget.label, style: context.text.body.copyWith(color: fg)),
+            child: Text(
+              widget.label,
+              textAlign: TextAlign.center,
+              style: context.text.body.copyWith(color: fg),
+            ),
           ),
         ),
       ),
@@ -117,7 +123,11 @@ class GeoIconButton extends StatelessWidget {
         child: SizedBox.square(
           dimension: Sizes.tapTarget,
           child: Center(
-            child: GeoIcon(glyph, color: color ?? context.colors.ink, filled: filled),
+            child: GeoIcon(
+              glyph,
+              color: color ?? context.colors.ink,
+              filled: filled,
+            ),
           ),
         ),
       ),

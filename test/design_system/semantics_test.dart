@@ -51,9 +51,9 @@ void main() {
 
   testWidgets('提醒短线有读屏标签', (tester) async {
     final handle = tester.ensureSemantics();
-    await tester.pumpWidget(themed(const ReminderMark(label: '09:00 · 每天')));
+    await tester.pumpWidget(themed(const ReminderMark(label: '09:00 · 每天', semanticLabel: '提醒 09:00 · 每天')));
     expect(find.bySemanticsLabel('提醒 09:00 · 每天'), findsOneWidget);
-    await tester.pumpWidget(themed(const ReminderMark(label: '09:00', active: false)));
+    await tester.pumpWidget(themed(const ReminderMark(label: '09:00', active: false, semanticLabel: '提醒 09:00，已不会响')));
     expect(find.bySemanticsLabel('提醒 09:00，已不会响'), findsOneWidget);
     handle.dispose();
   });

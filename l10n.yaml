@@ -1,0 +1,9 @@
+arb-dir: lib/l10n
+template-arb-file: app_en.arb
+output-dir: lib/l10n/generated
+output-localization-file: app_localizations.dart
+output-class: AppLocalizations
+nullable-getter: false
+required-resource-attributes: true
+# 每次 flutter gen-l10n 后列出各语言漏翻的键，发布前必须为 {}（文件不提交）
+untranslated-messages-file: l10n_untranslated.json

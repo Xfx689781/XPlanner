@@ -104,8 +104,16 @@ class _GeoIconPainter extends CustomPainter {
           );
         }
       case GeoGlyph.plus:
-        canvas.drawLine(Offset(c.dx, box.top), Offset(c.dx, box.bottom), stroke);
-        canvas.drawLine(Offset(box.left, c.dy), Offset(box.right, c.dy), stroke);
+        canvas.drawLine(
+          Offset(c.dx, box.top),
+          Offset(c.dx, box.bottom),
+          stroke,
+        );
+        canvas.drawLine(
+          Offset(box.left, c.dy),
+          Offset(box.right, c.dy),
+          stroke,
+        );
       case GeoGlyph.close:
         final d = box.deflate(box.width * 0.08);
         canvas.drawLine(d.topLeft, d.bottomRight, stroke);
@@ -115,8 +123,16 @@ class _GeoIconPainter extends CustomPainter {
         final r = box.width * 0.11;
         for (var i = 0; i < 3; i++) {
           final y = box.top + box.height * (0.15 + 0.35 * i);
-          canvas.drawLine(Offset(box.left, y), Offset(box.right, y), stroke..strokeWidth = Stroke.thin);
-          canvas.drawCircle(Offset(box.left + box.width * knobs[i], y), r, fill);
+          canvas.drawLine(
+            Offset(box.left, y),
+            Offset(box.right, y),
+            stroke..strokeWidth = Stroke.thin,
+          );
+          canvas.drawCircle(
+            Offset(box.left + box.width * knobs[i], y),
+            r,
+            fill,
+          );
         }
         stroke.strokeWidth = strokeWidth;
       case GeoGlyph.triangle:

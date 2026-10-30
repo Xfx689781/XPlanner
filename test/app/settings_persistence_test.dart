@@ -1,11 +1,9 @@
-import 'package:facet/app/app_locale.dart';
 import 'package:facet/core/data/app_database.dart';
 import 'package:facet/core/data/settings/app_settings.dart';
 import 'package:facet/core/data/settings/setting_keys.dart';
 import 'package:facet/core/data/settings/settings_enums.dart';
 import 'package:facet/core/data/settings/settings_repository.dart';
 import 'package:facet/design_system/design_system.dart';
-import 'package:facet/features/settings/settings_labels.dart';
 import 'package:facet/features/settings/settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -112,7 +110,7 @@ void main() {
 
       await openSettings(tester);
       expect(find.text('深色'), findsOneWidget);
-      expect(find.text('周一开始'), findsOneWidget);
+      expect(find.textContaining('周一开始'), findsOneWidget);
       expect(find.text('提前 15 分钟'), findsOneWidget);
 
       await tapText(tester, '外观');
@@ -311,7 +309,7 @@ void main() {
 
       await openSettings(tester);
       expect(find.text('跟随系统'), findsOneWidget); // 外观
-      expect(find.text(weekStartSummary(WeekStart.locale, appIntlLocale)), findsOneWidget); // 通用
+      expect(find.textContaining('跟随系统 · '), findsOneWidget); // 通用
       expect(find.text('准时'), findsOneWidget); // 提醒
 
       // 之后从界面改设置会覆盖掉非法值

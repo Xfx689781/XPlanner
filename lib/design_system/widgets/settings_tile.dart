@@ -31,6 +31,7 @@ class SettingsTile extends StatelessWidget {
 
   /// 警示的读屏文字（如"需要处理"）
   final String? attentionLabel;
+
   /// 两栏模式下是否为当前分组；单栏传 null（不暴露"选中"状态给读屏）
   final bool? selected;
   final bool showChevron;
@@ -53,11 +54,18 @@ class SettingsTile extends StatelessWidget {
           duration: Motion.quick,
           constraints: const BoxConstraints(minHeight: Sizes.settingsRow),
           // 左侧竖线占 Stroke.regular，内边距相应减去，标题与页标题左对齐
-          padding: const EdgeInsets.fromLTRB(Space.l - Stroke.regular, Space.s, Space.m, Space.s),
+          padding: const EdgeInsets.fromLTRB(
+            Space.l - Stroke.regular,
+            Space.s,
+            Space.m,
+            Space.s,
+          ),
           decoration: BoxDecoration(
             border: Border(
               left: BorderSide(
-                color: selected == true ? colors.accent : FacetColors.transparent,
+                color: selected == true
+                    ? colors.accent
+                    : FacetColors.transparent,
                 width: Stroke.regular,
               ),
             ),
@@ -67,7 +75,9 @@ class SettingsTile extends StatelessWidget {
               children: [
                 // 标题不参与弹性分配（最多占一半），剩余宽度全部给右侧的当前值
                 ConstrainedBox(
-                  constraints: BoxConstraints(maxWidth: constraints.maxWidth / 2),
+                  constraints: BoxConstraints(
+                    maxWidth: constraints.maxWidth / 2,
+                  ),
                   child: Text(title, style: context.text.body),
                 ),
                 if (attention) ...[
@@ -88,7 +98,12 @@ class SettingsTile extends StatelessWidget {
                 ),
                 if (showChevron) ...[
                   const SizedBox(width: Space.s),
-                  GeoIcon(GeoGlyph.forward, size: Sizes.glyphInline, color: colors.muted, strokeWidth: Stroke.regular),
+                  GeoIcon(
+                    GeoGlyph.forward,
+                    size: Sizes.glyphInline,
+                    color: colors.muted,
+                    strokeWidth: Stroke.regular,
+                  ),
                 ],
               ],
             ),

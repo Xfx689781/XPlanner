@@ -6,6 +6,7 @@ import '../../core/data/app_database.dart';
 import '../../core/data/data_providers.dart';
 import '../../core/utils/format.dart';
 import '../../design_system/design_system.dart';
+import '../../l10n/locale_providers.dart';
 
 /// 一条日志：左侧时间，右侧内容。长按删除。
 class LogRow extends ConsumerWidget {
@@ -15,21 +16,23 @@ class LogRow extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final time = formatTime(entry.createdAt.toLocal());
+    final l10n = context.l10n;
+    final time = AppDateFormat.of(context).time(entry.createdAt.toLocal());
     Future<void> confirmDelete() async {
       final repo = ref.read(logRepositoryProvider);
       final ok = await showGeoConfirm(
         context,
-        message: '删除这条记录？',
-        confirmLabel: '删除',
+        message: l10n.logDeleteConfirm,
+        confirmLabel: l10n.commonDelete,
+        cancelLabel: l10n.commonCancel,
         destructive: true,
       );
       if (ok) await repo.delete(entry.id);
     }
 
     return Semantics(
-      label: '$time ${entry.content}',
-      customSemanticsActions: {const CustomSemanticsAction(label: '删除'): confirmDelete},
+      label: l10n.logEntrySemantics(time, entry.content),
+      customSemanticsActions: {CustomSemanticsAction(label: l10n.commonDelete): confirmDelete},
       onLongPress: confirmDelete,
       excludeSemantics: true,
       child: GestureDetector(

@@ -31,17 +31,44 @@ class SectionHeader extends StatelessWidget {
     final color = accent ? colors.accent : colors.muted;
     return Padding(
       padding: const EdgeInsets.fromLTRB(Space.l, Space.l, Space.l, Space.s),
-      child: Row(
-        children: [
-          if (glyph != null) ...[
-            GeoIcon(glyph!, color: color, size: Sizes.glyphInline, filled: glyphFilled),
-            const SizedBox(width: Space.s),
-          ],
-          Text(label, style: context.text.small.copyWith(color: color)),
-          const SizedBox(width: Space.s),
-          Expanded(child: Container(height: Stroke.thin, color: colors.line)),
-          ?trailing,
-        ],
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final reserved =
+              Sizes.sectionLineMin +
+              Space.s +
+              (glyph == null ? 0 : Sizes.glyphInline + Space.s) +
+              (trailing == null ? 0 : Sizes.tapTarget);
+          return Row(
+            children: [
+              if (glyph != null) ...[
+                GeoIcon(
+                  glyph!,
+                  color: color,
+                  size: Sizes.glyphInline,
+                  filled: glyphFilled,
+                ),
+                const SizedBox(width: Space.s),
+              ],
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxWidth: (constraints.maxWidth - reserved).clamp(
+                    0,
+                    double.infinity,
+                  ),
+                ),
+                child: Text(
+                  label,
+                  style: context.text.small.copyWith(color: color),
+                ),
+              ),
+              const SizedBox(width: Space.s),
+              Expanded(
+                child: Container(height: Stroke.thin, color: colors.line),
+              ),
+              ?trailing,
+            ],
+          );
+        },
       ),
     );
   }

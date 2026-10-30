@@ -9,6 +9,7 @@ Future<bool> showGeoConfirm(
   BuildContext context, {
   required String message,
   required String confirmLabel,
+  required String cancelLabel,
   bool destructive = false,
 }) async {
   final result = await showDialog<bool>(
@@ -24,15 +25,17 @@ Future<bool> showGeoConfirm(
             children: [
               Text(message, style: context.text.body),
               const SizedBox(height: Space.l),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
+              OverflowBar(
+                alignment: MainAxisAlignment.end,
+                spacing: Space.s,
+                overflowAlignment: OverflowBarAlignment.end,
+                overflowSpacing: Space.s,
                 children: [
                   GeoButton(
-                    label: '取消',
+                    label: cancelLabel,
                     style: GeoButtonStyle.text,
                     onPressed: () => Navigator.of(context).pop(false),
                   ),
-                  const SizedBox(width: Space.s),
                   GeoButton(
                     label: confirmLabel,
                     style: destructive

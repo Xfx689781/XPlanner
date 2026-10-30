@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/notifications/reminder_scheduler.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 /// 用户第一次设提醒时在场景里申请通知权限（而不是一启动就弹）。
 /// 返回 false 表示权限仍未开启。
@@ -17,14 +18,15 @@ void showReminderOutcome(
   required bool permissionGranted,
   required ScheduleMode? mode,
   required VoidCallback openExactSettings,
+  required AppLocalizations l10n,
 }) {
   final String? message;
   SnackBarAction? action;
   if (!permissionGranted) {
-    message = '通知权限未开启，提醒不会弹出。可以在「设置」里开启。';
+    message = l10n.reminderPermissionDenied;
   } else if (mode == ScheduleMode.inexact) {
-    message = '没有「闹钟和提醒」权限，提醒可能晚几分钟。';
-    action = SnackBarAction(label: '去开启', onPressed: openExactSettings);
+    message = l10n.reminderInexactNotice;
+    action = SnackBarAction(label: l10n.commonTurnOn, onPressed: openExactSettings);
   } else {
     message = null;
   }

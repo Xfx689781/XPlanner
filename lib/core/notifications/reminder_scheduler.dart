@@ -56,6 +56,9 @@ abstract interface class ReminderScheduler {
   /// 打开系统的「闹钟和提醒」授权页
   Future<void> requestExactAlarmPermission();
 
+  /// 设置通知渠道的名称和描述（系统设置里可见），按当前界面语言
+  Future<void> configureChannel({required String name, required String description});
+
   /// 立即显示一条通知（测试用）
   Future<void> showNow({required int id, required String title, String? body});
 }

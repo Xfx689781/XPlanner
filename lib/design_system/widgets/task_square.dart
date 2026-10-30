@@ -38,7 +38,11 @@ class TaskSquare extends StatelessWidget {
         painter: TaskSquarePainter(
           fill: t,
           strokeWidth: strokeWidth,
-          outline: Color.lerp(overdue ? colors.accent : colors.ink, colors.accent, t)!,
+          outline: Color.lerp(
+            overdue ? colors.accent : colors.ink,
+            colors.accent,
+            t,
+          )!,
           fillColor: colors.accent,
         ),
       ),
@@ -84,7 +88,10 @@ class TaskSquarePainter extends CustomPainter {
     );
 
     if (fill > 0) {
-      final outer = RRect.fromRectAndRadius(rect, const Radius.circular(Radii.square));
+      final outer = RRect.fromRectAndRadius(
+        rect,
+        const Radius.circular(Radii.square),
+      );
       canvas.save();
       canvas.clipRRect(outer);
       final top = size.height * (1 - fill);

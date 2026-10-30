@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/utils/current_day.dart';
 import '../../core/utils/format.dart';
 import '../../design_system/design_system.dart';
+import '../../l10n/locale_providers.dart';
 import '../log/log_input_bar.dart';
 import '../log/log_providers.dart';
 import '../log/log_row.dart';
@@ -22,15 +23,16 @@ class TodayPage extends ConsumerWidget {
     final summary = ref.watch(todaySummaryProvider).value;
     final logs = ref.watch(todayLogsProvider).value ?? const [];
     final progress = summary?.progress;
+    final l10n = context.l10n;
 
     return PageFrame(
-      title: '今天',
-      subtitle: formatDate(today, today: today),
+      title: l10n.todayTitle,
+      subtitle: AppDateFormat.of(context).date(today, today: today),
       trailing: Padding(
         padding: const EdgeInsets.only(right: Space.s),
         child: GeoIconButton(
           glyph: GeoGlyph.sliders,
-          semanticLabel: '设置',
+          semanticLabel: l10n.todaySettings,
           color: context.colors.muted,
           onPressed: () => SettingsPage.open(context),
         ),
@@ -44,27 +46,27 @@ class TodayPage extends ConsumerWidget {
               progress: progress?.ratio ?? 0,
               semanticLabel: progress == null
                   ? null
-                  : '今天完成 ${progress.done} / ${progress.total}',
+                  : l10n.todayProgressSemantics(progress.done, progress.total),
             ),
           ),
           const SizedBox(height: Space.m),
           Center(
             child: Text(
               progress == null || progress.total == 0
-                  ? '今天没有安排'
-                  : '${progress.done} / ${progress.total}',
+                  ? l10n.todayNothingPlanned
+                  : l10n.todayProgressCount(progress.done, progress.total),
               style: context.text.small,
             ),
           ),
           if (summary != null && summary.overdue.isNotEmpty) ...[
-            const SectionHeader('逾期', glyph: GeoGlyph.square, glyphFilled: false, accent: true),
+            SectionHeader(l10n.todayOverdueHeader, glyph: GeoGlyph.square, glyphFilled: false, accent: true),
             for (final t in summary.overdue) TaskTile(key: ValueKey('o${t.id}'), task: t),
           ],
           SectionHeader(
-            '任务',
+            l10n.todayTasksHeader,
             trailing: GeoIconButton(
               glyph: GeoGlyph.plus,
-              semanticLabel: '新建任务',
+              semanticLabel: l10n.todayNewTask,
               color: context.colors.accent,
               onPressed: () => showTaskEditor(context, dueToday: true),
             ),
@@ -72,11 +74,11 @@ class TodayPage extends ConsumerWidget {
           if (summary != null && summary.tasks.isEmpty)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: Space.l, vertical: Space.s),
-              child: Text('今天还没有任务，点 + 添加', style: context.text.small),
+              child: Text(l10n.todayNoTasksHint, style: context.text.small),
             ),
           if (summary != null)
             for (final t in summary.tasks) TaskTile(key: ValueKey('t${t.id}'), task: t),
-          const SectionHeader('日志'),
+          SectionHeader(l10n.todayLogHeader),
           const LogInputBar(),
           for (final e in logs) LogRow(key: ValueKey(e.id), entry: e),
         ],

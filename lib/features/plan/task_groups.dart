@@ -1,15 +1,16 @@
 import '../../core/data/app_database.dart';
 import '../../core/data/task_rules.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 enum TaskGroup { overdue, today, upcoming, repeating, undated, done }
 
-String taskGroupLabel(TaskGroup g) => switch (g) {
-  TaskGroup.overdue => '逾期',
-  TaskGroup.today => '今天',
-  TaskGroup.upcoming => '以后',
-  TaskGroup.repeating => '重复',
-  TaskGroup.undated => '无日期',
-  TaskGroup.done => '已完成',
+String taskGroupLabel(AppLocalizations l10n, TaskGroup g) => switch (g) {
+  TaskGroup.overdue => l10n.taskGroupOverdue,
+  TaskGroup.today => l10n.taskGroupToday,
+  TaskGroup.upcoming => l10n.taskGroupUpcoming,
+  TaskGroup.repeating => l10n.taskGroupRepeating,
+  TaskGroup.undated => l10n.taskGroupUndated,
+  TaskGroup.done => l10n.taskGroupDone,
 };
 
 TaskGroup groupOf(Task t, DateTime today) {

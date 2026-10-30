@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/notifications/reminder_status.dart';
 import '../../design_system/design_system.dart';
+import '../../l10n/locale_providers.dart';
 import 'settings_sections.dart';
 
 PageRoute<void> _fadeRoute(WidgetBuilder builder) {
@@ -47,15 +48,16 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   }
 
   Widget _list({required bool wide}) {
+    final l10n = context.l10n;
     return ListView(
       padding: const EdgeInsets.only(bottom: Space.xl),
       children: [
         for (final s in settingsSections)
           SettingsTile(
-            title: s.title,
-            value: s.summary(ref),
+            title: s.title(l10n),
+            value: s.summary(l10n, ref),
             attention: s.needsAttention?.call(ref) ?? false,
-            attentionLabel: s.attentionLabel,
+            attentionLabel: s.attentionLabel?.call(l10n),
             selected: wide ? s.id == _selectedId : null,
             showChevron: !wide,
             onTap: () {
@@ -75,7 +77,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       padding: const EdgeInsets.only(right: Space.s),
       child: GeoIconButton(
         glyph: GeoGlyph.back,
-        semanticLabel: '返回',
+        semanticLabel: context.l10n.commonBack,
         onPressed: () => Navigator.of(context).pop(),
       ),
     );
@@ -92,7 +94,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               alignment: Alignment.topCenter,
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: Sizes.contentMaxWidth),
-                child: PageFrame(title: '设置', trailing: _backButton(), child: _list(wide: false)),
+                child: PageFrame(title: context.l10n.settingsTitle, trailing: _backButton(), child: _list(wide: false)),
               ),
             );
           }
@@ -102,7 +104,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: Sizes.settingsMaxWidth),
               child: PageFrame(
-                title: '设置',
+                title: context.l10n.settingsTitle,
                 trailing: _backButton(),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -141,12 +143,12 @@ class SettingsSectionPage extends StatelessWidget {
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: Sizes.contentMaxWidth),
           child: PageFrame(
-            title: section.title,
+            title: section.title(context.l10n),
             trailing: Padding(
               padding: const EdgeInsets.only(right: Space.s),
               child: GeoIconButton(
                 glyph: GeoGlyph.back,
-                semanticLabel: '返回',
+                semanticLabel: context.l10n.commonBack,
                 onPressed: () => Navigator.of(context).pop(),
               ),
             ),

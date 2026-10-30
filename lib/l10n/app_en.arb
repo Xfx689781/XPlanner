@@ -1,0 +1,673 @@
+{
+  "@@locale": "en",
+  "commonCancel": "Cancel",
+  "@commonCancel": {
+    "description": "Cancel button in dialogs"
+  },
+  "commonDelete": "Delete",
+  "@commonDelete": {
+    "description": "Delete action (button, screen reader action)"
+  },
+  "commonBack": "Back",
+  "@commonBack": {
+    "description": "Back button (screen reader label)"
+  },
+  "commonClose": "Close",
+  "@commonClose": {
+    "description": "Close button (screen reader label)"
+  },
+  "commonTurnOn": "Turn on",
+  "@commonTurnOn": {
+    "description": "Button that turns on a missing permission"
+  },
+  "navToday": "Today",
+  "@navToday": {
+    "description": "Bottom navigation: today page"
+  },
+  "navTasks": "Tasks",
+  "@navTasks": {
+    "description": "Bottom navigation: tasks page"
+  },
+  "navLog": "Log",
+  "@navLog": {
+    "description": "Bottom navigation: quick log page"
+  },
+  "taskDeletedNotice": "This task has been deleted",
+  "@taskDeletedNotice": {
+    "description": "Shown when a tapped notification points to a deleted task"
+  },
+  "notificationChannelName": "Task reminders",
+  "@notificationChannelName": {
+    "description": "Android notification channel name (shown in system settings)"
+  },
+  "notificationChannelDescription": "Reminders when a task is due",
+  "@notificationChannelDescription": {
+    "description": "Android notification channel description"
+  },
+  "notificationTestTitle": "Facet test reminder",
+  "@notificationTestTitle": {
+    "description": "Title of the test notification"
+  },
+  "notificationTestBody": "If you can see this, reminders are working",
+  "@notificationTestBody": {
+    "description": "Body of the test notification"
+  },
+  "dateToday": "Today",
+  "@dateToday": {
+    "description": "Relative date label"
+  },
+  "dateTomorrow": "Tomorrow",
+  "@dateTomorrow": {
+    "description": "Relative date label"
+  },
+  "dateYesterday": "Yesterday",
+  "@dateYesterday": {
+    "description": "Relative date label"
+  },
+  "dateWithTime": "{date} {time}",
+  "@dateWithTime": {
+    "description": "A date followed by a time, e.g. \"Tomorrow 15:30\"",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "priorityLow": "Low",
+  "@priorityLow": {
+    "description": "Task priority"
+  },
+  "priorityMedium": "Medium",
+  "@priorityMedium": {
+    "description": "Task priority"
+  },
+  "priorityHigh": "High",
+  "@priorityHigh": {
+    "description": "Task priority"
+  },
+  "repeatNone": "No repeat",
+  "@repeatNone": {
+    "description": "Reminder repeat option"
+  },
+  "repeatDaily": "Daily",
+  "@repeatDaily": {
+    "description": "Reminder repeat option"
+  },
+  "repeatWeekly": "Weekly",
+  "@repeatWeekly": {
+    "description": "Reminder repeat option"
+  },
+  "repeatEveryDay": "Every day",
+  "@repeatEveryDay": {
+    "description": "Repeat description after a reminder time"
+  },
+  "repeatEveryWeekday": "{weekday, select, mon{Every Monday} tue{Every Tuesday} wed{Every Wednesday} thu{Every Thursday} fri{Every Friday} sat{Every Saturday} sun{Every Sunday} other{Weekly}}",
+  "@repeatEveryWeekday": {
+    "description": "Weekly repeat on a given weekday. weekday is mon/tue/wed/thu/fri/sat/sun",
+    "placeholders": {
+      "weekday": {
+        "type": "String"
+      }
+    }
+  },
+  "reminderLabelWithRepeat": "{time} · {repeat}",
+  "@reminderLabelWithRepeat": {
+    "description": "Reminder time followed by its repeat rule",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      },
+      "repeat": {
+        "type": "String"
+      }
+    }
+  },
+  "taskGroupOverdue": "Overdue",
+  "@taskGroupOverdue": {
+    "description": "Task list group"
+  },
+  "taskGroupToday": "Today",
+  "@taskGroupToday": {
+    "description": "Task list group"
+  },
+  "taskGroupUpcoming": "Later",
+  "@taskGroupUpcoming": {
+    "description": "Task list group: tasks with a future date"
+  },
+  "taskGroupRepeating": "Repeating",
+  "@taskGroupRepeating": {
+    "description": "Task list group: repeating tasks not due today"
+  },
+  "taskGroupUndated": "No date",
+  "@taskGroupUndated": {
+    "description": "Task list group"
+  },
+  "taskGroupDone": "Done",
+  "@taskGroupDone": {
+    "description": "Task list group"
+  },
+  "taskSquareSemantics": "{title}, {priority, select, low{low priority} medium{medium priority} high{high priority} other{}}",
+  "@taskSquareSemantics": {
+    "description": "Screen reader label of a task checkbox. priority is low/medium/high",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "priority": {
+        "type": "String"
+      }
+    }
+  },
+  "taskSquareSemanticsOverdue": "{title}, {priority, select, low{low priority} medium{medium priority} high{high priority} other{}}, overdue",
+  "@taskSquareSemanticsOverdue": {
+    "description": "Screen reader label of an overdue task checkbox",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "priority": {
+        "type": "String"
+      }
+    }
+  },
+  "taskTileEditHint": "Edit",
+  "@taskTileEditHint": {
+    "description": "Screen reader hint for opening a task"
+  },
+  "tasksTitle": "Tasks",
+  "@tasksTitle": {
+    "description": "Tasks page title"
+  },
+  "tasksNewTask": "New task",
+  "@tasksNewTask": {
+    "description": "Screen reader label of the add-task button"
+  },
+  "tasksEmpty": "No tasks yet",
+  "@tasksEmpty": {
+    "description": "Empty state of the tasks page"
+  },
+  "tasksLoadError": "Couldn't load tasks",
+  "@tasksLoadError": {
+    "description": "Error state of the tasks page"
+  },
+  "todayTitle": "Today",
+  "@todayTitle": {
+    "description": "Today page title"
+  },
+  "todaySettings": "Settings",
+  "@todaySettings": {
+    "description": "Screen reader label of the settings button"
+  },
+  "todayProgressCount": "{done} / {total}",
+  "@todayProgressCount": {
+    "description": "Completed / total tasks under the day circle",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "todayProgressSemantics": "{total, plural, =1{{done} of 1 task done today} other{{done} of {total} tasks done today}}",
+  "@todayProgressSemantics": {
+    "description": "Screen reader label of the day circle",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "todayNothingPlanned": "Nothing planned today",
+  "@todayNothingPlanned": {
+    "description": "Shown under the day circle when there are no tasks today"
+  },
+  "todayOverdueHeader": "Overdue",
+  "@todayOverdueHeader": {
+    "description": "Section header on the today page"
+  },
+  "todayTasksHeader": "Tasks",
+  "@todayTasksHeader": {
+    "description": "Section header on the today page"
+  },
+  "todayNewTask": "New task",
+  "@todayNewTask": {
+    "description": "Screen reader label of the add-task button on the today page"
+  },
+  "todayNoTasksHint": "No tasks for today yet. Tap + to add one.",
+  "@todayNoTasksHint": {
+    "description": "Hint when today has no tasks"
+  },
+  "todayLogHeader": "Log",
+  "@todayLogHeader": {
+    "description": "Section header on the today page"
+  },
+  "logTitle": "Log",
+  "@logTitle": {
+    "description": "Log page title"
+  },
+  "logEmpty": "No entries yet",
+  "@logEmpty": {
+    "description": "Empty state of the log page"
+  },
+  "logLoadError": "Couldn't load entries",
+  "@logLoadError": {
+    "description": "Error state of the log page"
+  },
+  "logInputHint": "Jot something down…",
+  "@logInputHint": {
+    "description": "Placeholder of the quick log input"
+  },
+  "logAddSemantics": "Add entry",
+  "@logAddSemantics": {
+    "description": "Screen reader label of the add-entry button"
+  },
+  "logDeleteConfirm": "Delete this entry?",
+  "@logDeleteConfirm": {
+    "description": "Confirmation before deleting a log entry"
+  },
+  "logEntrySemantics": "{time} {content}",
+  "@logEntrySemantics": {
+    "description": "Screen reader label of a log entry",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      },
+      "content": {
+        "type": "String"
+      }
+    }
+  },
+  "taskEditorNewTitle": "New task",
+  "@taskEditorNewTitle": {
+    "description": "Editor header when creating a task"
+  },
+  "taskEditorEditTitle": "Edit task",
+  "@taskEditorEditTitle": {
+    "description": "Editor header when editing a task"
+  },
+  "taskEditorTitleHint": "What needs doing?",
+  "@taskEditorTitleHint": {
+    "description": "Placeholder of the task title field"
+  },
+  "taskEditorNoteHint": "Note (optional)",
+  "@taskEditorNoteHint": {
+    "description": "Placeholder of the note field"
+  },
+  "taskEditorPriorityLabel": "Priority",
+  "@taskEditorPriorityLabel": {
+    "description": "Editor field label"
+  },
+  "taskEditorDateLabel": "Date",
+  "@taskEditorDateLabel": {
+    "description": "Editor field label"
+  },
+  "taskEditorDateNone": "None",
+  "@taskEditorDateNone": {
+    "description": "Date option: no date"
+  },
+  "taskEditorDateToday": "Today",
+  "@taskEditorDateToday": {
+    "description": "Date option"
+  },
+  "taskEditorDateTomorrow": "Tomorrow",
+  "@taskEditorDateTomorrow": {
+    "description": "Date option"
+  },
+  "taskEditorDatePick": "Pick date",
+  "@taskEditorDatePick": {
+    "description": "Date option that opens a date picker"
+  },
+  "taskEditorAddTime": "+ Time",
+  "@taskEditorAddTime": {
+    "description": "Button that adds a time to the date"
+  },
+  "taskEditorClearTime": "Clear time",
+  "@taskEditorClearTime": {
+    "description": "Screen reader label of the clear-time button"
+  },
+  "taskEditorReminderLabel": "Reminder",
+  "@taskEditorReminderLabel": {
+    "description": "Editor field label"
+  },
+  "taskEditorAddReminder": "+ Add reminder",
+  "@taskEditorAddReminder": {
+    "description": "Button that adds a reminder"
+  },
+  "taskEditorRemoveReminder": "Remove reminder",
+  "@taskEditorRemoveReminder": {
+    "description": "Screen reader label of the remove-reminder button"
+  },
+  "taskEditorHintPast": "This time has already passed, so there won't be a reminder",
+  "@taskEditorHintPast": {
+    "description": "Editor hint"
+  },
+  "taskEditorHintCompleted": "This task is done, so it won't remind you. Mark it as not done to get reminders again.",
+  "@taskEditorHintCompleted": {
+    "description": "Editor hint"
+  },
+  "taskEditorHintUnsupported": "Reminders aren't supported on this platform. They'll work on your phone.",
+  "@taskEditorHintUnsupported": {
+    "description": "Editor hint on platforms without notifications"
+  },
+  "taskEditorHintNoExact": "Without the \"Alarms & reminders\" permission, reminders may be a few minutes late",
+  "@taskEditorHintNoExact": {
+    "description": "Editor hint when exact alarms are not allowed"
+  },
+  "taskEditorSave": "Save",
+  "@taskEditorSave": {
+    "description": "Save button"
+  },
+  "taskEditorSaveFailed": "Couldn't save. Please try again.",
+  "@taskEditorSaveFailed": {
+    "description": "Snackbar when saving a task fails"
+  },
+  "taskEditorDeleteConfirm": "Delete \"{title}\"? Its reminder will be canceled too.",
+  "@taskEditorDeleteConfirm": {
+    "description": "Confirmation before deleting a task",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "reminderPermissionDenied": "Notifications are off, so reminders won't appear. You can turn them on in Settings.",
+  "@reminderPermissionDenied": {
+    "description": "Snackbar after saving a reminder without notification permission"
+  },
+  "reminderInexactNotice": "Without the \"Alarms & reminders\" permission, reminders may be a few minutes late.",
+  "@reminderInexactNotice": {
+    "description": "Snackbar after saving a reminder without exact alarm permission"
+  },
+  "reminderSemantics": "Reminder {label}",
+  "@reminderSemantics": {
+    "description": "Screen reader label of a reminder mark",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "reminderSemanticsInactive": "Reminder {label}, won't ring",
+  "@reminderSemanticsInactive": {
+    "description": "Screen reader label of a reminder that will not ring",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsTitle": "Settings",
+  "@settingsTitle": {
+    "description": "Settings page title"
+  },
+  "settingsSaveFailed": "Couldn't save the setting. Please try again.",
+  "@settingsSaveFailed": {
+    "description": "Snackbar when saving a setting fails"
+  },
+  "settingsSectionGeneral": "General",
+  "@settingsSectionGeneral": {
+    "description": "Settings section"
+  },
+  "settingsSectionAppearance": "Appearance",
+  "@settingsSectionAppearance": {
+    "description": "Settings section"
+  },
+  "settingsSectionReminders": "Reminders",
+  "@settingsSectionReminders": {
+    "description": "Settings section"
+  },
+  "settingsSectionAbout": "About",
+  "@settingsSectionAbout": {
+    "description": "Settings section"
+  },
+  "settingsRemindersAttention": "Notification or alarm permission is off",
+  "@settingsRemindersAttention": {
+    "description": "Screen reader text for the warning mark on the reminders section"
+  },
+  "settingsGeneralSummary": "{language} · {weekStart}",
+  "@settingsGeneralSummary": {
+    "description": "Summary of the general section: language and week start",
+    "placeholders": {
+      "language": {
+        "type": "String"
+      },
+      "weekStart": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsLanguage": "Language",
+  "@settingsLanguage": {
+    "description": "Settings item"
+  },
+  "languageFollowSystem": "Follow system",
+  "@languageFollowSystem": {
+    "description": "Language option that follows the phone language"
+  },
+  "languageCurrent": "Currently: {language}",
+  "@languageCurrent": {
+    "description": "Shows which language \"follow system\" resolves to",
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsWeekStart": "Week starts on",
+  "@settingsWeekStart": {
+    "description": "Settings item"
+  },
+  "weekStartLocale": "Language default",
+  "@weekStartLocale": {
+    "description": "Week start option that follows the language"
+  },
+  "weekStartMonday": "Monday",
+  "@weekStartMonday": {
+    "description": "Week start option"
+  },
+  "weekStartSunday": "Sunday",
+  "@weekStartSunday": {
+    "description": "Week start option"
+  },
+  "weekStartCurrent": "Currently: {day}",
+  "@weekStartCurrent": {
+    "description": "Shows which day \"language default\" resolves to",
+    "placeholders": {
+      "day": {
+        "type": "String"
+      }
+    }
+  },
+  "weekStartSummary": "Starts {day}",
+  "@weekStartSummary": {
+    "description": "Short summary such as \"Starts Monday\"",
+    "placeholders": {
+      "day": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsTheme": "Theme",
+  "@settingsTheme": {
+    "description": "Settings item"
+  },
+  "themeSystem": "Follow system",
+  "@themeSystem": {
+    "description": "Theme option"
+  },
+  "themeLight": "Light",
+  "@themeLight": {
+    "description": "Theme option"
+  },
+  "themeDark": "Dark",
+  "@themeDark": {
+    "description": "Theme option"
+  },
+  "settingsReminderLead": "Default for new reminders",
+  "@settingsReminderLead": {
+    "description": "Settings item: default reminder lead time"
+  },
+  "reminderLeadOnTime": "At the time",
+  "@reminderLeadOnTime": {
+    "description": "Reminder lead option"
+  },
+  "reminderLeadBefore": "{minutes, plural, =1{1 minute before} other{{minutes} minutes before}}",
+  "@reminderLeadBefore": {
+    "description": "Reminder lead option, e.g. \"15 minutes before\"",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsPermissionsHeader": "Permissions & status",
+  "@settingsPermissionsHeader": {
+    "description": "Settings header"
+  },
+  "settingsUnsupported": "Reminders aren't supported on this platform. Tasks and reminder times are saved and will ring on your phone.",
+  "@settingsUnsupported": {
+    "description": "Shown on platforms without notifications"
+  },
+  "settingsNotifications": "Notifications",
+  "@settingsNotifications": {
+    "description": "Permission row"
+  },
+  "settingsNotificationsOn": "On",
+  "@settingsNotificationsOn": {
+    "description": "Permission status"
+  },
+  "settingsNotificationsOff": "Off — reminders won't appear",
+  "@settingsNotificationsOff": {
+    "description": "Permission status"
+  },
+  "settingsExactAlarms": "Alarms & reminders",
+  "@settingsExactAlarms": {
+    "description": "Permission row (Android \"Alarms & reminders\")"
+  },
+  "settingsExactOn": "On — reminders are on time",
+  "@settingsExactOn": {
+    "description": "Permission status"
+  },
+  "settingsExactOff": "Off — reminders may be several minutes late",
+  "@settingsExactOff": {
+    "description": "Permission status"
+  },
+  "settingsBattery": "Battery",
+  "@settingsBattery": {
+    "description": "Status row"
+  },
+  "settingsBatteryOk": "Unrestricted",
+  "@settingsBatteryOk": {
+    "description": "Battery status"
+  },
+  "settingsBatteryBad": "May be blocked by battery saving",
+  "@settingsBatteryBad": {
+    "description": "Battery status"
+  },
+  "settingsOpenAppSettings": "Open app settings",
+  "@settingsOpenAppSettings": {
+    "description": "Button that opens system app settings"
+  },
+  "settingsTimezone": "Time zone",
+  "@settingsTimezone": {
+    "description": "Status row"
+  },
+  "settingsTimezoneGuessed": "{zone} (couldn't read the system time zone; guessed from the time difference, so reminders may be off by an hour)",
+  "@settingsTimezoneGuessed": {
+    "description": "Time zone status when guessed",
+    "placeholders": {
+      "zone": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsTimezoneNote": "Reminders follow local time: after changing time zones, open Facet once and reminders will ring at the same local time.",
+  "@settingsTimezoneNote": {
+    "description": "Explanation about time zone changes"
+  },
+  "settingsCannotDetect": "Can't detect",
+  "@settingsCannotDetect": {
+    "description": "Status that cannot be detected"
+  },
+  "settingsTestButton": "Send a test notification in 5 seconds",
+  "@settingsTestButton": {
+    "description": "Button"
+  },
+  "settingsTestScheduledExact": "A notification will appear in 5 seconds. You can lock your screen now.",
+  "@settingsTestScheduledExact": {
+    "description": "Snackbar"
+  },
+  "settingsTestScheduledInexact": "Scheduled (inexact mode, it may arrive a bit later)",
+  "@settingsTestScheduledInexact": {
+    "description": "Snackbar"
+  },
+  "settingsTestFailed": "Couldn't schedule: {error}",
+  "@settingsTestFailed": {
+    "description": "Snackbar",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsNotificationsManual": "Turn them on in Settings → Apps → Facet → Notifications",
+  "@settingsNotificationsManual": {
+    "description": "Snackbar when the permission dialog cannot be shown"
+  },
+  "settingsOpenAppManual": "Open Settings → Apps → Facet manually",
+  "@settingsOpenAppManual": {
+    "description": "Snackbar when app settings cannot be opened"
+  },
+  "settingsSamsungHeader": "Samsung phones: keep reminders from being blocked",
+  "@settingsSamsungHeader": {
+    "description": "Header. Menu names must match Samsung One UI in this language"
+  },
+  "settingsSamsungIntro": "Samsung's battery saving may block reminders in the background. We recommend setting this once:",
+  "@settingsSamsungIntro": {
+    "description": "Intro"
+  },
+  "settingsSamsungStep1": "Settings → Apps → Facet → Battery → choose \"Unrestricted\". \"Open app settings\" above takes you there.",
+  "@settingsSamsungStep1": {
+    "description": "Step; One UI menu names"
+  },
+  "settingsSamsungStep2": "Settings → Battery → Background usage limits: make sure Facet isn't in \"Sleeping apps\" or \"Deep sleeping apps\". You can add it to \"Never sleeping apps\".",
+  "@settingsSamsungStep2": {
+    "description": "Step; One UI menu names"
+  },
+  "settingsSamsungStep3": "Settings → Apps → Facet → Notifications: allow notifications and turn on showing them on the lock screen.",
+  "@settingsSamsungStep3": {
+    "description": "Step; One UI menu names"
+  },
+  "settingsSamsungStep4": "Apps you don't open for a long time may be put to sleep automatically. If reminders stop one day, check step 2 again.",
+  "@settingsSamsungStep4": {
+    "description": "Step"
+  },
+  "settingsAppInfo": "App info",
+  "@settingsAppInfo": {
+    "description": "About section header"
+  },
+  "settingsAppName": "App",
+  "@settingsAppName": {
+    "description": "About row label"
+  },
+  "settingsVersion": "Version",
+  "@settingsVersion": {
+    "description": "About row label"
+  },
+  "settingsPrivacy": "Privacy",
+  "@settingsPrivacy": {
+    "description": "About section header"
+  },
+  "settingsPrivacyText": "Your tasks, log and settings are stored on this device. Facet has no accounts, collects no usage data and doesn't send your data to any server.",
+  "@settingsPrivacyText": {
+    "description": "Privacy statement"
+  }
+}

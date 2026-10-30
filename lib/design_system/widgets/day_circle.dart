@@ -38,7 +38,10 @@ class DayCircle extends StatelessWidget {
             ring: colors.ink,
             fillColor: colors.accent,
           ),
-          child: SizedBox.square(dimension: diameter, child: Center(child: child)),
+          child: SizedBox.square(
+            dimension: diameter,
+            child: Center(child: child),
+          ),
         ),
         child: child,
       ),
@@ -64,7 +67,9 @@ class DayCirclePainter extends CustomPainter {
 
     if (progress > 0) {
       canvas.save();
-      canvas.clipPath(Path()..addOval(Rect.fromCircle(center: center, radius: radius)));
+      canvas.clipPath(
+        Path()..addOval(Rect.fromCircle(center: center, radius: radius)),
+      );
       final top = size.height * (1 - progress);
       canvas.drawRect(
         Rect.fromLTRB(0, top, size.width, size.height),
@@ -85,5 +90,7 @@ class DayCirclePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(DayCirclePainter old) =>
-      old.progress != progress || old.ring != ring || old.fillColor != fillColor;
+      old.progress != progress ||
+      old.ring != ring ||
+      old.fillColor != fillColor;
 }

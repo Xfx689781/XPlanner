@@ -12,21 +12,34 @@ class LocalNotificationScheduler implements ReminderScheduler {
   final FlutterLocalNotificationsPlugin _plugin;
 
   static const _channelId = 'task_reminders';
-  static const _channelName = '任务提醒';
   static const _icon = 'ic_stat_facet';
 
-  static const _details = NotificationDetails(
+  // 渠道名显示在系统设置里，由 configureChannel 按当前语言设置（启动时、切换语言后）
+  String _channelName = 'Task reminders';
+  String _channelDescription = 'Reminders when a task is due';
+
+  NotificationDetails get _details => NotificationDetails(
     android: AndroidNotificationDetails(
       _channelId,
       _channelName,
-      channelDescription: '任务到点时的提醒',
+      channelDescription: _channelDescription,
       importance: Importance.high,
       priority: Priority.high,
       icon: _icon,
       category: AndroidNotificationCategory.reminder,
     ),
-    iOS: DarwinNotificationDetails(),
+    iOS: const DarwinNotificationDetails(),
   );
+
+  @override
+  Future<void> configureChannel({required String name, required String description}) async {
+    _channelName = name;
+    _channelDescription = description;
+    // 同一个 id 再创建一次会更新已有渠道的名称和描述（重要程度保持不变）
+    await _android?.createNotificationChannel(
+      AndroidNotificationChannel(_channelId, name, description: description, importance: Importance.high),
+    );
+  }
 
   AndroidFlutterLocalNotificationsPlugin? get _android =>
       _plugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();

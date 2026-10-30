@@ -61,6 +61,14 @@ class FakeScheduler implements ReminderScheduler {
     pending.clear();
   }
 
+  String? channelName;
+
+  @override
+  Future<void> configureChannel({required String name, required String description}) async {
+    log.add('configureChannel $name');
+    channelName = name;
+  }
+
   @override
   Future<void> cancelAllPending() async {
     log.add('cancelAllPending');

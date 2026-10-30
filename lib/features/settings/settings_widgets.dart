@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../design_system/design_system.dart';
+import '../../l10n/locale_providers.dart';
 
 /// 一组单选设置：小标题 + 几何单选列表。分组页里加一个选择型设置项就用它。
 class ChoiceSetting<T> extends StatelessWidget {
@@ -62,7 +63,7 @@ class StatusRow extends StatelessWidget {
     required this.ok,
     required this.okText,
     this.badText,
-    this.unknownText = '无法检测',
+    required this.unknownText,
     this.action,
     this.onAction,
   });
@@ -153,9 +154,10 @@ class SettingsStep extends StatelessWidget {
 /// 保存设置；写库失败时（设置已自动恢复原值）给出提示。
 Future<void> saveSetting(BuildContext context, Future<void> Function() save) async {
   final messenger = ScaffoldMessenger.of(context);
+  final failed = context.l10n.settingsSaveFailed;
   try {
     await save();
   } catch (_) {
-    messenger.showSnackBar(const SnackBar(content: Text('设置保存失败，请重试')));
+    messenger.showSnackBar(SnackBar(content: Text(failed)));
   }
 }

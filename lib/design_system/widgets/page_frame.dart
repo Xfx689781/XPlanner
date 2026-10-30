@@ -26,7 +26,12 @@ class PageFrame extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(Space.l, Space.l, Space.s, Space.m),
+            padding: const EdgeInsets.fromLTRB(
+              Space.l,
+              Space.l,
+              Space.s,
+              Space.m,
+            ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
