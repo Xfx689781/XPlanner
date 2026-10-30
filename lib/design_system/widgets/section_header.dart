@@ -2,7 +2,6 @@ import 'package:flutter/widgets.dart';
 
 import '../metrics.dart';
 import '../tokens.dart';
-import '../typography.dart';
 import 'geo_icon.dart';
 
 /// 分组标题：小号文字 + 向右延伸的细线。
@@ -27,7 +26,7 @@ class SectionHeader extends StatelessWidget {
       child: Row(
         children: [
           if (glyph != null) ...[
-            GeoIcon(glyph!, color: color, size: FontSizes.small, filled: true),
+            GeoIcon(glyph!, color: color, size: Sizes.glyphInline, filled: true),
             const SizedBox(width: Space.s),
           ],
           Text(label, style: context.text.small.copyWith(color: color)),

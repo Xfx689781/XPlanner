@@ -39,9 +39,9 @@ class FacetColors {
     background: Color(0xFFF4F2EE),
     surface: Color(0xFFFFFFFF),
     ink: Color(0xFF1D1D1F),
-    muted: Color(0xFF8C8A86),
+    muted: Color(0xFF6F6D69),
     line: Color(0xFFD8D5CF),
-    accent: Color(0xFFE4572E),
+    accent: Color(0xFFBF3F1C),
     onAccent: Color(0xFFFFFFFF),
   );
 

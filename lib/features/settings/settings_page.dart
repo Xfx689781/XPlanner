@@ -38,7 +38,9 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   void initState() {
     super.initState();
     // 从系统设置页回来时刷新状态
-    _lifecycle = AppLifecycleListener(onResume: () => ref.invalidate(reminderStatusProvider));
+    _lifecycle = AppLifecycleListener(
+      onResume: () => ref.invalidate(reminderStatusProvider),
+    );
   }
 
   @override
@@ -57,7 +59,9 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       // 用户之前拒绝过时系统不会再弹窗，只能去应用设置里开
       final opened = await ref.read(systemSettingsProvider).openAppDetails();
       if (!opened) {
-        messenger.showSnackBar(const SnackBar(content: Text('请在系统设置 → 应用 → Facet → 通知 中开启')));
+        messenger.showSnackBar(
+          const SnackBar(content: Text('请在系统设置 → 应用 → Facet → 通知 中开启')),
+        );
       }
     }
   }
@@ -66,26 +70,37 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     final messenger = ScaffoldMessenger.of(context);
     final opened = await ref.read(systemSettingsProvider).openAppDetails();
     if (!opened) {
-      messenger.showSnackBar(const SnackBar(content: Text('请手动打开 设置 → 应用 → Facet')));
+      messenger.showSnackBar(
+        const SnackBar(content: Text('请手动打开 设置 → 应用 → Facet')),
+      );
     }
   }
 
   Future<void> _testNotification() async {
     final messenger = ScaffoldMessenger.of(context);
     final now = ref.read(clockProvider).now();
-    final at = tz.TZDateTime.from(now, tz.local).add(const Duration(seconds: 5));
+    final at = tz.TZDateTime.from(
+      now,
+      tz.local,
+    ).add(const Duration(seconds: 5));
     try {
-      final mode = await _scheduler.schedule(ReminderRequest(
-        id: testNotificationId,
-        title: 'Facet 测试提醒',
-        body: '能看到这条，说明提醒正常',
-        at: at,
-      ));
-      messenger.showSnackBar(SnackBar(
-        content: Text(mode == ScheduleMode.exact
-            ? '5 秒后会弹出一条通知，可以先锁屏'
-            : '已安排（不精确模式，可能晚一些才弹出）'),
-      ));
+      final mode = await _scheduler.schedule(
+        ReminderRequest(
+          id: testNotificationId,
+          title: 'Facet 测试提醒',
+          body: '能看到这条，说明提醒正常',
+          at: at,
+        ),
+      );
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(
+            mode == ScheduleMode.exact
+                ? '5 秒后会弹出一条通知，可以先锁屏'
+                : '已安排（不精确模式，可能晚一些才弹出）',
+          ),
+        ),
+      );
     } catch (e) {
       messenger.showSnackBar(SnackBar(content: Text('安排失败：$e')));
     }
@@ -96,71 +111,94 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     final status = ref.watch(reminderStatusProvider).value;
 
     return Scaffold(
-      body: PageFrame(
-        title: '设置',
-        trailing: Padding(
-          padding: const EdgeInsets.only(right: Space.s),
-          child: GeoIconButton(
-            glyph: GeoGlyph.close,
-            semanticLabel: '返回',
-            onPressed: () => Navigator.of(context).pop(),
+      body: Align(
+        alignment: Alignment.topCenter,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: Sizes.contentMaxWidth),
+          child: PageFrame(
+            title: '设置',
+            trailing: Padding(
+              padding: const EdgeInsets.only(right: Space.s),
+              child: GeoIconButton(
+                glyph: GeoGlyph.back,
+                semanticLabel: '返回',
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+            ),
+            child: ListView(
+              padding: const EdgeInsets.only(bottom: Space.xl),
+              children: [
+                const SectionHeader('提醒'),
+                if (status == null)
+                  const SizedBox.shrink()
+                else if (!status.supported)
+                  const _Paragraph('这个平台暂不支持提醒。任务和提醒时间会正常保存，在手机上会按时弹出。')
+                else ...[
+                  _StatusRow(
+                    label: '通知权限',
+                    ok: status.notificationsEnabled,
+                    okText: '已开启',
+                    badText: '未开启，提醒不会弹出',
+                    action: '开启',
+                    onAction: _requestNotifications,
+                  ),
+                  _StatusRow(
+                    label: '闹钟和提醒',
+                    ok: status.exactAllowed,
+                    okText: '已开启，提醒准时',
+                    badText: '未开启，提醒可能晚几分钟到十几分钟',
+                    action: '去开启',
+                    onAction: _scheduler.requestExactAlarmPermission,
+                  ),
+                  _StatusRow(
+                    label: '电池',
+                    ok: status.batteryUnrestricted,
+                    okText: '不受限制',
+                    badText: '可能被省电策略拦截',
+                    action: '打开应用设置',
+                    onAction: _openAppDetails,
+                  ),
+                  _StatusRow(
+                    label: '时区',
+                    ok: !status.timezoneGuessed,
+                    okText: status.timezone,
+                    badText: '${status.timezone}（没取到系统时区，按时差推测，提醒可能差一小时）',
+                  ),
+                  const _Paragraph('提醒按当地钟点：换了时区后请打开一次 Facet，提醒会改按新时区的钟点响。'),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(
+                      Space.l,
+                      Space.m,
+                      Space.l,
+                      0,
+                    ),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: GeoButton(
+                        label: '5 秒后发一条测试通知',
+                        onPressed: _testNotification,
+                      ),
+                    ),
+                  ),
+                  const SectionHeader('三星手机：防止提醒被拦截'),
+                  const _Paragraph('三星的省电策略可能在后台拦截提醒。建议按下面设置一次：'),
+                  const _Step(
+                    1,
+                    '设置 → 应用 → Facet → 电池 → 选「不受限制」。上面「打开应用设置」可以直接跳到这里。',
+                  ),
+                  const _Step(
+                    2,
+                    '设置 → 电池 → 后台使用限制：确认 Facet 不在「休眠应用」或「深度休眠应用」里；可以把它加入「永不休眠的应用」。',
+                  ),
+                  const _Step(3, '设置 → 应用 → Facet → 通知：允许通知，并打开「锁定屏幕」上的显示。'),
+                  const _Step(
+                    4,
+                    '长时间不打开的 App 可能被系统自动放进休眠列表，如果某天提醒不响了，回来检查第 2 步。',
+                  ),
+                ],
+              ],
+            ),
           ),
-        ),
-        child: ListView(
-          padding: const EdgeInsets.only(bottom: Space.xl),
-          children: [
-            const SectionHeader('提醒'),
-            if (status == null)
-              const SizedBox.shrink()
-            else if (!status.supported)
-              const _Paragraph('这个平台暂不支持提醒。任务和提醒时间会正常保存，在手机上会按时弹出。')
-            else ...[
-              _StatusRow(
-                label: '通知权限',
-                ok: status.notificationsEnabled,
-                okText: '已开启',
-                badText: '未开启，提醒不会弹出',
-                action: '开启',
-                onAction: _requestNotifications,
-              ),
-              _StatusRow(
-                label: '闹钟和提醒',
-                ok: status.exactAllowed,
-                okText: '已开启，提醒准时',
-                badText: '未开启，提醒可能晚几分钟到十几分钟',
-                action: '去开启',
-                onAction: _scheduler.requestExactAlarmPermission,
-              ),
-              _StatusRow(
-                label: '电池',
-                ok: status.batteryUnrestricted,
-                okText: '不受限制',
-                badText: '可能被省电策略拦截',
-                action: '打开应用设置',
-                onAction: _openAppDetails,
-              ),
-              _StatusRow(
-                label: '时区',
-                ok: !status.timezoneGuessed,
-                okText: status.timezone,
-                badText: '${status.timezone}（没取到系统时区，按时差推测，提醒可能差一小时）',
-              ),
-              const _Paragraph('提醒按当地钟点：换了时区后请打开一次 Facet，提醒会改按新时区的钟点响。'),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(Space.l, Space.m, Space.l, 0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: GeoButton(label: '5 秒后发一条测试通知', onPressed: _testNotification),
-                ),
-              ),
-              const SectionHeader('三星手机：防止提醒被拦截'),
-              const _Paragraph('三星的省电策略可能在后台拦截提醒。建议按下面设置一次：'),
-              const _Step(1, '设置 → 应用 → Facet → 电池 → 选「不受限制」。上面「打开应用设置」可以直接跳到这里。'),
-              const _Step(2, '设置 → 电池 → 后台使用限制：确认 Facet 不在「休眠应用」或「深度休眠应用」里；可以把它加入「永不休眠的应用」。'),
-              const _Step(3, '设置 → 应用 → Facet → 通知：允许通知，并打开「锁定屏幕」上的显示。'),
-              const _Step(4, '长时间不打开的 App 可能被系统自动放进休眠列表，如果某天提醒不响了，回来检查第 2 步。'),
-            ],
-          ],
         ),
       ),
     );
@@ -195,11 +233,14 @@ class _StatusRow extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(Space.l, Space.s, Space.s, Space.s),
       child: Row(
         children: [
+          // 实心 = 正常；主色空心 = 需要处理；灰色空心 = 无法检测
           GeoIcon(
             GeoGlyph.circle,
-            size: FontSizes.body,
-            color: bad ? colors.accent : colors.ink,
-            filled: !bad,
+            size: Sizes.glyphInline,
+            color: bad
+                ? colors.accent
+                : (ok == null ? colors.muted : colors.ink),
+            filled: ok == true,
             strokeWidth: Stroke.thin,
           ),
           const SizedBox(width: Space.m),
@@ -210,13 +251,19 @@ class _StatusRow extends StatelessWidget {
                 Text(label, style: context.text.body),
                 Text(
                   ok == null ? '无法检测' : (bad ? badText ?? '' : okText),
-                  style: context.text.small.copyWith(color: bad ? colors.accent : null),
+                  style: context.text.small.copyWith(
+                    color: bad ? colors.accent : null,
+                  ),
                 ),
               ],
             ),
           ),
           if (bad && action != null)
-            GeoButton(label: action!, style: GeoButtonStyle.outline, onPressed: onAction),
+            GeoButton(
+              label: action!,
+              style: GeoButtonStyle.outline,
+              onPressed: onAction,
+            ),
         ],
       ),
     );
@@ -232,7 +279,10 @@ class _Paragraph extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(Space.l, Space.xs, Space.l, Space.s),
-      child: Text(text, style: context.text.small.copyWith(color: context.colors.ink)),
+      child: Text(
+        text,
+        style: context.text.small.copyWith(color: context.colors.ink),
+      ),
     );
   }
 }
@@ -250,8 +300,16 @@ class _Step extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(width: Space.l, child: Text('$n', style: context.text.small)),
-          Expanded(child: Text(text, style: context.text.small.copyWith(color: context.colors.ink))),
+          SizedBox(
+            width: Space.l,
+            child: Text('$n', style: context.text.small),
+          ),
+          Expanded(
+            child: Text(
+              text,
+              style: context.text.small.copyWith(color: context.colors.ink),
+            ),
+          ),
         ],
       ),
     );

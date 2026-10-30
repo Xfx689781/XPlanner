@@ -27,6 +27,15 @@ abstract final class Sizes {
   /// 图标（几何字形）边长
   static const double icon = 22;
 
+  /// 文字行内的小字形（分组标题、状态点、优先级示意）
+  static const double glyphInline = 14;
+
+  /// 空状态的大字形
+  static const double emptyGlyph = 64;
+
+  /// 确认框最大宽度
+  static const double dialogMaxWidth = 360;
+
   /// 首页大圆直径（窄屏）
   static const double dayCircle = 184;
 

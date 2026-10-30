@@ -49,7 +49,7 @@ class _GeoButtonState extends State<GeoButton> {
       GeoButtonStyle.outline => (
         const Color(0x00000000),
         widget.destructive ? colors.accent : colors.ink,
-        colors.line,
+        colors.muted,
       ),
       GeoButtonStyle.text => (
         const Color(0x00000000),
@@ -107,6 +107,8 @@ class GeoIconButton extends StatelessWidget {
     return Semantics(
       button: true,
       label: semanticLabel,
+      // excludeSemantics 会把手势的语义动作一起去掉，显式补上
+      onTap: onPressed,
       excludeSemantics: true,
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
@@ -116,37 +118,6 @@ class GeoIconButton extends StatelessWidget {
           child: Center(
             child: GeoIcon(glyph, color: color ?? context.colors.ink, filled: filled),
           ),
-        ),
-      ),
-    );
-  }
-}
-
-/// 主色实心方块 + 白色加号：新建入口。
-class GeoAddButton extends StatelessWidget {
-  const GeoAddButton({super.key, required this.onPressed, required this.semanticLabel});
-
-  final VoidCallback onPressed;
-  final String semanticLabel;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.colors;
-    return Semantics(
-      button: true,
-      label: semanticLabel,
-      excludeSemantics: true,
-      child: GestureDetector(
-        onTap: onPressed,
-        child: Container(
-          width: Sizes.tapTarget,
-          height: Sizes.tapTarget,
-          decoration: BoxDecoration(
-            color: colors.accent,
-            borderRadius: BorderRadius.circular(Radii.square),
-          ),
-          alignment: Alignment.center,
-          child: GeoIcon(GeoGlyph.plus, color: colors.onAccent),
         ),
       ),
     );

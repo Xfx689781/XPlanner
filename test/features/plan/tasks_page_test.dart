@@ -68,14 +68,14 @@ void main() {
     await openTasksTab(tester);
 
     expect(find.text('逾期'), findsOneWidget);
-    await tester.tap(find.bySemanticsLabel('今天的'));
+    await tester.tap(find.bySemanticsLabel(RegExp('^今天的，高优先级')));
     await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 50)));
     await tester.pumpAndSettle();
 
     final t = (await tester.db(() => repo.watchAll().first)).firstWhere((t) => t.title == '今天的');
     expect(t.completedAt, clock.value);
     final square = tester.widget<TaskSquare>(
-      find.byWidgetPredicate((w) => w is TaskSquare && w.semanticLabel == '今天的'),
+      find.byWidgetPredicate((w) => w is TaskSquare && (w.semanticLabel ?? '').startsWith('今天的')),
     );
     expect(square.done, isTrue);
     await finish(tester);

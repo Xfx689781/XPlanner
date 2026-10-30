@@ -19,9 +19,11 @@ class TasksPage extends ConsumerWidget {
     return PageFrame(
       title: '任务',
       trailing: Padding(
-        padding: const EdgeInsets.only(right: Space.m),
-        child: GeoAddButton(
+        padding: const EdgeInsets.only(right: Space.s),
+        child: GeoIconButton(
+          glyph: GeoGlyph.plus,
           semanticLabel: '新建任务',
+          color: context.colors.accent,
           onPressed: () => showTaskEditor(context),
         ),
       ),

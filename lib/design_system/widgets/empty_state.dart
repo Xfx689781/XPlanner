@@ -18,7 +18,7 @@ class EmptyState extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          GeoIcon(glyph, color: colors.line, size: Sizes.tapTarget * 1.5, strokeWidth: Stroke.thin),
+          GeoIcon(glyph, color: colors.line, size: Sizes.emptyGlyph, strokeWidth: Stroke.thin),
           const SizedBox(height: Space.m),
           Text(message, style: context.text.small),
         ],

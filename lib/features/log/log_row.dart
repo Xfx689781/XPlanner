@@ -1,3 +1,4 @@
+import 'package:flutter/semantics.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -15,21 +16,27 @@ class LogRow extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final time = formatTime(entry.createdAt.toLocal());
+    Future<void> confirmDelete() async {
+      final repo = ref.read(logRepositoryProvider);
+      final ok = await showGeoConfirm(
+        context,
+        message: '删除这条记录？',
+        confirmLabel: '删除',
+        destructive: true,
+      );
+      if (ok) await repo.delete(entry.id);
+    }
+
     return Semantics(
       label: '$time ${entry.content}',
-      hint: '长按删除',
+      customSemanticsActions: {const CustomSemanticsAction(label: '删除'): confirmDelete},
+      onLongPress: confirmDelete,
       excludeSemantics: true,
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
-        onLongPress: () async {
-          final ok = await showGeoConfirm(
-            context,
-            message: '删除这条记录？',
-            confirmLabel: '删除',
-            destructive: true,
-          );
-          if (ok) await ref.read(logRepositoryProvider).delete(entry.id);
-        },
+        onLongPress: confirmDelete,
+        // 桌面上右键也能删除
+        onSecondaryTap: confirmDelete,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: Space.l, vertical: Space.s),
           child: Row(

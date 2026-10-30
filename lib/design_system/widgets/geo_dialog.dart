@@ -14,32 +14,37 @@ Future<bool> showGeoConfirm(
   final result = await showDialog<bool>(
     context: context,
     builder: (context) => Dialog(
-      child: Padding(
-        padding: const EdgeInsets.all(Space.l),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(message, style: context.text.body),
-            const SizedBox(height: Space.l),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                GeoButton(
-                  label: '取消',
-                  style: GeoButtonStyle.text,
-                  onPressed: () => Navigator.of(context).pop(false),
-                ),
-                const SizedBox(width: Space.s),
-                GeoButton(
-                  label: confirmLabel,
-                  style: destructive ? GeoButtonStyle.outline : GeoButtonStyle.primary,
-                  destructive: destructive,
-                  onPressed: () => Navigator.of(context).pop(true),
-                ),
-              ],
-            ),
-          ],
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: Sizes.dialogMaxWidth),
+        child: Padding(
+          padding: const EdgeInsets.all(Space.l),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(message, style: context.text.body),
+              const SizedBox(height: Space.l),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  GeoButton(
+                    label: '取消',
+                    style: GeoButtonStyle.text,
+                    onPressed: () => Navigator.of(context).pop(false),
+                  ),
+                  const SizedBox(width: Space.s),
+                  GeoButton(
+                    label: confirmLabel,
+                    style: destructive
+                        ? GeoButtonStyle.outline
+                        : GeoButtonStyle.primary,
+                    destructive: destructive,
+                    onPressed: () => Navigator.of(context).pop(true),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     ),

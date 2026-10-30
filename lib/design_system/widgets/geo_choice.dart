@@ -38,6 +38,7 @@ class GeoChoice<T> extends StatelessWidget {
               button: true,
               selected: o.value == value,
               label: o.label,
+              onTap: () => onChanged(o.value),
               excludeSemantics: true,
               child: GestureDetector(
                 behavior: HitTestBehavior.opaque,

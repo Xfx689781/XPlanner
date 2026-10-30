@@ -69,6 +69,11 @@ class TodayPage extends ConsumerWidget {
               onPressed: () => showTaskEditor(context, dueToday: true),
             ),
           ),
+          if (summary != null && summary.tasks.isEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: Space.l, vertical: Space.s),
+              child: Text('今天还没有任务，点 + 添加', style: context.text.small),
+            ),
           if (summary != null)
             for (final t in summary.tasks) TaskTile(key: ValueKey('t${t.id}'), task: t),
           const SectionHeader('日志'),

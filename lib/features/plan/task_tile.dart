@@ -32,43 +32,63 @@ class TaskTile extends ConsumerWidget {
           TaskSquare(
             done: done,
             strokeWidth: strokeForPriority(task.priority),
-            semanticLabel: task.title,
+            semanticLabel: [
+              task.title,
+              '${priorityLabel(task.priority)}优先级',
+              if (overdue) '逾期',
+            ].join('，'),
             onTap: () => ref.read(taskActionsProvider).toggleDone(task),
           ),
           Expanded(
-            child: GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: () => showTaskEditor(context, task: task),
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(Space.xs, Space.s + Space.xs, Space.m, Space.s),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      task.title,
-                      style: context.text.body.copyWith(color: done ? colors.muted : colors.ink),
-                    ),
-                    if (due != null || reminder != null) ...[
-                      const SizedBox(height: Space.xs),
-                      Wrap(
-                        spacing: Space.m,
-                        runSpacing: Space.xs,
-                        crossAxisAlignment: WrapCrossAlignment.center,
-                        children: [
-                          if (due != null)
-                            Text(
-                              due,
-                              style: context.text.small.copyWith(color: overdue ? colors.accent : null),
-                            ),
-                          if (reminder != null)
-                            ReminderMark(
-                              label: reminderLabel(reminder, task.reminderRepeat),
-                              active: !done && !overdue,
-                            ),
-                        ],
+            child: Semantics(
+              button: true,
+              hint: '编辑',
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () => showTaskEditor(context, task: task),
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    Space.xs,
+                    Space.s + Space.xs,
+                    Space.m,
+                    Space.s,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        task.title,
+                        style: context.text.body.copyWith(
+                          color: done ? colors.muted : colors.ink,
+                        ),
                       ),
+                      if (due != null || reminder != null) ...[
+                        const SizedBox(height: Space.xs),
+                        Wrap(
+                          spacing: Space.m,
+                          runSpacing: Space.xs,
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          children: [
+                            if (due != null)
+                              Text(
+                                due,
+                                style: context.text.small.copyWith(
+                                  color: overdue ? colors.accent : null,
+                                ),
+                              ),
+                            if (reminder != null)
+                              ReminderMark(
+                                label: reminderLabel(
+                                  reminder,
+                                  task.reminderRepeat,
+                                ),
+                                active: !done && !overdue,
+                              ),
+                          ],
+                        ),
+                      ],
                     ],
-                  ],
+                  ),
                 ),
               ),
             ),

@@ -51,6 +51,11 @@ class _TaskEditorSheetState extends ConsumerState<TaskEditorSheet> {
 
   bool get _isNew => widget.task == null;
 
+  bool get _isDesktop => switch (Theme.of(context).platform) {
+    TargetPlatform.windows || TargetPlatform.macOS || TargetPlatform.linux => true,
+    _ => false,
+  };
+
   @override
   void initState() {
     super.initState();
@@ -92,6 +97,7 @@ class _TaskEditorSheetState extends ConsumerState<TaskEditorSheet> {
       initialDate: initial,
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
+      initialEntryMode: DatePickerEntryMode.calendarOnly,
     );
   }
 
@@ -99,6 +105,8 @@ class _TaskEditorSheetState extends ConsumerState<TaskEditorSheet> {
     return showTimePicker(
       context: context,
       initialTime: initial,
+      // 手机用表盘、桌面用输入框，不显示切换图标
+      initialEntryMode: _isDesktop ? TimePickerEntryMode.inputOnly : TimePickerEntryMode.dialOnly,
       builder: (context, child) => MediaQuery(
         data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
         child: child!,
@@ -296,7 +304,7 @@ class _TaskEditorSheetState extends ConsumerState<TaskEditorSheet> {
                     value: p,
                     label: priorityLabel(p),
                     leading: SizedBox.square(
-                      dimension: FontSizes.body,
+                      dimension: Sizes.glyphInline,
                       child: CustomPaint(
                         painter: TaskSquarePainter(
                           fill: 0,
