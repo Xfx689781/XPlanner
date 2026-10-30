@@ -7,10 +7,13 @@ import 'geo_icon.dart';
 
 /// 分组标题：小号文字 + 向右延伸的细线。
 class SectionHeader extends StatelessWidget {
-  const SectionHeader(this.label, {super.key, this.glyph, this.accent = false});
+  const SectionHeader(this.label, {super.key, this.glyph, this.accent = false, this.trailing});
 
   final String label;
   final GeoGlyph? glyph;
+
+  /// 细线右侧的操作
+  final Widget? trailing;
 
   /// 用主色强调（例如逾期）
   final bool accent;
@@ -30,6 +33,7 @@ class SectionHeader extends StatelessWidget {
           Text(label, style: context.text.small.copyWith(color: color)),
           const SizedBox(width: Space.s),
           Expanded(child: Container(height: Stroke.thin, color: colors.line)),
+          ?trailing,
         ],
       ),
     );

@@ -13,21 +13,23 @@ import 'task_actions.dart';
 import 'task_labels.dart';
 
 /// 打开新建（task 为空）或编辑任务的底部弹层。
-Future<void> showTaskEditor(BuildContext context, {Task? task}) {
+/// [dueToday]：新建时默认日期设为今天（从今天页进入时）。
+Future<void> showTaskEditor(BuildContext context, {Task? task, bool dueToday = false}) {
   return showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
-    builder: (_) => TaskEditorSheet(task: task),
+    builder: (_) => TaskEditorSheet(task: task, dueToday: dueToday),
   );
 }
 
 enum _DueChoice { none, today, tomorrow, other }
 
 class TaskEditorSheet extends ConsumerStatefulWidget {
-  const TaskEditorSheet({super.key, this.task});
+  const TaskEditorSheet({super.key, this.task, this.dueToday = false});
 
   final Task? task;
+  final bool dueToday;
 
   @override
   ConsumerState<TaskEditorSheet> createState() => _TaskEditorSheetState();
@@ -55,6 +57,8 @@ class _TaskEditorSheetState extends ConsumerState<TaskEditorSheet> {
     if (t?.dueAt != null) {
       _dueDate = startOfDay(t!.dueAt!);
       if (t.dueHasTime) _dueTime = TimeOfDay.fromDateTime(t.dueAt!);
+    } else if (t == null && widget.dueToday) {
+      _dueDate = ref.read(currentDayProvider);
     }
     _reminderAt = t?.reminderAt;
     _repeat = t?.reminderRepeat ?? RepeatRule.none;

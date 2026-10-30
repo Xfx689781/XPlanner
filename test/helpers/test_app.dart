@@ -2,6 +2,7 @@ import 'package:facet/app/app.dart';
 import 'package:facet/core/data/app_database.dart';
 import 'package:facet/core/data/data_providers.dart';
 import 'package:facet/core/utils/clock.dart';
+import 'package:facet/design_system/design_system.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart';
@@ -29,6 +30,12 @@ Widget testApp(AppDatabase db, {Clock? clock, List<Override> overrides = const [
 }
 
 extension DbTester on WidgetTester {
+  /// 点导航栏里的某一栏（页面里可能有同名的分组标题）
+  Future<void> tapNav(String label) async {
+    await tap(find.descendant(of: find.byType(GeoNavBar), matching: find.text(label)));
+    await pumpAndSettle();
+  }
+
   /// 在 widget 测试里直接读写数据库要走真实的异步，否则 drift 的计时器在假时钟下不会推进。
   Future<T> db<T>(Future<T> Function() fn) async => (await runAsync(fn)) as T;
 

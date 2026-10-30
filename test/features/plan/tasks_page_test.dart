@@ -20,8 +20,7 @@ void main() {
 
   Future<void> openTasksTab(WidgetTester tester) async {
     await tester.pumpWidget(testApp(db, clock: clock));
-    await tester.tap(find.bySemanticsLabel('任务'));
-    await tester.pumpAndSettle();
+    await tester.tapNav('任务');
   }
 
   Future<void> finish(WidgetTester tester) async {

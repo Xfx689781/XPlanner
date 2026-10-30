@@ -9,12 +9,10 @@ void main() {
     await tester.pumpWidget(testApp(db));
     expect(find.text('今天'), findsWidgets);
 
-    await tester.tap(find.bySemanticsLabel('任务'));
-    await tester.pumpAndSettle();
+    await tester.tapNav('任务');
     expect(find.text('还没有任务'), findsOneWidget);
 
-    await tester.tap(find.bySemanticsLabel('日志'));
-    await tester.pumpAndSettle();
+    await tester.tapNav('日志');
     expect(find.text('日志'), findsWidgets);
 
     await tester.disposeApp();
