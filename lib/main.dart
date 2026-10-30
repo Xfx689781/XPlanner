@@ -4,6 +4,11 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'app/app.dart';
+import 'core/data/app_database.dart';
+import 'core/data/data_providers.dart';
+import 'core/data/settings/app_settings.dart';
+import 'core/data/settings/settings_provider.dart';
+import 'core/data/settings/settings_repository.dart';
 import 'core/notifications/notification_ids.dart';
 import 'core/notifications/notification_providers.dart';
 import 'core/notifications/noop_reminder_scheduler.dart';
@@ -15,8 +20,15 @@ Future<void> main() async {
   await initLocalTimezone();
 
   final scheduler = await _initScheduler();
+  // runApp 之前预读设置：第一帧就是保存的主题 / 语言，不闪烁。读库时会先跑迁移
+  final db = AppDatabase();
+  final settings = await _loadSettings(db);
   final container = ProviderContainer(
-    overrides: [reminderSchedulerProvider.overrideWithValue(scheduler)],
+    overrides: [
+      databaseProvider.overrideWithValue(db),
+      initialSettingsProvider.overrideWithValue(settings),
+      reminderSchedulerProvider.overrideWithValue(scheduler),
+    ],
     // 本地数据库出错时重试没有意义
     retry: (_, _) => null,
   );
@@ -41,6 +53,15 @@ Future<void> main() async {
 }
 
 void Function(String? payload)? _onNotificationTap;
+
+Future<AppSettings> _loadSettings(AppDatabase db) async {
+  try {
+    return await SettingsRepository(db).load();
+  } catch (e) {
+    debugPrint('读取设置失败，使用默认设置：$e');
+    return AppSettings.defaults;
+  }
+}
 
 /// 初始化失败时退回空实现，保证 App 能启动
 Future<ReminderScheduler> _initScheduler() async {

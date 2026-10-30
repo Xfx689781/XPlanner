@@ -1,6 +1,8 @@
 import 'package:facet/app/app.dart';
 import 'package:facet/core/data/app_database.dart';
 import 'package:facet/core/data/data_providers.dart';
+import 'package:facet/core/data/settings/app_settings.dart';
+import 'package:facet/core/data/settings/settings_provider.dart';
 import 'package:facet/core/utils/clock.dart';
 import 'package:facet/design_system/design_system.dart';
 import 'package:flutter/widgets.dart';
@@ -18,10 +20,16 @@ class FixedClock implements Clock {
 }
 
 /// 用内存数据库和固定时钟启动整个 App。
-Widget testApp(AppDatabase db, {Clock? clock, List<Override> overrides = const []}) {
+Widget testApp(
+  AppDatabase db, {
+  Clock? clock,
+  AppSettings settings = AppSettings.defaults,
+  List<Override> overrides = const [],
+}) {
   return ProviderScope(
     overrides: [
       databaseProvider.overrideWithValue(db),
+      initialSettingsProvider.overrideWithValue(settings),
       if (clock != null) clockProvider.overrideWithValue(clock),
       ...overrides,
     ],
