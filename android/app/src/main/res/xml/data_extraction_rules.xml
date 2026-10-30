@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 12+ 的备份规则。只备份数据库（任务、日志、设置都在 app_flutter/facet.sqlite 里）。
+     不备份：缓存；SharedPreferences（通知插件缓存的已排闹钟，恢复到新手机会过期失效）。
+     恢复后第一次打开 App 时，main 里的 resyncAll 会按数据库重新排好所有提醒。 -->
+<data-extraction-rules>
+    <cloud-backup>
+        <include domain="root" path="app_flutter/" />
+    </cloud-backup>
+    <device-transfer>
+        <include domain="root" path="app_flutter/" />
+    </device-transfer>
+</data-extraction-rules>
