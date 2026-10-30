@@ -97,6 +97,7 @@ ThemeData buildFacetTheme(Brightness brightness) {
     snackBarTheme: SnackBarThemeData(
       backgroundColor: colors.ink,
       contentTextStyle: text.small.copyWith(color: colors.background),
+      actionTextColor: colors.accent,
       elevation: 0,
       shape: const RoundedRectangleBorder(),
       behavior: SnackBarBehavior.floating,

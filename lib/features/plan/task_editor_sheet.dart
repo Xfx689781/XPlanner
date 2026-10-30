@@ -4,12 +4,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/data/app_database.dart';
 import '../../core/data/enums.dart';
 import '../../core/data/task_repository.dart';
+import '../../core/notifications/notification_providers.dart';
+import '../../core/notifications/reminder_scheduler.dart';
+import '../../core/notifications/reminder_status.dart';
 import '../../core/utils/clock.dart';
 import '../../core/utils/current_day.dart';
 import '../../core/utils/date_utils.dart';
 import '../../core/utils/format.dart';
 import '../../design_system/design_system.dart';
 import 'task_actions.dart';
+import 'reminder_permission.dart';
 import 'task_labels.dart';
 
 /// 打开新建（task 为空）或编辑任务的底部弹层。
@@ -177,11 +181,27 @@ class _TaskEditorSheetState extends ConsumerState<TaskEditorSheet> {
   Future<void> _save() async {
     if (_title.text.trim().isEmpty || _saving) return;
     setState(() => _saving = true);
+    final messenger = ScaffoldMessenger.of(context);
+    final scheduler = ref.read(reminderSchedulerProvider);
+    final draft = _draft();
+    final hasReminder = draft.reminderAt != null;
+    // 第一次设提醒时在这里申请通知权限
+    final granted = hasReminder ? await ensureNotificationPermission(ref) : true;
+
     final actions = ref.read(taskActionsProvider);
+    final ScheduleMode? mode;
     if (_isNew) {
-      await actions.create(_draft());
+      (_, mode) = await actions.create(draft);
     } else {
-      await actions.update(widget.task!.id, _draft());
+      (_, mode) = await actions.update(widget.task!.id, draft);
+    }
+    if (hasReminder) {
+      showReminderOutcome(
+        messenger,
+        permissionGranted: granted,
+        mode: mode,
+        openExactSettings: scheduler.requestExactAlarmPermission,
+      );
     }
     if (mounted) Navigator.of(context).pop();
   }
@@ -205,6 +225,7 @@ class _TaskEditorSheetState extends ConsumerState<TaskEditorSheet> {
     final now = ref.read(clockProvider).now();
     final reminder = _reminderAt;
     final reminderPast = reminder != null && _repeat == RepeatRule.none && !reminder.isAfter(now);
+    final status = reminder == null ? null : ref.watch(reminderStatusProvider).value;
 
     return Padding(
       padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
@@ -356,12 +377,14 @@ class _TaskEditorSheetState extends ConsumerState<TaskEditorSheet> {
                 ],
               ),
               if (reminderPast)
-                Padding(
-                  padding: const EdgeInsets.only(top: Space.s),
-                  child: Text(
-                    '这个时间已经过去，不会提醒',
-                    style: context.text.small.copyWith(color: colors.accent),
-                  ),
+                _Hint('这个时间已经过去，不会提醒'),
+              if (status?.supported == false)
+                _Hint('这个平台暂不支持提醒，会在手机上生效'),
+              if (status?.exactMissing ?? false)
+                _Hint(
+                  '没有「闹钟和提醒」权限，提醒可能晚几分钟',
+                  action: '去开启',
+                  onAction: ref.read(reminderSchedulerProvider).requestExactAlarmPermission,
                 ),
             ],
             const SizedBox(height: Space.l),
@@ -399,6 +422,30 @@ class _Label extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(top: Space.l, bottom: Space.xs),
       child: Text(text, style: context.text.small),
+    );
+  }
+}
+
+class _Hint extends StatelessWidget {
+  const _Hint(this.text, {this.action, this.onAction});
+
+  final String text;
+  final String? action;
+  final VoidCallback? onAction;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: Space.s),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(text, style: context.text.small.copyWith(color: context.colors.accent)),
+          ),
+          if (action != null)
+            GeoButton(label: action!, style: GeoButtonStyle.text, onPressed: onAction),
+        ],
+      ),
     );
   }
 }
