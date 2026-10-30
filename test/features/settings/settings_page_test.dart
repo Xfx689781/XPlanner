@@ -87,7 +87,7 @@ void main() {
     await tester.tap(find.text('关于'));
     await tester.pumpAndSettle();
     expect(find.text('一周从哪天开始'), findsNothing);
-    expect(find.textContaining('只保存在这台设备上'), findsOneWidget);
+    expect(find.textContaining('保存在本机'), findsOneWidget);
     // 没有进入子页面（没有发生路由跳转）
     expect(find.byType(SettingsSectionPage), findsNothing);
     await finish(tester);
@@ -97,7 +97,7 @@ void main() {
     await setWidth(tester, 390);
     await tester.pumpWidget(app(FakeScheduler(exactAllowed: false)));
     await tester.pumpAndSettle();
-    expect(find.bySemanticsLabel(RegExp('提醒.*需要处理')), findsOneWidget);
+    expect(find.bySemanticsLabel(RegExp('提醒.*通知或闹钟权限未开启')), findsOneWidget);
     await finish(tester);
   });
 
@@ -105,11 +105,11 @@ void main() {
     await setWidth(tester, 390);
     await tester.pumpWidget(app(FakeScheduler()));
     await tester.pumpAndSettle();
-    expect(find.bySemanticsLabel(RegExp('需要处理')), findsNothing);
+    expect(find.bySemanticsLabel(RegExp('权限未开启')), findsNothing);
 
     await tester.pumpWidget(app(FakeScheduler(supported: false, exactAllowed: false)));
     await tester.pumpAndSettle();
-    expect(find.bySemanticsLabel(RegExp('需要处理')), findsNothing);
+    expect(find.bySemanticsLabel(RegExp('权限未开启')), findsNothing);
     await finish(tester);
   });
 

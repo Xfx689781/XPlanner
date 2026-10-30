@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 
 import '../metrics.dart';
 import '../motion.dart';
+import '../colors.dart';
 import '../tokens.dart';
 
 class GeoOption<T> {
@@ -49,7 +50,6 @@ class _OptionRow<T> extends StatelessWidget {
     return Semantics(
       inMutuallyExclusiveGroup: true,
       checked: selected,
-      button: true,
       label: [option.label, ?option.detail].join('，'),
       onTap: onTap,
       excludeSemantics: true,
@@ -67,7 +67,7 @@ class _OptionRow<T> extends StatelessWidget {
                 width: Sizes.glyphInline,
                 height: Sizes.glyphInline,
                 decoration: BoxDecoration(
-                  color: selected ? colors.accent : const Color(0x00000000),
+                  color: selected ? colors.accent : FacetColors.transparent,
                   border: Border.all(
                     color: selected ? colors.accent : colors.muted,
                     width: Stroke.thin,

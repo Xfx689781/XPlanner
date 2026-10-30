@@ -42,8 +42,9 @@ class InfoRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: Space.l, vertical: Space.s),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Expanded(child: Text(label, style: context.text.body)),
+          Flexible(child: Text(label, style: context.text.body)),
           const SizedBox(width: Space.m),
           Flexible(child: Text(value, textAlign: TextAlign.end, style: context.text.small)),
         ],
@@ -87,12 +88,8 @@ class StatusRow extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.only(top: Space.xs),
-            child: GeoIcon(
-              GeoGlyph.circle,
-              size: Sizes.glyphInline,
-              color: bad ? colors.accent : (ok == null ? colors.muted : colors.ink),
-              filled: ok == true,
-              strokeWidth: Stroke.thin,
+            child: StatusDot(
+              bad ? StatusKind.attention : (ok == null ? StatusKind.unknown : StatusKind.ok),
             ),
           ),
           const SizedBox(width: Space.m),

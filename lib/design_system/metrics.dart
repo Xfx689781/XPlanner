@@ -36,6 +36,9 @@ abstract final class Sizes {
   /// 确认框最大宽度
   static const double dialogMaxWidth = 360;
 
+  /// 设置中心分组行的最小高度
+  static const double settingsRow = 52;
+
   /// 设置中心两栏模式下左侧分组列表宽度
   static const double settingsListWidth = 280;
 

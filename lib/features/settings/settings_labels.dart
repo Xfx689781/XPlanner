@@ -1,4 +1,5 @@
 import '../../core/data/settings/settings_enums.dart';
+import '../../core/utils/week_start.dart';
 
 String themeLabel(ThemePreference t) => switch (t) {
   ThemePreference.system => '跟随系统',
@@ -12,12 +13,11 @@ String weekStartLabel(WeekStart w) => switch (w) {
   WeekStart.sunday => '周日',
 };
 
-/// 设置主页摘要里用的短说法
-String weekStartSummary(WeekStart w) => switch (w) {
-  WeekStart.locale => '一周按语言习惯',
-  WeekStart.monday => '周一开始',
-  WeekStart.sunday => '周日开始',
-};
+String weekdayName(int weekday) => weekday == DateTime.sunday ? '周日' : '周一';
+
+/// 设置主页摘要：显示实际生效的那天
+String weekStartSummary(WeekStart w, String intlLocale) =>
+    '${weekdayName(effectiveFirstWeekday(w, intlLocale))}开始';
 
 String reminderLeadLabel(ReminderLead l) => switch (l) {
   ReminderLead.onTime => '准时',

@@ -55,6 +55,9 @@ class FacetColors {
     onAccent: Color(0xFF121213),
   );
 
+  /// 占位用的透明色（例如未选中时的边框），不属于调色板
+  static const transparent = Color(0x00000000);
+
   static FacetColors lerp(FacetColors a, FacetColors b, double t) {
     return FacetColors(
       background: Color.lerp(a.background, b.background, t)!,

@@ -55,8 +55,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             title: s.title,
             value: s.summary(ref),
             attention: s.needsAttention?.call(ref) ?? false,
-            attentionLabel: '需要处理',
-            selected: wide && s.id == _selectedId,
+            attentionLabel: s.attentionLabel,
+            selected: wide ? s.id == _selectedId : null,
             showChevron: !wide,
             onTap: () {
               if (wide) {

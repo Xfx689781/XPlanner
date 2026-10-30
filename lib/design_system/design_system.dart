@@ -15,4 +15,5 @@ export 'widgets/page_frame.dart';
 export 'widgets/reminder_mark.dart';
 export 'widgets/section_header.dart';
 export 'widgets/settings_tile.dart';
+export 'widgets/status_dot.dart';
 export 'widgets/task_square.dart';

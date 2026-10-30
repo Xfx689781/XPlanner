@@ -12,11 +12,11 @@ class AboutSection extends StatelessWidget {
     return const Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        SectionHeader('关于'),
+        SectionHeader('应用信息'),
         InfoRow(label: '应用', value: appName),
         InfoRow(label: '版本', value: '$appVersion ($appBuild)'),
         SectionHeader('隐私'),
-        SettingsParagraph('你的任务、日志和设置只保存在这台设备上，不会发送到任何网络地址。Facet 没有账号，也不收集使用数据。'),
+        SettingsParagraph('你的任务、日志和设置保存在本机。Facet 没有账号，不收集使用数据，也不会把数据发送到任何服务器。'),
       ],
     );
   }

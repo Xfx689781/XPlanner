@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/app_info.dart';
+import '../../app/app_locale.dart';
 import '../../core/data/settings/settings_provider.dart';
 import '../../core/notifications/reminder_status.dart';
 import 'sections/about_section.dart';
@@ -19,6 +20,7 @@ class SettingsSection {
     required this.summary,
     required this.content,
     this.needsAttention,
+    this.attentionLabel,
   });
 
   final String id;
@@ -29,6 +31,9 @@ class SettingsSection {
 
   /// 主页上是否显示警示标记
   final bool Function(WidgetRef ref)? needsAttention;
+
+  /// 警示的读屏文字：说明要处理什么
+  final String? attentionLabel;
   final WidgetBuilder content;
 }
 
@@ -36,7 +41,7 @@ final settingsSections = <SettingsSection>[
   SettingsSection(
     id: 'general',
     title: '通用',
-    summary: (ref) => '跟随系统 · ${weekStartSummary(ref.watch(settingsProvider.select((s) => s.weekStart)))}',
+    summary: (ref) => weekStartSummary(ref.watch(settingsProvider.select((s) => s.weekStart)), appIntlLocale),
     content: (_) => const GeneralSection(),
   ),
   SettingsSection(
@@ -50,6 +55,7 @@ final settingsSections = <SettingsSection>[
     title: '提醒',
     summary: (ref) => reminderLeadLabel(ref.watch(settingsProvider.select((s) => s.reminderLead))),
     needsAttention: (ref) => remindersNeedAttention(ref.watch(reminderStatusProvider).value),
+    attentionLabel: '通知或闹钟权限未开启',
     content: (_) => const RemindersSection(),
   ),
   SettingsSection(
