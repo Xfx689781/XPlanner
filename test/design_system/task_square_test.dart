@@ -54,4 +54,14 @@ void main() {
     );
     expect(_painter(tester).outline, FacetColors.dark.ink);
   });
+
+  testWidgets('逾期：未完成时主色描边，完成后与普通完成一致', (tester) async {
+    await tester.pumpWidget(themed(const TaskSquare(done: false, overdue: true, strokeWidth: Stroke.regular)));
+    expect(_painter(tester).outline, FacetColors.light.accent);
+    expect(_painter(tester).fill, 0);
+
+    await tester.pumpWidget(themed(const TaskSquare(done: false, strokeWidth: Stroke.regular)));
+    await tester.pumpAndSettle();
+    expect(_painter(tester).outline, FacetColors.light.ink);
+  });
 }

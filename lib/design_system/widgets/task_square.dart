@@ -4,7 +4,7 @@ import '../metrics.dart';
 import '../motion.dart';
 import '../tokens.dart';
 
-/// 任务方块：空心 = 未完成，实心 = 完成，描边粗细 = 优先级。
+/// 任务方块：空心 = 未完成，实心 = 完成，描边粗细 = 优先级，主色描边的空心 = 逾期。
 /// 完成状态切换时，主色自下而上填满（或退回）。
 class TaskSquare extends StatelessWidget {
   const TaskSquare({
@@ -14,9 +14,13 @@ class TaskSquare extends StatelessWidget {
     this.size = Sizes.taskSquare,
     this.onTap,
     this.semanticLabel,
+    this.overdue = false,
   });
 
   final bool done;
+
+  /// 逾期：未完成时描边用主色（警示）
+  final bool overdue;
   final double strokeWidth;
   final double size;
   final VoidCallback? onTap;
@@ -34,7 +38,7 @@ class TaskSquare extends StatelessWidget {
         painter: TaskSquarePainter(
           fill: t,
           strokeWidth: strokeWidth,
-          outline: Color.lerp(colors.ink, colors.accent, t)!,
+          outline: Color.lerp(overdue ? colors.accent : colors.ink, colors.accent, t)!,
           fillColor: colors.accent,
         ),
       ),

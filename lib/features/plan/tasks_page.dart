@@ -38,14 +38,16 @@ class TasksPage extends ConsumerWidget {
             for (final (group, items) in groupTasks(value, today)) ...[
               SectionHeader(
                 taskGroupLabel(group),
-                glyph: group == TaskGroup.overdue ? GeoGlyph.triangle : null,
+                // 逾期 = 主色描边的空心方块，与任务方块一致
+                glyph: group == TaskGroup.overdue ? GeoGlyph.square : null,
+                glyphFilled: false,
                 accent: group == TaskGroup.overdue,
               ),
               for (final t in items) TaskTile(key: ValueKey(t.id), task: t),
             ],
           ],
         ),
-        AsyncError() => const EmptyState(glyph: GeoGlyph.triangle, message: '读取任务失败'),
+        AsyncError() => const EmptyState(glyph: GeoGlyph.close, message: '读取任务失败'),
         _ => const SizedBox.shrink(),
       },
     );

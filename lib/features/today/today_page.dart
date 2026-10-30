@@ -57,7 +57,7 @@ class TodayPage extends ConsumerWidget {
             ),
           ),
           if (summary != null && summary.overdue.isNotEmpty) ...[
-            const SectionHeader('逾期', glyph: GeoGlyph.triangle, accent: true),
+            const SectionHeader('逾期', glyph: GeoGlyph.square, glyphFilled: false, accent: true),
             for (final t in summary.overdue) TaskTile(key: ValueKey('o${t.id}'), task: t),
           ],
           SectionHeader(

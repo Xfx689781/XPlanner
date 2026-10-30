@@ -38,7 +38,7 @@ class LogPage extends ConsumerWidget {
                   ],
                 ],
               ),
-              AsyncError() => const EmptyState(glyph: GeoGlyph.triangle, message: '读取记录失败'),
+              AsyncError() => const EmptyState(glyph: GeoGlyph.close, message: '读取记录失败'),
               _ => const SizedBox.shrink(),
             },
           ),

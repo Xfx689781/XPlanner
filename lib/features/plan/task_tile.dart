@@ -32,6 +32,7 @@ class TaskTile extends ConsumerWidget {
           TaskSquare(
             done: done,
             strokeWidth: strokeForPriority(task.priority),
+            overdue: overdue,
             semanticLabel: [
               task.title,
               '${priorityLabel(task.priority)}优先级',
