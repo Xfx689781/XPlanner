@@ -44,3 +44,14 @@ class LogEntries extends Table {
 
   DateTimeColumn get createdAt => dateTime()();
 }
+
+/// 键值设置表。加设置项不需要改表或迁移：类型、默认值、校验在 Dart 端（settings/setting_keys.dart）。
+/// 值等于默认值时删除该行。
+class SettingEntries extends Table {
+  TextColumn get key => text()();
+
+  TextColumn get value => text()();
+
+  @override
+  Set<Column> get primaryKey => {key};
+}
