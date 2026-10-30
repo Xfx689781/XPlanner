@@ -21,26 +21,33 @@ class SettingsController extends Notifier<AppSettings> {
   AppSettings build() => ref.watch(initialSettingsProvider);
 
   Future<void> setTheme(ThemePreference v) =>
-      _update(SettingKeys.theme, v, state.copyWith(theme: v));
+      _update(SettingKeys.theme, v, (s) => s.theme, (s, v) => s.copyWith(theme: v));
 
   Future<void> setWeekStart(WeekStart v) =>
-      _update(SettingKeys.weekStart, v, state.copyWith(weekStart: v));
+      _update(SettingKeys.weekStart, v, (s) => s.weekStart, (s, v) => s.copyWith(weekStart: v));
 
   Future<void> setReminderLead(ReminderLead v) =>
-      _update(SettingKeys.reminderLead, v, state.copyWith(reminderLead: v));
+      _update(SettingKeys.reminderLead, v, (s) => s.reminderLead, (s, v) => s.copyWith(reminderLead: v));
 
   Future<void> setLanguageTag(String? v) =>
-      _update(SettingKeys.language, v, state.copyWith(languageTag: () => v));
+      _update(SettingKeys.language, v, (s) => s.languageTag, (s, v) => s.copyWith(languageTag: () => v));
 
-  Future<void> _update<T>(SettingKey<T> key, T value, AppSettings next) async {
-    final previous = state;
-    if (next == previous) return;
-    state = next;
+  /// 只回滚这一项，且只在它仍是这次写入的值时回滚：
+  /// 写库期间别的设置（或同一项的更新值）已经成功保存，不能被一起冲掉。
+  Future<void> _update<T>(
+    SettingKey<T> key,
+    T value,
+    T Function(AppSettings) read,
+    AppSettings Function(AppSettings, T) apply,
+  ) async {
+    final previous = read(state);
+    if (previous == value) return;
+    state = apply(state, value);
     try {
       await ref.read(settingsRepositoryProvider).write(key, value);
     } catch (e) {
       debugPrint('保存设置失败（${key.name}）：$e');
-      state = previous;
+      if (read(state) == value) state = apply(state, previous);
       rethrow;
     }
   }

@@ -105,6 +105,7 @@ class GeoIconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Semantics(
+      container: true,
       button: true,
       label: semanticLabel,
       // excludeSemantics 会把手势的语义动作一起去掉，显式补上
