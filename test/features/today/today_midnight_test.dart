@@ -27,7 +27,7 @@ void main() {
 
     await tester.pumpWidget(testApp(db, clock: clock));
     await tester.pumpAndSettle();
-    expect(find.text('1 / 2'), findsOneWidget);
+    expect(find.text('1 / 2 已完成'), findsWidgets);
     expect(find.text('逾期'), findsNothing);
     expect(tester.widget<DayCircle>(find.byType(DayCircle)).progress, 0.5);
 
@@ -36,7 +36,7 @@ void main() {
     await tester.pump(const Duration(seconds: 15));
     await tester.pumpAndSettle();
 
-    expect(find.text('0 / 1'), findsOneWidget);
+    expect(find.text('0 / 1 已完成'), findsWidgets);
     expect(find.text('逾期'), findsOneWidget);
     expect(find.text('年终总结'), findsOneWidget);
     expect(tester.widget<DayCircle>(find.byType(DayCircle)).progress, 0);

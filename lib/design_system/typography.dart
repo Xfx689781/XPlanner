@@ -11,6 +11,9 @@ abstract final class FontSizes {
 
   /// 页标题
   static const double title = 28;
+
+  /// 唯一例外：今天页大圆中心的百分比数字（整页最醒目的文字），不要用于其他地方
+  static const double display = 40;
 }
 
 /// 按调色板生成的文字样式。

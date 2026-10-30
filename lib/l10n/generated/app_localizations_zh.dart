@@ -165,11 +165,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get todaySettings => '设置';
 
   @override
-  String todayProgressCount(int done, int total) {
-    return '$done / $total';
-  }
-
-  @override
   String todayProgressSemantics(int done, int total) {
     String _temp0 = intl.Intl.pluralLogic(
       total,
@@ -180,7 +175,15 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get todayNothingPlanned => '今天没有安排';
+  String todayProgressDone(int done, int total) {
+    return '$done / $total 已完成';
+  }
+
+  @override
+  String get todayNoTasks => '今天没有任务';
+
+  @override
+  String get todayAddTask => '+ 添加';
 
   @override
   String get todayOverdueHeader => '逾期';
@@ -190,9 +193,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get todayNewTask => '新建任务';
-
-  @override
-  String get todayNoTasksHint => '今天还没有任务，点 + 添加';
 
   @override
   String get todayLogHeader => '日志';

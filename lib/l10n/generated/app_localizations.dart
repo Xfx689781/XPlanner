@@ -344,23 +344,29 @@ abstract class AppLocalizations {
   /// **'Settings'**
   String get todaySettings;
 
-  /// Completed / total tasks under the day circle
-  ///
-  /// In en, this message translates to:
-  /// **'{done} / {total}'**
-  String todayProgressCount(int done, int total);
-
   /// Screen reader label of the day circle
   ///
   /// In en, this message translates to:
   /// **'{total, plural, =1{{done} of 1 task done today} other{{done} of {total} tasks done today}}'**
   String todayProgressSemantics(int done, int total);
 
-  /// Shown under the day circle when there are no tasks today
+  /// Second line inside the day circle
   ///
   /// In en, this message translates to:
-  /// **'Nothing planned today'**
-  String get todayNothingPlanned;
+  /// **'{done} / {total} done'**
+  String todayProgressDone(int done, int total);
+
+  /// Inside the empty day circle
+  ///
+  /// In en, this message translates to:
+  /// **'No tasks today'**
+  String get todayNoTasks;
+
+  /// Button inside the empty day circle that adds a task for today
+  ///
+  /// In en, this message translates to:
+  /// **'+ Add'**
+  String get todayAddTask;
 
   /// Section header on the today page
   ///
@@ -379,12 +385,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'New task'**
   String get todayNewTask;
-
-  /// Hint when today has no tasks
-  ///
-  /// In en, this message translates to:
-  /// **'No tasks for today yet. Tap + to add one.'**
-  String get todayNoTasksHint;
 
   /// Section header on the today page
   ///

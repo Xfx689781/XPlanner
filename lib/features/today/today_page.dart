@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/utils/current_day.dart';
@@ -43,19 +44,24 @@ class TodayPage extends ConsumerWidget {
           const SizedBox(height: Space.m),
           Center(
             child: DayCircle(
-              progress: progress?.ratio ?? 0,
-              semanticLabel: progress == null
-                  ? null
+              done: progress?.done ?? 0,
+              total: progress?.total ?? 0,
+              formatPercent: NumberFormat.percentPattern(AppDateFormat.of(context).intlLocale).format,
+              subtitle: progress == null ? '' : l10n.todayProgressDone(progress.done, progress.total),
+              semanticLabel: progress == null || progress.total == 0
+                  ? l10n.todayNoTasks
                   : l10n.todayProgressSemantics(progress.done, progress.total),
-            ),
-          ),
-          const SizedBox(height: Space.m),
-          Center(
-            child: Text(
-              progress == null || progress.total == 0
-                  ? l10n.todayNothingPlanned
-                  : l10n.todayProgressCount(progress.done, progress.total),
-              style: context.text.small,
+              emptyChild: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(l10n.todayNoTasks, style: context.text.small),
+                  GeoButton(
+                    label: l10n.todayAddTask,
+                    style: GeoButtonStyle.text,
+                    onPressed: () => showTaskEditor(context, dueToday: true),
+                  ),
+                ],
+              ),
             ),
           ),
           if (summary != null && summary.overdue.isNotEmpty) ...[
@@ -71,11 +77,6 @@ class TodayPage extends ConsumerWidget {
               onPressed: () => showTaskEditor(context, dueToday: true),
             ),
           ),
-          if (summary != null && summary.tasks.isEmpty)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: Space.l, vertical: Space.s),
-              child: Text(l10n.todayNoTasksHint, style: context.text.small),
-            ),
           if (summary != null)
             for (final t in summary.tasks) TaskTile(key: ValueKey('t${t.id}'), task: t),
           SectionHeader(l10n.todayLogHeader),

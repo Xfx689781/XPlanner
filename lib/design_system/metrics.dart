@@ -48,8 +48,8 @@ abstract final class Sizes {
   /// 分组标题右侧细线的最短长度（标题过长时换行，保证细线可见）
   static const double sectionLineMin = 24;
 
-  /// 首页大圆直径（窄屏）
-  static const double dayCircle = 184;
+  /// 首页大圆直径（含外圈分段环）
+  static const double dayCircle = 156;
 
   /// 提醒短横线长度
   static const double reminderDash = 12;

@@ -201,18 +201,6 @@
   "@todaySettings": {
     "description": "Screen reader label of the settings button"
   },
-  "todayProgressCount": "{done} / {total}",
-  "@todayProgressCount": {
-    "description": "Completed / total tasks under the day circle",
-    "placeholders": {
-      "done": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
   "todayProgressSemantics": "{total, plural, =1{{done} of 1 task done today} other{{done} of {total} tasks done today}}",
   "@todayProgressSemantics": {
     "description": "Screen reader label of the day circle",
@@ -225,9 +213,25 @@
       }
     }
   },
-  "todayNothingPlanned": "Nothing planned today",
-  "@todayNothingPlanned": {
-    "description": "Shown under the day circle when there are no tasks today"
+  "todayProgressDone": "{done} / {total} done",
+  "@todayProgressDone": {
+    "description": "Second line inside the day circle",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "todayNoTasks": "No tasks today",
+  "@todayNoTasks": {
+    "description": "Inside the empty day circle"
+  },
+  "todayAddTask": "+ Add",
+  "@todayAddTask": {
+    "description": "Button inside the empty day circle that adds a task for today"
   },
   "todayOverdueHeader": "Overdue",
   "@todayOverdueHeader": {
@@ -240,10 +244,6 @@
   "todayNewTask": "New task",
   "@todayNewTask": {
     "description": "Screen reader label of the add-task button on the today page"
-  },
-  "todayNoTasksHint": "No tasks for today yet. Tap + to add one.",
-  "@todayNoTasksHint": {
-    "description": "Hint when today has no tasks"
   },
   "todayLogHeader": "Log",
   "@todayLogHeader": {

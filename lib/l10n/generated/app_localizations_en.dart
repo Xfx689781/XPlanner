@@ -166,11 +166,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get todaySettings => 'Settings';
 
   @override
-  String todayProgressCount(int done, int total) {
-    return '$done / $total';
-  }
-
-  @override
   String todayProgressSemantics(int done, int total) {
     String _temp0 = intl.Intl.pluralLogic(
       total,
@@ -182,7 +177,15 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get todayNothingPlanned => 'Nothing planned today';
+  String todayProgressDone(int done, int total) {
+    return '$done / $total done';
+  }
+
+  @override
+  String get todayNoTasks => 'No tasks today';
+
+  @override
+  String get todayAddTask => '+ Add';
 
   @override
   String get todayOverdueHeader => 'Overdue';
@@ -192,9 +195,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get todayNewTask => 'New task';
-
-  @override
-  String get todayNoTasksHint => 'No tasks for today yet. Tap + to add one.';
 
   @override
   String get todayLogHeader => 'Log';

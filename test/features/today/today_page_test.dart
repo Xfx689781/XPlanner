@@ -35,16 +35,17 @@ void main() {
     expect(find.text('逾期'), findsOneWidget);
     expect(find.text('逾期的'), findsOneWidget);
     expect(find.text('明天的'), findsNothing);
-    expect(find.text('1 / 2'), findsOneWidget);
+    expect(find.text('1 / 2 已完成'), findsWidgets);
     final circle = tester.widget<DayCircle>(find.byType(DayCircle));
     expect(circle.progress, 0.5);
     await finish(tester);
   });
 
-  testWidgets('没有任务时显示今天没有安排', (tester) async {
+  testWidgets('没有任务时圆心显示今天没有任务和添加入口', (tester) async {
     await tester.pumpWidget(testApp(db, clock: clock));
     await tester.pumpAndSettle();
-    expect(find.text('今天没有安排'), findsOneWidget);
+    expect(find.text('今天没有任务'), findsOneWidget);
+    expect(find.text('+ 添加'), findsOneWidget);
     await finish(tester);
   });
 
