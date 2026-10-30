@@ -66,6 +66,34 @@ ThemeData buildFacetTheme(Brightness brightness) {
       elevation: 0,
       shape: const RoundedRectangleBorder(),
     ),
+    datePickerTheme: DatePickerThemeData(
+      backgroundColor: colors.surface,
+      headerBackgroundColor: colors.surface,
+      headerForegroundColor: colors.ink,
+      elevation: 0,
+      shape: const RoundedRectangleBorder(),
+      dayShape: const WidgetStatePropertyAll(CircleBorder()),
+      todayBorder: BorderSide(color: colors.accent, width: Stroke.thin),
+      dividerColor: colors.line,
+    ),
+    timePickerTheme: TimePickerThemeData(
+      backgroundColor: colors.surface,
+      elevation: 0,
+      shape: const RoundedRectangleBorder(),
+      hourMinuteShape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(Radii.square)),
+      ),
+      dialBackgroundColor: colors.background,
+      dialHandColor: colors.accent,
+      dayPeriodBorderSide: BorderSide(color: colors.line, width: Stroke.thin),
+    ),
+    textButtonTheme: TextButtonThemeData(
+      style: TextButton.styleFrom(
+        foregroundColor: colors.ink,
+        shape: const RoundedRectangleBorder(),
+        splashFactory: NoSplash.splashFactory,
+      ),
+    ),
     snackBarTheme: SnackBarThemeData(
       backgroundColor: colors.ink,
       contentTextStyle: text.small.copyWith(color: colors.background),

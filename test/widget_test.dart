@@ -1,18 +1,23 @@
-import 'package:facet/app/app.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import 'helpers/test_app.dart';
+import 'helpers/test_db.dart';
 
 void main() {
   testWidgets('三栏导航可以切换', (tester) async {
-    await tester.pumpWidget(const ProviderScope(child: FacetApp()));
+    final db = openTestDb();
+    await tester.pumpWidget(testApp(db));
     expect(find.text('今天'), findsWidgets);
 
     await tester.tap(find.bySemanticsLabel('任务'));
     await tester.pumpAndSettle();
-    expect(find.text('任务'), findsWidgets);
+    expect(find.text('还没有任务'), findsOneWidget);
 
     await tester.tap(find.bySemanticsLabel('日志'));
     await tester.pumpAndSettle();
     expect(find.text('日志'), findsWidgets);
+
+    await tester.disposeApp();
+    await tester.db(db.close);
   });
 }
