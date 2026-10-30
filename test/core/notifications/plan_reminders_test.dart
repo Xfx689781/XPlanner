@@ -43,13 +43,13 @@ void main() {
       expect(plans.single.match, DateTimeComponents.time);
     });
 
-    test('每天重复今天已完成（9 点前）：改为 7 条一次性，从明天开始，今天不响', () {
+    test('每天重复今天已完成（9 点前）：改为一次性窗口，从明天开始，今天不响', () {
       final t = task(reminderAt: DateTime(2026, 10, 1, 9), repeat: RepeatRule.daily);
       final plans = planReminders(t, at(2026, 10, 30, 8), doneToday: true);
       expect(plans, hasLength(dailyWindow));
       expect(plans.every((p) => p.match == null), isTrue);
       expect(plans.first.at, at(2026, 10, 31, 9));
-      expect(plans.last.at, at(2026, 11, 6, 9));
+      expect(plans.last.at, at(2026, 10, 30 + dailyWindow, 9));
     });
 
     test('每天重复今天已完成但 9 点已过：系统重复本来就从明天开始，仍用 1 条', () {
@@ -66,15 +66,13 @@ void main() {
       expect(plans.first.at, at(2026, 11, 5, 9));
     });
 
-    test('每周重复、开始日期在 3 周后：4 条一次性，每周一次', () {
+    test('每周重复、开始日期在 3 周后：一次性窗口，每周一次', () {
       final t = task(reminderAt: DateTime(2026, 11, 20, 9), repeat: RepeatRule.weekly); // 周五
       final plans = planReminders(t, at(2026, 10, 30, 8), doneToday: false);
       expect(plans, hasLength(weeklyWindow));
       expect(plans.map((p) => p.at), [
         at(2026, 11, 20, 9),
         at(2026, 11, 27, 9),
-        at(2026, 12, 4, 9),
-        at(2026, 12, 11, 9),
       ]);
     });
 

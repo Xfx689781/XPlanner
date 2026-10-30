@@ -1,8 +1,10 @@
+import 'package:drift/drift.dart' show Value;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart' show DateTimeComponents;
 import 'package:timezone/timezone.dart' as tz;
 
 import '../data/app_database.dart';
 import '../data/enums.dart';
+import '../data/reminder_spec.dart';
 
 /// 一次调度：触发时间 + 重复方式。
 ///
@@ -23,8 +25,9 @@ class TriggerPlan {
 
 /// 需要跳过今天或延后开始时，用连续的一次性提醒代替系统重复，提前排这么多次。
 /// App 每次启动 / 回到前台都会重新补满。
-const dailyWindow = 7;
-const weeklyWindow = 4;
+/// 每个任务最多 5 个提醒，窗口取小一些，避免碰到 Android 每个 App 约 500 个闹钟的上限。
+const dailyWindow = 3;
+const weeklyWindow = 2;
 
 /// 计算任务的下一次提醒。不需要提醒时返回 null。
 ///
@@ -114,4 +117,24 @@ tz.TZDateTime? _nextOccurrence(
 tz.TZDateTime _anchorWithWallTime(tz.TZDateTime at, DateTime wall) {
   if (at.hour == wall.hour && at.minute == wall.minute) return at;
   return tz.TZDateTime(at.location, at.year, at.month, at.day + 7, wall.hour, wall.minute);
+}
+
+/// 锚点往前推 [minutes] 分钟，按"当地钟点"计算（14:00 提前 15 分钟永远是 13:45，提前 1 天是前一天 14:00）。
+DateTime shiftBack(DateTime anchor, int minutes) {
+  final u = DateTime.utc(anchor.year, anchor.month, anchor.day, anchor.hour, anchor.minute)
+      .subtract(Duration(minutes: minutes));
+  return DateTime(u.year, u.month, u.day, u.hour, u.minute);
+}
+
+/// 一个提醒（提前量）要交给系统的调度列表。
+///
+/// "今天已完成就跳过"按锚点那天判断：提前量跨过零点时（锚点 00:10 提前 15 分钟 → 前一天 23:55），
+/// 今天 23:55 那条属于明天的锚点，不跳过。
+List<TriggerPlan> planSpec(Task task, ReminderSpec spec, tz.TZDateTime now, {required bool doneToday}) {
+  final anchor = task.reminderAt;
+  if (anchor == null) return const [];
+  if (!ReminderSpec.allowedFor(spec.offsetMinutes, task.reminderRepeat)) return const [];
+  final fire = shiftBack(anchor, spec.offsetMinutes);
+  final sameDay = fire.year == anchor.year && fire.month == anchor.month && fire.day == anchor.day;
+  return planReminders(task.copyWith(reminderAt: Value(fire)), now, doneToday: doneToday && sameDay);
 }

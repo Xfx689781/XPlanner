@@ -523,6 +523,167 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get settingsPrivacyText =>
       '你的任务、日志和设置保存在本机。Facet 没有账号，不收集使用数据，也不会把数据发送到任何服务器。如果你开启了安卓系统备份，系统会把数据加密备份到你自己的 Google 账号，开发者无法访问。';
+
+  @override
+  String durationMinutes(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n 分钟',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String durationHours(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n 小时',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String durationDays(int n) {
+    String _temp0 = intl.Intl.pluralLogic(n, locale: localeName, other: '$n 天');
+    return '$_temp0';
+  }
+
+  @override
+  String durationWeeks(int n) {
+    String _temp0 = intl.Intl.pluralLogic(n, locale: localeName, other: '$n 周');
+    return '$_temp0';
+  }
+
+  @override
+  String reminderNotifyBefore(String lead, String title, String time) {
+    return '$lead后：$title（$time）';
+  }
+
+  @override
+  String reminderNotifyNow(String title, String time) {
+    return '$title（$time）';
+  }
+
+  @override
+  String get notificationActionDone => '完成';
+
+  @override
+  String get notificationActionSnooze => '稍后 10 分钟';
+
+  @override
+  String get alarmChannelName => '任务闹钟';
+
+  @override
+  String get alarmChannelDescription => '持续响铃，直到点「完成」或「稍后提醒」';
+
+  @override
+  String reminderLeadBeforeText(String lead) {
+    return '提前 $lead';
+  }
+
+  @override
+  String get reminderLeadCustom => '自定义…';
+
+  @override
+  String get reminderCustomTitle => '自定义提醒';
+
+  @override
+  String get reminderCustomAmount => '数值';
+
+  @override
+  String get reminderCustomInvalid => '请输入 1 分钟到 30 天之间的值';
+
+  @override
+  String get unitMinutes => '分钟';
+
+  @override
+  String get unitHours => '小时';
+
+  @override
+  String get unitDays => '天';
+
+  @override
+  String get commonOk => '确定';
+
+  @override
+  String get reminderKindNotification => '通知';
+
+  @override
+  String get reminderKindAlarm => '闹钟';
+
+  @override
+  String reminderKindToggle(String lead, String kind) {
+    return '$lead：$kind，点按切换';
+  }
+
+  @override
+  String get reminderMaxReached => '最多 5 个提醒';
+
+  @override
+  String get reminderAnchorLabel => '提醒基准时间';
+
+  @override
+  String get reminderAnchorTaskTime => '任务时间';
+
+  @override
+  String get reminderAnchorPick => '选择日期和时间';
+
+  @override
+  String get reminderAlarmOnlyPhone => '闹钟只在手机上响';
+
+  @override
+  String listPair(String a, String b) {
+    return '$a和$b';
+  }
+
+  @override
+  String listJoin(String a, String b) {
+    return '$a、$b';
+  }
+
+  @override
+  String listLast(String rest, String last) {
+    return '$rest和$last';
+  }
+
+  @override
+  String reminderSummaryBefore(String when, String leads) {
+    return '$when，提前 $leads';
+  }
+
+  @override
+  String reminderSummaryOnTime(String when) {
+    return '$when，准时';
+  }
+
+  @override
+  String reminderSummaryOnTimeAnd(String when, String leads) {
+    return '$when，准时和提前 $leads';
+  }
+
+  @override
+  String reminderAlarmSuffix(String lead) {
+    return '$lead（闹钟）';
+  }
+
+  @override
+  String get settingsReminderKindDefault => '新建提醒的默认方式';
+
+  @override
+  String get settingsFullScreen => '全屏闹钟';
+
+  @override
+  String get settingsFullScreenOn => '已开启，锁屏时全屏显示';
+
+  @override
+  String get settingsFullScreenOff => '未开启，闹钟仍会响铃并显示横幅';
+
+  @override
+  String alarmPageSemantics(String title, String time) {
+    return '闹钟：$title，$time';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -1044,4 +1205,165 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   @override
   String get settingsPrivacyText =>
       '你的任務、日誌和設定都儲存在這台裝置上。Facet 沒有帳號，不收集使用資料，也不會把資料傳送到任何伺服器。如果你開啟了 Android 系統備份，系統會將資料加密備份到你自己的 Google 帳戶，開發者無法存取。';
+
+  @override
+  String durationMinutes(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n 分鐘',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String durationHours(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n 小時',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String durationDays(int n) {
+    String _temp0 = intl.Intl.pluralLogic(n, locale: localeName, other: '$n 天');
+    return '$_temp0';
+  }
+
+  @override
+  String durationWeeks(int n) {
+    String _temp0 = intl.Intl.pluralLogic(n, locale: localeName, other: '$n 週');
+    return '$_temp0';
+  }
+
+  @override
+  String reminderNotifyBefore(String lead, String title, String time) {
+    return '$lead後：$title（$time）';
+  }
+
+  @override
+  String reminderNotifyNow(String title, String time) {
+    return '$title（$time）';
+  }
+
+  @override
+  String get notificationActionDone => '完成';
+
+  @override
+  String get notificationActionSnooze => '稍後 10 分鐘';
+
+  @override
+  String get alarmChannelName => '任務鬧鐘';
+
+  @override
+  String get alarmChannelDescription => '持續響鈴，直到點「完成」或「稍後提醒」';
+
+  @override
+  String reminderLeadBeforeText(String lead) {
+    return '提前 $lead';
+  }
+
+  @override
+  String get reminderLeadCustom => '自訂…';
+
+  @override
+  String get reminderCustomTitle => '自訂提醒';
+
+  @override
+  String get reminderCustomAmount => '數值';
+
+  @override
+  String get reminderCustomInvalid => '請輸入 1 分鐘到 30 天之間的值';
+
+  @override
+  String get unitMinutes => '分鐘';
+
+  @override
+  String get unitHours => '小時';
+
+  @override
+  String get unitDays => '天';
+
+  @override
+  String get commonOk => '確定';
+
+  @override
+  String get reminderKindNotification => '通知';
+
+  @override
+  String get reminderKindAlarm => '鬧鐘';
+
+  @override
+  String reminderKindToggle(String lead, String kind) {
+    return '$lead：$kind，點按切換';
+  }
+
+  @override
+  String get reminderMaxReached => '最多 5 個提醒';
+
+  @override
+  String get reminderAnchorLabel => '提醒基準時間';
+
+  @override
+  String get reminderAnchorTaskTime => '任務時間';
+
+  @override
+  String get reminderAnchorPick => '選擇日期和時間';
+
+  @override
+  String get reminderAlarmOnlyPhone => '鬧鐘只在手機上響';
+
+  @override
+  String listPair(String a, String b) {
+    return '$a和$b';
+  }
+
+  @override
+  String listJoin(String a, String b) {
+    return '$a、$b';
+  }
+
+  @override
+  String listLast(String rest, String last) {
+    return '$rest和$last';
+  }
+
+  @override
+  String reminderSummaryBefore(String when, String leads) {
+    return '$when，提前 $leads';
+  }
+
+  @override
+  String reminderSummaryOnTime(String when) {
+    return '$when，準時';
+  }
+
+  @override
+  String reminderSummaryOnTimeAnd(String when, String leads) {
+    return '$when，準時和提前 $leads';
+  }
+
+  @override
+  String reminderAlarmSuffix(String lead) {
+    return '$lead（鬧鐘）';
+  }
+
+  @override
+  String get settingsReminderKindDefault => '新增提醒的預設方式';
+
+  @override
+  String get settingsFullScreen => '全螢幕鬧鐘';
+
+  @override
+  String get settingsFullScreenOn => '已開啟，鎖定時全螢幕顯示';
+
+  @override
+  String get settingsFullScreenOff => '未開啟，鬧鐘仍會響鈴並顯示橫幅';
+
+  @override
+  String alarmPageSemantics(String title, String time) {
+    return '鬧鐘：$title，$time';
+  }
 }

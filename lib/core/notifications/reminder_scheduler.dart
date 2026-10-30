@@ -9,6 +9,7 @@ class ReminderRequest {
     this.body,
     this.match,
     this.payload,
+    this.alarm = false,
   });
 
   final int id;
@@ -17,6 +18,9 @@ class ReminderRequest {
   final tz.TZDateTime at;
   final DateTimeComponents? match;
   final String? payload;
+
+  /// 闹钟方式：闹钟渠道、持续响铃、全屏（有权限时）、带「完成 / 稍后」按钮
+  final bool alarm;
 }
 
 /// 实际用了哪种调度方式

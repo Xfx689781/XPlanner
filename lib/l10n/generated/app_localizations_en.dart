@@ -542,4 +542,181 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get settingsPrivacyText =>
       'Your tasks, log and settings are stored on this device. Facet has no accounts, collects no usage data and doesn\'t send your data to any server. If Android backup is turned on, the system backs up your data, encrypted, to your own Google account; the developer can\'t access it.';
+
+  @override
+  String durationMinutes(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n minutes',
+      one: '1 minute',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String durationHours(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n hours',
+      one: '1 hour',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String durationDays(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n days',
+      one: '1 day',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String durationWeeks(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n weeks',
+      one: '1 week',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String reminderNotifyBefore(String lead, String title, String time) {
+    return 'In $lead: $title ($time)';
+  }
+
+  @override
+  String reminderNotifyNow(String title, String time) {
+    return '$title ($time)';
+  }
+
+  @override
+  String get notificationActionDone => 'Done';
+
+  @override
+  String get notificationActionSnooze => 'Snooze 10 min';
+
+  @override
+  String get alarmChannelName => 'Task alarms';
+
+  @override
+  String get alarmChannelDescription =>
+      'Keeps ringing until you tap Done or Snooze';
+
+  @override
+  String reminderLeadBeforeText(String lead) {
+    return '$lead before';
+  }
+
+  @override
+  String get reminderLeadCustom => 'Custom…';
+
+  @override
+  String get reminderCustomTitle => 'Custom reminder';
+
+  @override
+  String get reminderCustomAmount => 'Amount';
+
+  @override
+  String get reminderCustomInvalid =>
+      'Enter a value between 1 minute and 30 days';
+
+  @override
+  String get unitMinutes => 'Minutes';
+
+  @override
+  String get unitHours => 'Hours';
+
+  @override
+  String get unitDays => 'Days';
+
+  @override
+  String get commonOk => 'OK';
+
+  @override
+  String get reminderKindNotification => 'Notification';
+
+  @override
+  String get reminderKindAlarm => 'Alarm';
+
+  @override
+  String reminderKindToggle(String lead, String kind) {
+    return '$lead: $kind. Tap to switch.';
+  }
+
+  @override
+  String get reminderMaxReached => 'Up to 5 reminders';
+
+  @override
+  String get reminderAnchorLabel => 'Remind relative to';
+
+  @override
+  String get reminderAnchorTaskTime => 'Task time';
+
+  @override
+  String get reminderAnchorPick => 'Pick date & time';
+
+  @override
+  String get reminderAlarmOnlyPhone => 'Alarms ring on your phone only';
+
+  @override
+  String listPair(String a, String b) {
+    return '$a and $b';
+  }
+
+  @override
+  String listJoin(String a, String b) {
+    return '$a, $b';
+  }
+
+  @override
+  String listLast(String rest, String last) {
+    return '$rest, and $last';
+  }
+
+  @override
+  String reminderSummaryBefore(String when, String leads) {
+    return '$when, $leads before';
+  }
+
+  @override
+  String reminderSummaryOnTime(String when) {
+    return '$when, on time';
+  }
+
+  @override
+  String reminderSummaryOnTimeAnd(String when, String leads) {
+    return '$when, on time and $leads before';
+  }
+
+  @override
+  String reminderAlarmSuffix(String lead) {
+    return '$lead (alarm)';
+  }
+
+  @override
+  String get settingsReminderKindDefault => 'Default style for new reminders';
+
+  @override
+  String get settingsFullScreen => 'Full-screen alarms';
+
+  @override
+  String get settingsFullScreenOn =>
+      'On — alarms show full screen on the lock screen';
+
+  @override
+  String get settingsFullScreenOff =>
+      'Off — alarms still ring and show a banner';
+
+  @override
+  String alarmPageSemantics(String title, String time) {
+    return 'Alarm: $title at $time';
+  }
 }

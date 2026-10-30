@@ -1,10 +1,13 @@
 import 'dart:io' show Platform;
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart' show WidgetsBinding;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../l10n/locale_providers.dart';
 import '../data/data_providers.dart';
 import '../utils/clock.dart';
+import '../utils/format.dart';
 import 'local_notification_scheduler.dart';
 import 'noop_reminder_scheduler.dart';
 import 'reminder_scheduler.dart';
@@ -28,6 +31,12 @@ final reminderSyncProvider = Provider<ReminderSyncService>(
     scheduler: ref.watch(reminderSchedulerProvider),
     repository: ref.watch(taskRepositoryProvider),
     clock: ref.watch(clockProvider),
+    // 只在调度时读取当前语言和 12/24 小时制，不 watch：切换语言不会重建服务（否则串行队列会丢）
+    dates: () => AppDateFormat(
+      ref.read(appLocalizationsProvider),
+      ref.read(appLanguageProvider).intlLocale,
+      use24h: WidgetsBinding.instance.platformDispatcher.alwaysUse24HourFormat,
+    ),
   ),
 );
 

@@ -980,6 +980,240 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your tasks, log and settings are stored on this device. Facet has no accounts, collects no usage data and doesn\'t send your data to any server. If Android backup is turned on, the system backs up your data, encrypted, to your own Google account; the developer can\'t access it.'**
   String get settingsPrivacyText;
+
+  /// A duration in minutes
+  ///
+  /// In en, this message translates to:
+  /// **'{n, plural, =1{1 minute} other{{n} minutes}}'**
+  String durationMinutes(int n);
+
+  /// A duration in hours
+  ///
+  /// In en, this message translates to:
+  /// **'{n, plural, =1{1 hour} other{{n} hours}}'**
+  String durationHours(int n);
+
+  /// A duration in days
+  ///
+  /// In en, this message translates to:
+  /// **'{n, plural, =1{1 day} other{{n} days}}'**
+  String durationDays(int n);
+
+  /// A duration in weeks
+  ///
+  /// In en, this message translates to:
+  /// **'{n, plural, =1{1 week} other{{n} weeks}}'**
+  String durationWeeks(int n);
+
+  /// Notification title for an early reminder, e.g. "In 15 minutes: Pay rent (14:00)"
+  ///
+  /// In en, this message translates to:
+  /// **'In {lead}: {title} ({time})'**
+  String reminderNotifyBefore(String lead, String title, String time);
+
+  /// Notification title for an on-time reminder
+  ///
+  /// In en, this message translates to:
+  /// **'{title} ({time})'**
+  String reminderNotifyNow(String title, String time);
+
+  /// Notification / alarm button that completes the task
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get notificationActionDone;
+
+  /// Notification / alarm button that snoozes for 10 minutes
+  ///
+  /// In en, this message translates to:
+  /// **'Snooze 10 min'**
+  String get notificationActionSnooze;
+
+  /// Android notification channel name for alarm-style reminders
+  ///
+  /// In en, this message translates to:
+  /// **'Task alarms'**
+  String get alarmChannelName;
+
+  /// Android notification channel description for alarms
+  ///
+  /// In en, this message translates to:
+  /// **'Keeps ringing until you tap Done or Snooze'**
+  String get alarmChannelDescription;
+
+  /// Reminder lead option, e.g. "15 minutes before" / "提前 15 分钟"
+  ///
+  /// In en, this message translates to:
+  /// **'{lead} before'**
+  String reminderLeadBeforeText(String lead);
+
+  /// Opens a dialog to enter a custom reminder lead
+  ///
+  /// In en, this message translates to:
+  /// **'Custom…'**
+  String get reminderLeadCustom;
+
+  /// Title of the custom lead dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Custom reminder'**
+  String get reminderCustomTitle;
+
+  /// Label of the number field in the custom lead dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get reminderCustomAmount;
+
+  /// Validation message
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a value between 1 minute and 30 days'**
+  String get reminderCustomInvalid;
+
+  /// Unit choice
+  ///
+  /// In en, this message translates to:
+  /// **'Minutes'**
+  String get unitMinutes;
+
+  /// Unit choice
+  ///
+  /// In en, this message translates to:
+  /// **'Hours'**
+  String get unitHours;
+
+  /// Unit choice
+  ///
+  /// In en, this message translates to:
+  /// **'Days'**
+  String get unitDays;
+
+  /// OK button
+  ///
+  /// In en, this message translates to:
+  /// **'OK'**
+  String get commonOk;
+
+  /// Reminder style: normal notification
+  ///
+  /// In en, this message translates to:
+  /// **'Notification'**
+  String get reminderKindNotification;
+
+  /// Reminder style: alarm that keeps ringing
+  ///
+  /// In en, this message translates to:
+  /// **'Alarm'**
+  String get reminderKindAlarm;
+
+  /// Screen reader label of the notification / alarm toggle
+  ///
+  /// In en, this message translates to:
+  /// **'{lead}: {kind}. Tap to switch.'**
+  String reminderKindToggle(String lead, String kind);
+
+  /// Shown when 5 reminders are selected
+  ///
+  /// In en, this message translates to:
+  /// **'Up to 5 reminders'**
+  String get reminderMaxReached;
+
+  /// Label of the reminder anchor date-time row
+  ///
+  /// In en, this message translates to:
+  /// **'Remind relative to'**
+  String get reminderAnchorLabel;
+
+  /// Shown when reminders are relative to the task time
+  ///
+  /// In en, this message translates to:
+  /// **'Task time'**
+  String get reminderAnchorTaskTime;
+
+  /// Button that picks the reminder date and time
+  ///
+  /// In en, this message translates to:
+  /// **'Pick date & time'**
+  String get reminderAnchorPick;
+
+  /// Hint on platforms without alarm support
+  ///
+  /// In en, this message translates to:
+  /// **'Alarms ring on your phone only'**
+  String get reminderAlarmOnlyPhone;
+
+  /// Joins two list items
+  ///
+  /// In en, this message translates to:
+  /// **'{a} and {b}'**
+  String listPair(String a, String b);
+
+  /// Joins list items (not the last)
+  ///
+  /// In en, this message translates to:
+  /// **'{a}, {b}'**
+  String listJoin(String a, String b);
+
+  /// Joins the last item of a list of 3+
+  ///
+  /// In en, this message translates to:
+  /// **'{rest}, and {last}'**
+  String listLast(String rest, String last);
+
+  /// Summary: anchor time and leads, e.g. "Nov 3 14:00, 1 day and 15 minutes before"
+  ///
+  /// In en, this message translates to:
+  /// **'{when}, {leads} before'**
+  String reminderSummaryBefore(String when, String leads);
+
+  /// Summary when only on-time
+  ///
+  /// In en, this message translates to:
+  /// **'{when}, on time'**
+  String reminderSummaryOnTime(String when);
+
+  /// Summary with on-time plus leads
+  ///
+  /// In en, this message translates to:
+  /// **'{when}, on time and {leads} before'**
+  String reminderSummaryOnTimeAnd(String when, String leads);
+
+  /// Marks a lead that rings as an alarm
+  ///
+  /// In en, this message translates to:
+  /// **'{lead} (alarm)'**
+  String reminderAlarmSuffix(String lead);
+
+  /// Settings item
+  ///
+  /// In en, this message translates to:
+  /// **'Default style for new reminders'**
+  String get settingsReminderKindDefault;
+
+  /// Permission row: full-screen intent
+  ///
+  /// In en, this message translates to:
+  /// **'Full-screen alarms'**
+  String get settingsFullScreen;
+
+  /// Permission status
+  ///
+  /// In en, this message translates to:
+  /// **'On — alarms show full screen on the lock screen'**
+  String get settingsFullScreenOn;
+
+  /// Permission status
+  ///
+  /// In en, this message translates to:
+  /// **'Off — alarms still ring and show a banner'**
+  String get settingsFullScreenOff;
+
+  /// Screen reader label of the alarm page
+  ///
+  /// In en, this message translates to:
+  /// **'Alarm: {title} at {time}'**
+  String alarmPageSemantics(String title, String time);
 }
 
 class _AppLocalizationsDelegate

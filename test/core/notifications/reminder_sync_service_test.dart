@@ -44,7 +44,7 @@ void main() {
     final mode = await sync.syncTask(t);
     expect(mode, ScheduleMode.exact);
     final req = scheduler.pending[notificationIdForTask(t.id)]!;
-    expect(req.title, '开会');
+    expect(req.title, '开会 (09:00)'); // 准时：任务名 + 时间（测试默认英文格式）
     expect(req.body, '带电脑');
     expect(parseTaskPayload(req.payload), t.id);
     expect(scheduler.cancelledTaskIds, [t.id]);

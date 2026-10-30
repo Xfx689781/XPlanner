@@ -709,5 +709,271 @@
   "settingsPrivacyText": "Your tasks, log and settings are stored on this device. Facet has no accounts, collects no usage data and doesn't send your data to any server. If Android backup is turned on, the system backs up your data, encrypted, to your own Google account; the developer can't access it.",
   "@settingsPrivacyText": {
     "description": "Privacy statement"
+  },
+  "durationMinutes": "{n, plural, =1{1 minute} other{{n} minutes}}",
+  "@durationMinutes": {
+    "description": "A duration in minutes",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "durationHours": "{n, plural, =1{1 hour} other{{n} hours}}",
+  "@durationHours": {
+    "description": "A duration in hours",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "durationDays": "{n, plural, =1{1 day} other{{n} days}}",
+  "@durationDays": {
+    "description": "A duration in days",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "durationWeeks": "{n, plural, =1{1 week} other{{n} weeks}}",
+  "@durationWeeks": {
+    "description": "A duration in weeks",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "reminderNotifyBefore": "In {lead}: {title} ({time})",
+  "@reminderNotifyBefore": {
+    "description": "Notification title for an early reminder, e.g. \"In 15 minutes: Pay rent (14:00)\"",
+    "placeholders": {
+      "lead": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "reminderNotifyNow": "{title} ({time})",
+  "@reminderNotifyNow": {
+    "description": "Notification title for an on-time reminder",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationActionDone": "Done",
+  "@notificationActionDone": {
+    "description": "Notification / alarm button that completes the task"
+  },
+  "notificationActionSnooze": "Snooze 10 min",
+  "@notificationActionSnooze": {
+    "description": "Notification / alarm button that snoozes for 10 minutes"
+  },
+  "alarmChannelName": "Task alarms",
+  "@alarmChannelName": {
+    "description": "Android notification channel name for alarm-style reminders"
+  },
+  "alarmChannelDescription": "Keeps ringing until you tap Done or Snooze",
+  "@alarmChannelDescription": {
+    "description": "Android notification channel description for alarms"
+  },
+  "reminderLeadBeforeText": "{lead} before",
+  "@reminderLeadBeforeText": {
+    "description": "Reminder lead option, e.g. \"15 minutes before\" / \"提前 15 分钟\"",
+    "placeholders": {
+      "lead": {
+        "type": "String"
+      }
+    }
+  },
+  "reminderLeadCustom": "Custom…",
+  "@reminderLeadCustom": {
+    "description": "Opens a dialog to enter a custom reminder lead"
+  },
+  "reminderCustomTitle": "Custom reminder",
+  "@reminderCustomTitle": {
+    "description": "Title of the custom lead dialog"
+  },
+  "reminderCustomAmount": "Amount",
+  "@reminderCustomAmount": {
+    "description": "Label of the number field in the custom lead dialog"
+  },
+  "reminderCustomInvalid": "Enter a value between 1 minute and 30 days",
+  "@reminderCustomInvalid": {
+    "description": "Validation message"
+  },
+  "unitMinutes": "Minutes",
+  "@unitMinutes": {
+    "description": "Unit choice"
+  },
+  "unitHours": "Hours",
+  "@unitHours": {
+    "description": "Unit choice"
+  },
+  "unitDays": "Days",
+  "@unitDays": {
+    "description": "Unit choice"
+  },
+  "commonOk": "OK",
+  "@commonOk": {
+    "description": "OK button"
+  },
+  "reminderKindNotification": "Notification",
+  "@reminderKindNotification": {
+    "description": "Reminder style: normal notification"
+  },
+  "reminderKindAlarm": "Alarm",
+  "@reminderKindAlarm": {
+    "description": "Reminder style: alarm that keeps ringing"
+  },
+  "reminderKindToggle": "{lead}: {kind}. Tap to switch.",
+  "@reminderKindToggle": {
+    "description": "Screen reader label of the notification / alarm toggle",
+    "placeholders": {
+      "lead": {
+        "type": "String"
+      },
+      "kind": {
+        "type": "String"
+      }
+    }
+  },
+  "reminderMaxReached": "Up to 5 reminders",
+  "@reminderMaxReached": {
+    "description": "Shown when 5 reminders are selected"
+  },
+  "reminderAnchorLabel": "Remind relative to",
+  "@reminderAnchorLabel": {
+    "description": "Label of the reminder anchor date-time row"
+  },
+  "reminderAnchorTaskTime": "Task time",
+  "@reminderAnchorTaskTime": {
+    "description": "Shown when reminders are relative to the task time"
+  },
+  "reminderAnchorPick": "Pick date & time",
+  "@reminderAnchorPick": {
+    "description": "Button that picks the reminder date and time"
+  },
+  "reminderAlarmOnlyPhone": "Alarms ring on your phone only",
+  "@reminderAlarmOnlyPhone": {
+    "description": "Hint on platforms without alarm support"
+  },
+  "listPair": "{a} and {b}",
+  "@listPair": {
+    "description": "Joins two list items",
+    "placeholders": {
+      "a": {
+        "type": "String"
+      },
+      "b": {
+        "type": "String"
+      }
+    }
+  },
+  "listJoin": "{a}, {b}",
+  "@listJoin": {
+    "description": "Joins list items (not the last)",
+    "placeholders": {
+      "a": {
+        "type": "String"
+      },
+      "b": {
+        "type": "String"
+      }
+    }
+  },
+  "listLast": "{rest}, and {last}",
+  "@listLast": {
+    "description": "Joins the last item of a list of 3+",
+    "placeholders": {
+      "rest": {
+        "type": "String"
+      },
+      "last": {
+        "type": "String"
+      }
+    }
+  },
+  "reminderSummaryBefore": "{when}, {leads} before",
+  "@reminderSummaryBefore": {
+    "description": "Summary: anchor time and leads, e.g. \"Nov 3 14:00, 1 day and 15 minutes before\"",
+    "placeholders": {
+      "when": {
+        "type": "String"
+      },
+      "leads": {
+        "type": "String"
+      }
+    }
+  },
+  "reminderSummaryOnTime": "{when}, on time",
+  "@reminderSummaryOnTime": {
+    "description": "Summary when only on-time",
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "reminderSummaryOnTimeAnd": "{when}, on time and {leads} before",
+  "@reminderSummaryOnTimeAnd": {
+    "description": "Summary with on-time plus leads",
+    "placeholders": {
+      "when": {
+        "type": "String"
+      },
+      "leads": {
+        "type": "String"
+      }
+    }
+  },
+  "reminderAlarmSuffix": "{lead} (alarm)",
+  "@reminderAlarmSuffix": {
+    "description": "Marks a lead that rings as an alarm",
+    "placeholders": {
+      "lead": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsReminderKindDefault": "Default style for new reminders",
+  "@settingsReminderKindDefault": {
+    "description": "Settings item"
+  },
+  "settingsFullScreen": "Full-screen alarms",
+  "@settingsFullScreen": {
+    "description": "Permission row: full-screen intent"
+  },
+  "settingsFullScreenOn": "On — alarms show full screen on the lock screen",
+  "@settingsFullScreenOn": {
+    "description": "Permission status"
+  },
+  "settingsFullScreenOff": "Off — alarms still ring and show a banner",
+  "@settingsFullScreenOff": {
+    "description": "Permission status"
+  },
+  "alarmPageSemantics": "Alarm: {title} at {time}",
+  "@alarmPageSemantics": {
+    "description": "Screen reader label of the alarm page",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
   }
 }
