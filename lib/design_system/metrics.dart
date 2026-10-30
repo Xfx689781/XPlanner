@@ -36,6 +36,9 @@ abstract final class Sizes {
   /// 确认框最大宽度
   static const double dialogMaxWidth = 360;
 
+  /// 设置页主题色色块直径
+  static const double swatch = 24;
+
   /// 设置中心分组行的最小高度
   static const double settingsRow = 52;
 

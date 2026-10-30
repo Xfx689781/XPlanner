@@ -11,6 +11,7 @@ export 'widgets/geo_dialog.dart';
 export 'widgets/geo_icon.dart';
 export 'widgets/geo_nav_bar.dart';
 export 'widgets/geo_option_list.dart';
+export 'widgets/geo_swatch_picker.dart';
 export 'widgets/page_frame.dart';
 export 'widgets/reminder_mark.dart';
 export 'widgets/section_header.dart';

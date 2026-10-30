@@ -53,7 +53,7 @@ void main() {
       expect(find.text(t), findsOneWidget);
     }
     expect(find.text('数据'), findsNothing);
-    expect(find.text('跟随系统'), findsOneWidget); // 外观的当前值
+    expect(find.text('跟随系统 · 朱红'), findsOneWidget); // 外观的当前值
     expect(find.text('准时'), findsOneWidget); // 提醒的当前值
     await finish(tester);
   });
@@ -70,7 +70,7 @@ void main() {
     await tester.tap(find.bySemanticsLabel('返回').first);
     await tester.pumpAndSettle();
 
-    expect(find.text('深色'), findsOneWidget);
+    expect(find.text('深色 · 朱红'), findsOneWidget);
     final saved = await tester.db(() => SettingsRepository(db).load());
     expect(saved.theme, ThemePreference.dark);
     await finish(tester);

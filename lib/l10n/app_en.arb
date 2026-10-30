@@ -511,6 +511,46 @@
   "@themeDark": {
     "description": "Theme option"
   },
+  "settingsAccentColor": "Accent color",
+  "@settingsAccentColor": {
+    "description": "Settings item: accent color"
+  },
+  "settingsAppearanceSummary": "{theme} · {accent}",
+  "@settingsAppearanceSummary": {
+    "description": "Summary of the appearance section: theme and accent color",
+    "placeholders": {
+      "theme": {
+        "type": "String"
+      },
+      "accent": {
+        "type": "String"
+      }
+    }
+  },
+  "accentVermilion": "Vermilion",
+  "@accentVermilion": {
+    "description": "Accent color name"
+  },
+  "accentAmber": "Amber",
+  "@accentAmber": {
+    "description": "Accent color name"
+  },
+  "accentPine": "Pine",
+  "@accentPine": {
+    "description": "Accent color name"
+  },
+  "accentTeal": "Teal",
+  "@accentTeal": {
+    "description": "Accent color name"
+  },
+  "accentIndigo": "Indigo",
+  "@accentIndigo": {
+    "description": "Accent color name"
+  },
+  "accentPlum": "Violet",
+  "@accentPlum": {
+    "description": "Accent color name"
+  },
   "settingsReminderLead": "Default for new reminders",
   "@settingsReminderLead": {
     "description": "Settings item: default reminder lead time"
@@ -666,7 +706,7 @@
   "@settingsPrivacy": {
     "description": "About section header"
   },
-  "settingsPrivacyText": "Your tasks, log and settings are stored on this device. Facet has no accounts, collects no usage data and doesn't send your data to any server.",
+  "settingsPrivacyText": "Your tasks, log and settings are stored on this device. Facet has no accounts, collects no usage data and doesn't send your data to any server. If Android backup is turned on, the system backs up your data, encrypted, to your own Google account; the developer can't access it.",
   "@settingsPrivacyText": {
     "description": "Privacy statement"
   }

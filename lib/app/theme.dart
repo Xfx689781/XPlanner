@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import '../design_system/design_system.dart';
 
 /// 用设计令牌构建 ThemeData，并关掉 Material 的默认视觉（水波纹、阴影、圆角卡片）。
-ThemeData buildFacetTheme(Brightness brightness) {
-  final colors = brightness == Brightness.light ? FacetColors.light : FacetColors.dark;
+ThemeData buildFacetTheme(Brightness brightness, [AccentPalette accent = AccentPalette.vermilion]) {
+  final colors = FacetColors.resolve(brightness, accent);
   final text = FacetText.from(ink: colors.ink, muted: colors.muted);
   final underline = UnderlineInputBorder(
     borderSide: BorderSide(color: colors.line, width: Stroke.thin),
@@ -19,8 +19,8 @@ ThemeData buildFacetTheme(Brightness brightness) {
       onPrimary: colors.onAccent,
       secondary: colors.accent,
       onSecondary: colors.onAccent,
-      error: colors.accent,
-      onError: colors.onAccent,
+      error: colors.danger,
+      onError: colors.onDanger,
       surface: colors.background,
       onSurface: colors.ink,
     ),

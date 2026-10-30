@@ -717,6 +717,54 @@ abstract class AppLocalizations {
   /// **'Dark'**
   String get themeDark;
 
+  /// Settings item: accent color
+  ///
+  /// In en, this message translates to:
+  /// **'Accent color'**
+  String get settingsAccentColor;
+
+  /// Summary of the appearance section: theme and accent color
+  ///
+  /// In en, this message translates to:
+  /// **'{theme} · {accent}'**
+  String settingsAppearanceSummary(String theme, String accent);
+
+  /// Accent color name
+  ///
+  /// In en, this message translates to:
+  /// **'Vermilion'**
+  String get accentVermilion;
+
+  /// Accent color name
+  ///
+  /// In en, this message translates to:
+  /// **'Amber'**
+  String get accentAmber;
+
+  /// Accent color name
+  ///
+  /// In en, this message translates to:
+  /// **'Pine'**
+  String get accentPine;
+
+  /// Accent color name
+  ///
+  /// In en, this message translates to:
+  /// **'Teal'**
+  String get accentTeal;
+
+  /// Accent color name
+  ///
+  /// In en, this message translates to:
+  /// **'Indigo'**
+  String get accentIndigo;
+
+  /// Accent color name
+  ///
+  /// In en, this message translates to:
+  /// **'Violet'**
+  String get accentPlum;
+
   /// Settings item: default reminder lead time
   ///
   /// In en, this message translates to:
@@ -930,7 +978,7 @@ abstract class AppLocalizations {
   /// Privacy statement
   ///
   /// In en, this message translates to:
-  /// **'Your tasks, log and settings are stored on this device. Facet has no accounts, collects no usage data and doesn\'t send your data to any server.'**
+  /// **'Your tasks, log and settings are stored on this device. Facet has no accounts, collects no usage data and doesn\'t send your data to any server. If Android backup is turned on, the system backs up your data, encrypted, to your own Google account; the developer can\'t access it.'**
   String get settingsPrivacyText;
 }
 

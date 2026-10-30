@@ -386,6 +386,32 @@ class AppLocalizationsEn extends AppLocalizations {
   String get themeDark => 'Dark';
 
   @override
+  String get settingsAccentColor => 'Accent color';
+
+  @override
+  String settingsAppearanceSummary(String theme, String accent) {
+    return '$theme · $accent';
+  }
+
+  @override
+  String get accentVermilion => 'Vermilion';
+
+  @override
+  String get accentAmber => 'Amber';
+
+  @override
+  String get accentPine => 'Pine';
+
+  @override
+  String get accentTeal => 'Teal';
+
+  @override
+  String get accentIndigo => 'Indigo';
+
+  @override
+  String get accentPlum => 'Violet';
+
+  @override
   String get settingsReminderLead => 'Default for new reminders';
 
   @override
@@ -515,5 +541,5 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsPrivacyText =>
-      'Your tasks, log and settings are stored on this device. Facet has no accounts, collects no usage data and doesn\'t send your data to any server.';
+      'Your tasks, log and settings are stored on this device. Facet has no accounts, collects no usage data and doesn\'t send your data to any server. If Android backup is turned on, the system backs up your data, encrypted, to your own Google account; the developer can\'t access it.';
 }

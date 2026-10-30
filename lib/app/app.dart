@@ -6,6 +6,7 @@ import '../core/data/settings/settings_provider.dart';
 import '../l10n/generated/app_localizations.dart';
 import '../l10n/locale_providers.dart';
 import '../l10n/supported_locales.dart';
+import 'accent.dart';
 import 'home_shell.dart';
 import 'theme.dart';
 import 'week_start_localizations.dart';
@@ -40,12 +41,13 @@ class _FacetAppState extends ConsumerState<FacetApp> with WidgetsBindingObserver
   Widget build(BuildContext context) {
     final theme = ref.watch(settingsProvider.select((s) => s.theme));
     final weekStart = ref.watch(settingsProvider.select((s) => s.weekStart));
+    final accent = paletteOf(ref.watch(settingsProvider.select((s) => s.accent)));
     final language = ref.watch(appLanguageProvider);
     return MaterialApp(
       title: 'Facet',
       debugShowCheckedModeBanner: false,
-      theme: buildFacetTheme(Brightness.light),
-      darkTheme: buildFacetTheme(Brightness.dark),
+      theme: buildFacetTheme(Brightness.light, accent),
+      darkTheme: buildFacetTheme(Brightness.dark, accent),
       themeMode: switch (theme) {
         ThemePreference.system => ThemeMode.system,
         ThemePreference.light => ThemeMode.light,

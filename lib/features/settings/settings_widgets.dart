@@ -101,7 +101,7 @@ class StatusRow extends StatelessWidget {
                 Text(label, style: context.text.body),
                 Text(
                   ok == null ? unknownText : (bad ? badText ?? '' : okText),
-                  style: context.text.small.copyWith(color: bad ? colors.accent : null),
+                  style: context.text.small.copyWith(color: bad ? colors.danger : null),
                 ),
                 if (bad && action != null) ...[
                   const SizedBox(height: Space.s),

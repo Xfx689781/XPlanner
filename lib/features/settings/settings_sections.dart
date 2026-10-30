@@ -56,7 +56,10 @@ final settingsSections = <SettingsSection>[
   SettingsSection(
     id: 'appearance',
     title: (l10n) => l10n.settingsSectionAppearance,
-    summary: (l10n, ref) => themeLabel(l10n, ref.watch(settingsProvider.select((s) => s.theme))),
+    summary: (l10n, ref) {
+      final (theme, accent) = ref.watch(settingsProvider.select((s) => (s.theme, s.accent)));
+      return l10n.settingsAppearanceSummary(themeLabel(l10n, theme), accentLabel(l10n, accent));
+    },
     content: (_) => const AppearanceSection(),
   ),
   SettingsSection(

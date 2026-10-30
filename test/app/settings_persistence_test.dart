@@ -109,7 +109,7 @@ void main() {
       expect(firstDayOfWeek(tester), 1);
 
       await openSettings(tester);
-      expect(find.text('深色'), findsOneWidget);
+      expect(find.text('深色 · 朱红'), findsOneWidget);
       expect(find.textContaining('周一开始'), findsOneWidget);
       expect(find.text('提前 15 分钟'), findsOneWidget);
 
@@ -308,8 +308,8 @@ void main() {
       expect(brightness(tester), Brightness.light);
 
       await openSettings(tester);
-      expect(find.text('跟随系统'), findsOneWidget); // 外观
-      expect(find.textContaining('跟随系统 · '), findsOneWidget); // 通用
+      expect(find.text('跟随系统 · 朱红'), findsOneWidget); // 外观
+      expect(find.textContaining(RegExp('跟随系统 · .*开始')), findsOneWidget); // 通用
       expect(find.text('准时'), findsOneWidget); // 提醒
 
       // 之后从界面改设置会覆盖掉非法值

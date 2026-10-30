@@ -103,6 +103,14 @@
   "themeSystem": "跟随系统",
   "themeLight": "浅色",
   "themeDark": "深色",
+  "settingsAccentColor": "主题色",
+  "settingsAppearanceSummary": "{theme} · {accent}",
+  "accentVermilion": "朱红",
+  "accentAmber": "琥珀",
+  "accentPine": "松绿",
+  "accentTeal": "湖蓝",
+  "accentIndigo": "靛蓝",
+  "accentPlum": "紫",
   "settingsReminderLead": "新建提醒时默认",
   "reminderLeadOnTime": "准时",
   "reminderLeadBefore": "{minutes, plural, other{提前 {minutes} 分钟}}",
@@ -138,5 +146,5 @@
   "settingsAppName": "应用",
   "settingsVersion": "版本",
   "settingsPrivacy": "隐私",
-  "settingsPrivacyText": "你的任务、日志和设置保存在本机。Facet 没有账号，不收集使用数据，也不会把数据发送到任何服务器。"
+  "settingsPrivacyText": "你的任务、日志和设置保存在本机。Facet 没有账号，不收集使用数据，也不会把数据发送到任何服务器。如果你开启了安卓系统备份，系统会把数据加密备份到你自己的 Google 账号，开发者无法访问。"
 }

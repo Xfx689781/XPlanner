@@ -563,7 +563,7 @@ class _Hint extends StatelessWidget {
           Expanded(
             child: Text(
               text,
-              style: context.text.small.copyWith(color: context.colors.accent),
+              style: context.text.small.copyWith(color: context.colors.danger),
             ),
           ),
           if (action != null)

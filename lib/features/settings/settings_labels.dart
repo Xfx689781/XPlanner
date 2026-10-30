@@ -8,6 +8,15 @@ String themeLabel(AppLocalizations l10n, ThemePreference t) => switch (t) {
   ThemePreference.dark => l10n.themeDark,
 };
 
+String accentLabel(AppLocalizations l10n, AccentColor a) => switch (a) {
+  AccentColor.vermilion => l10n.accentVermilion,
+  AccentColor.amber => l10n.accentAmber,
+  AccentColor.pine => l10n.accentPine,
+  AccentColor.teal => l10n.accentTeal,
+  AccentColor.indigo => l10n.accentIndigo,
+  AccentColor.plum => l10n.accentPlum,
+};
+
 String weekStartLabel(AppLocalizations l10n, WeekStart w) => switch (w) {
   WeekStart.locale => l10n.weekStartLocale,
   WeekStart.monday => l10n.weekStartMonday,

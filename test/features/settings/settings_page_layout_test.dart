@@ -152,7 +152,7 @@ void main() {
         tester.widget<GeoOptionList<ThemePreference>>(find.byType(GeoOptionList<ThemePreference>)).value,
         ThemePreference.system,
       );
-      expect(tile(tester, '外观').value, '跟随系统');
+      expect(tile(tester, '外观').value, '跟随系统 · 朱红');
       expect(Theme.of(tester.element(find.byType(SettingsTile).first)).brightness, Brightness.light);
       expect(await tester.db(() => SettingsRepository(db).raw('theme')), isNull);
       await finish(tester);

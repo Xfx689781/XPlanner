@@ -376,6 +376,32 @@ class AppLocalizationsZh extends AppLocalizations {
   String get themeDark => '深色';
 
   @override
+  String get settingsAccentColor => '主题色';
+
+  @override
+  String settingsAppearanceSummary(String theme, String accent) {
+    return '$theme · $accent';
+  }
+
+  @override
+  String get accentVermilion => '朱红';
+
+  @override
+  String get accentAmber => '琥珀';
+
+  @override
+  String get accentPine => '松绿';
+
+  @override
+  String get accentTeal => '湖蓝';
+
+  @override
+  String get accentIndigo => '靛蓝';
+
+  @override
+  String get accentPlum => '紫';
+
+  @override
   String get settingsReminderLead => '新建提醒时默认';
 
   @override
@@ -496,7 +522,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get settingsPrivacyText =>
-      '你的任务、日志和设置保存在本机。Facet 没有账号，不收集使用数据，也不会把数据发送到任何服务器。';
+      '你的任务、日志和设置保存在本机。Facet 没有账号，不收集使用数据，也不会把数据发送到任何服务器。如果你开启了安卓系统备份，系统会把数据加密备份到你自己的 Google 账号，开发者无法访问。';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -870,6 +896,32 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get themeDark => '深色';
 
   @override
+  String get settingsAccentColor => '主題色';
+
+  @override
+  String settingsAppearanceSummary(String theme, String accent) {
+    return '$theme · $accent';
+  }
+
+  @override
+  String get accentVermilion => '朱紅';
+
+  @override
+  String get accentAmber => '琥珀';
+
+  @override
+  String get accentPine => '松綠';
+
+  @override
+  String get accentTeal => '湖藍';
+
+  @override
+  String get accentIndigo => '靛藍';
+
+  @override
+  String get accentPlum => '紫';
+
+  @override
   String get settingsReminderLead => '新增提醒時預設';
 
   @override
@@ -991,5 +1043,5 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get settingsPrivacyText =>
-      '你的任務、日誌和設定都儲存在這台裝置上。Facet 沒有帳號，不收集使用資料，也不會把資料傳送到任何伺服器。';
+      '你的任務、日誌和設定都儲存在這台裝置上。Facet 沒有帳號，不收集使用資料，也不會把資料傳送到任何伺服器。如果你開啟了 Android 系統備份，系統會將資料加密備份到你自己的 Google 帳戶，開發者無法存取。';
 }

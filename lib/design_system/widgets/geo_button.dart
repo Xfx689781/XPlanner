@@ -31,7 +31,7 @@ class GeoButton extends StatefulWidget {
   final VoidCallback? onPressed;
   final GeoButtonStyle style;
 
-  /// 文字用主色（删除等）
+  /// 危险操作（删除等）：文字用固定的警示红，不随主题色变
   final bool destructive;
 
   @override
@@ -46,15 +46,17 @@ class _GeoButtonState extends State<GeoButton> {
     final colors = context.colors;
     final enabled = widget.onPressed != null;
     final (Color bg, Color fg, Color? border) = switch (widget.style) {
-      GeoButtonStyle.primary => (colors.accent, colors.onAccent, null),
+      GeoButtonStyle.primary => widget.destructive
+          ? (colors.danger, colors.onDanger, null)
+          : (colors.accent, colors.onAccent, null),
       GeoButtonStyle.outline => (
         FacetColors.transparent,
-        widget.destructive ? colors.accent : colors.ink,
-        colors.muted,
+        widget.destructive ? colors.danger : colors.ink,
+        widget.destructive ? colors.danger : colors.muted,
       ),
       GeoButtonStyle.text => (
         FacetColors.transparent,
-        widget.destructive ? colors.accent : colors.ink,
+        widget.destructive ? colors.danger : colors.ink,
         null,
       ),
     };

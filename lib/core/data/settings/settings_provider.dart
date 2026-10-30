@@ -23,6 +23,9 @@ class SettingsController extends Notifier<AppSettings> {
   Future<void> setTheme(ThemePreference v) =>
       _update(SettingKeys.theme, v, (s) => s.theme, (s, v) => s.copyWith(theme: v));
 
+  Future<void> setAccent(AccentColor v) =>
+      _update(SettingKeys.accent, v, (s) => s.accent, (s, v) => s.copyWith(accent: v));
+
   Future<void> setWeekStart(WeekStart v) =>
       _update(SettingKeys.weekStart, v, (s) => s.weekStart, (s, v) => s.copyWith(weekStart: v));
 

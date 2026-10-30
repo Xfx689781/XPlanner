@@ -28,6 +28,13 @@ abstract final class SettingKeys {
     _decodeTheme,
   );
 
+  static const accent = SettingKey<AccentColor>(
+    'accentColor',
+    AccentColor.vermilion,
+    _enumName,
+    _decodeAccent,
+  );
+
   static const weekStart = SettingKey<WeekStart>(
     'weekStart',
     WeekStart.locale,
@@ -49,6 +56,7 @@ abstract final class SettingKeys {
 String _enumName(Enum e) => e.name;
 ThemePreference? _decodeTheme(String raw) => _byName(ThemePreference.values, raw);
 WeekStart? _decodeWeekStart(String raw) => _byName(WeekStart.values, raw);
+AccentColor? _decodeAccent(String raw) => _byName(AccentColor.values, raw);
 String _encodeLead(ReminderLead l) => '${l.minutes}';
 ReminderLead? _decodeLead(String raw) {
   final m = int.tryParse(raw);
