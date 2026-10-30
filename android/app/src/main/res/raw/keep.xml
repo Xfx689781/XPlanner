@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 通知图标只在 Dart 里以字符串引用，release 构建的资源压缩会误删，这里显式保留 -->
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:keep="@drawable/ic_stat_facet" />

@@ -6,10 +6,13 @@ plugins {
 
 android {
     namespace = "com.xfx.facet"
-    compileSdk = flutter.compileSdkVersion
+    // flutter_local_notifications 要求 compileSdk >= 35
+    compileSdk = maxOf(flutter.compileSdkVersion, 36)
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
+        // flutter_local_notifications 定时通知需要 Java 8+ 时间 API 的脱糖
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
@@ -46,4 +49,8 @@ kotlin {
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
 }
