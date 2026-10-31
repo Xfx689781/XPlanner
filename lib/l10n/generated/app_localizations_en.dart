@@ -418,17 +418,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reminderLeadOnTime => 'At the time';
 
   @override
-  String reminderLeadBefore(int minutes) {
-    String _temp0 = intl.Intl.pluralLogic(
-      minutes,
-      locale: localeName,
-      other: '$minutes minutes before',
-      one: '1 minute before',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String get settingsPermissionsHeader => 'Permissions & status';
 
   @override

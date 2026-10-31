@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 
+import '../enums.dart';
 import 'setting_keys.dart';
 import 'settings_enums.dart';
 
@@ -10,7 +11,8 @@ class AppSettings {
     this.theme = ThemePreference.system,
     this.accent = AccentColor.vermilion,
     this.weekStart = WeekStart.locale,
-    this.reminderLead = ReminderLead.onTime,
+    this.reminderOffsets = const [0],
+    this.reminderKind = ReminderKind.notification,
     this.languageTag,
   });
 
@@ -19,7 +21,11 @@ class AppSettings {
   final ThemePreference theme;
   final AccentColor accent;
   final WeekStart weekStart;
-  final ReminderLead reminderLead;
+  /// 新建提醒时默认选中的提前量（分钟，先响的在前，最多 5 个）
+  final List<int> reminderOffsets;
+
+  /// 新建提醒时的默认方式
+  final ReminderKind reminderKind;
 
   /// null = 跟随系统
   final String? languageTag;
@@ -30,7 +36,10 @@ class AppSettings {
       theme: SettingKeys.theme.read(raw[SettingKeys.theme.name]),
       accent: SettingKeys.accent.read(raw[SettingKeys.accent.name]),
       weekStart: SettingKeys.weekStart.read(raw[SettingKeys.weekStart.name]),
-      reminderLead: SettingKeys.reminderLead.read(raw[SettingKeys.reminderLead.name]),
+      reminderOffsets: raw[SettingKeys.reminderOffsets.name] != null
+          ? SettingKeys.reminderOffsets.read(raw[SettingKeys.reminderOffsets.name])
+          : decodeLegacyReminderLead(raw[SettingKeys.legacyReminderLead]) ?? SettingKeys.reminderOffsets.defaultValue,
+      reminderKind: SettingKeys.reminderKind.read(raw[SettingKeys.reminderKind.name]),
       languageTag: SettingKeys.language.read(raw[SettingKeys.language.name]),
     );
   }
@@ -39,14 +48,16 @@ class AppSettings {
     ThemePreference? theme,
     AccentColor? accent,
     WeekStart? weekStart,
-    ReminderLead? reminderLead,
+    List<int>? reminderOffsets,
+    ReminderKind? reminderKind,
     String? Function()? languageTag,
   }) {
     return AppSettings(
       theme: theme ?? this.theme,
       accent: accent ?? this.accent,
       weekStart: weekStart ?? this.weekStart,
-      reminderLead: reminderLead ?? this.reminderLead,
+      reminderOffsets: reminderOffsets ?? this.reminderOffsets,
+      reminderKind: reminderKind ?? this.reminderKind,
       languageTag: languageTag == null ? this.languageTag : languageTag(),
     );
   }
@@ -57,9 +68,10 @@ class AppSettings {
       other.theme == theme &&
       other.accent == accent &&
       other.weekStart == weekStart &&
-      other.reminderLead == reminderLead &&
+      listEquals(other.reminderOffsets, reminderOffsets) &&
+      other.reminderKind == reminderKind &&
       other.languageTag == languageTag;
 
   @override
-  int get hashCode => Object.hash(theme, accent, weekStart, reminderLead, languageTag);
+  int get hashCode => Object.hash(theme, accent, weekStart, Object.hashAll(reminderOffsets), reminderKind, languageTag);
 }

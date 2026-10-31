@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:timezone/timezone.dart' as tz;
 
-import '../../../core/data/settings/settings_enums.dart';
+import '../../../core/data/enums.dart';
 import '../../../core/data/settings/settings_provider.dart';
 import '../../../core/notifications/notification_ids.dart';
 import '../../../core/notifications/notification_providers.dart';
@@ -12,7 +12,7 @@ import '../../../core/utils/clock.dart';
 import '../../../core/utils/system_settings.dart';
 import '../../../design_system/design_system.dart';
 import '../../../l10n/locale_providers.dart';
-import '../settings_labels.dart';
+import '../../plan/reminder_offset_picker.dart';
 import '../settings_widgets.dart';
 
 /// 提醒分组是否需要用户处理：通知权限或闹钟权限没开（电池状态部分机型检测不到，不算在内）。
@@ -25,18 +25,35 @@ class RemindersSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final status = ref.watch(reminderStatusProvider).value;
-    final lead = ref.watch(settingsProvider.select((s) => s.reminderLead));
+    final offsets = ref.watch(settingsProvider.select((s) => s.reminderOffsets));
+    final kind = ref.watch(settingsProvider.select((s) => s.reminderKind));
+    final controller = ref.read(settingsProvider.notifier);
     final scheduler = ref.read(reminderSchedulerProvider);
     final l10n = context.l10n;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        ChoiceSetting<ReminderLead>(
-          title: l10n.settingsReminderLead,
-          value: lead,
-          options: [for (final l in ReminderLead.values) GeoOption(value: l, label: reminderLeadLabel(l10n, l))],
-          onChanged: (l) => saveSetting(context, () => ref.read(settingsProvider.notifier).setReminderLead(l)),
+        SectionHeader(l10n.settingsReminderLead),
+        ReminderOffsetPicker(
+          selected: offsets,
+          onChanged: (v) {
+            if (v.isEmpty) return; // 至少保留一个
+            saveSetting(context, () => controller.setReminderOffsets(v));
+          },
+        ),
+        ChoiceSetting<ReminderKind>(
+          title: l10n.settingsReminderKindDefault,
+          value: kind,
+          options: [
+            GeoOption(value: ReminderKind.notification, label: l10n.reminderKindNotification),
+            GeoOption(
+              value: ReminderKind.alarm,
+              label: l10n.reminderKindAlarm,
+              detail: status?.supported == false ? l10n.reminderAlarmOnlyPhone : null,
+            ),
+          ],
+          onChanged: (k) => saveSetting(context, () => controller.setReminderKind(k)),
         ),
         SectionHeader(l10n.settingsPermissionsHeader),
         if (status == null)

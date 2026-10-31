@@ -408,16 +408,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get reminderLeadOnTime => '准时';
 
   @override
-  String reminderLeadBefore(int minutes) {
-    String _temp0 = intl.Intl.pluralLogic(
-      minutes,
-      locale: localeName,
-      other: '提前 $minutes 分钟',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String get settingsPermissionsHeader => '权限与状态';
 
   @override
@@ -1087,16 +1077,6 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get reminderLeadOnTime => '準時';
-
-  @override
-  String reminderLeadBefore(int minutes) {
-    String _temp0 = intl.Intl.pluralLogic(
-      minutes,
-      locale: localeName,
-      other: '提前 $minutes 分鐘',
-    );
-    return '$_temp0';
-  }
 
   @override
   String get settingsPermissionsHeader => '權限與狀態';

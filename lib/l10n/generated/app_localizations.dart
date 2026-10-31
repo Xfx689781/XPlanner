@@ -777,12 +777,6 @@ abstract class AppLocalizations {
   /// **'At the time'**
   String get reminderLeadOnTime;
 
-  /// Reminder lead option, e.g. "15 minutes before"
-  ///
-  /// In en, this message translates to:
-  /// **'{minutes, plural, =1{1 minute before} other{{minutes} minutes before}}'**
-  String reminderLeadBefore(int minutes);
-
   /// Settings header
   ///
   /// In en, this message translates to:

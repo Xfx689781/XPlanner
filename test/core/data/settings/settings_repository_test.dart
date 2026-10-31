@@ -1,5 +1,6 @@
 import 'package:facet/core/data/app_database.dart';
 import 'package:facet/core/data/data_providers.dart';
+import 'package:facet/core/data/enums.dart';
 import 'package:facet/core/data/settings/app_settings.dart';
 import 'package:facet/core/data/settings/setting_keys.dart';
 import 'package:facet/core/data/settings/settings_enums.dart';
@@ -27,13 +28,15 @@ void main() {
   test('写入后读出一致；用同一个数据库新建仓库（模拟重启）仍在', () async {
     await repo.write(SettingKeys.theme, ThemePreference.dark);
     await repo.write(SettingKeys.weekStart, WeekStart.monday);
-    await repo.write(SettingKeys.reminderLead, ReminderLead.min15);
+    await repo.write(SettingKeys.reminderOffsets, [1440, 15]);
+    await repo.write(SettingKeys.reminderKind, ReminderKind.alarm);
     await repo.write(SettingKeys.language, 'zh-Hant');
 
     final reloaded = await SettingsRepository(db).load();
     expect(reloaded.theme, ThemePreference.dark);
     expect(reloaded.weekStart, WeekStart.monday);
-    expect(reloaded.reminderLead, ReminderLead.min15);
+    expect(reloaded.reminderOffsets, [1440, 15]);
+    expect(reloaded.reminderKind, ReminderKind.alarm);
     expect(reloaded.languageTag, 'zh-Hant');
   });
 
@@ -56,8 +59,35 @@ void main() {
   });
 
   test('提前量按分钟数存储', () async {
-    await repo.write(SettingKeys.reminderLead, ReminderLead.min5);
-    expect(await repo.raw('reminderLeadMinutes'), '5');
+    await repo.write(SettingKeys.reminderOffsets, [60, 5]);
+    expect(await repo.raw('reminderDefaultOffsets'), '60,5');
+    // 写回默认值 [0] 时删除该行（列表按编码值比较）
+    await repo.write(SettingKeys.reminderOffsets, [0]);
+    expect(await repo.raw('reminderDefaultOffsets'), isNull);
+  });
+
+  test('兼容旧版单选：reminderLeadMinutes=15 读成 [15]；写新值后删除旧键', () async {
+    await db.into(db.settingEntries).insert(SettingEntriesCompanion.insert(key: 'reminderLeadMinutes', value: '15'));
+    expect((await repo.load()).reminderOffsets, [15]);
+
+    final c = ProviderContainer(overrides: [
+      databaseProvider.overrideWithValue(db),
+      initialSettingsProvider.overrideWithValue(await repo.load()),
+    ]);
+    addTearDown(c.dispose);
+    await c.read(settingsProvider.notifier).setReminderOffsets([15, 1440, 15]);
+    expect(c.read(settingsProvider).reminderOffsets, [1440, 15]); // 去重、先响的在前
+    expect(await repo.raw('reminderLeadMinutes'), isNull);
+    expect((await repo.load()).reminderOffsets, [1440, 15]);
+  });
+
+  test('默认提前量最多 5 个，全部清空时不保存', () async {
+    final c = ProviderContainer(overrides: [databaseProvider.overrideWithValue(db)]);
+    addTearDown(c.dispose);
+    await c.read(settingsProvider.notifier).setReminderOffsets([0, 5, 10, 15, 30, 60, 120]);
+    expect(c.read(settingsProvider).reminderOffsets, hasLength(5));
+    await c.read(settingsProvider.notifier).setReminderOffsets([]);
+    expect(c.read(settingsProvider).reminderOffsets, hasLength(5));
   });
 
   group('SettingsController', () {
@@ -90,8 +120,8 @@ void main() {
         settingsRepositoryProvider.overrideWithValue(_FailingRepo(db)),
       ]);
       addTearDown(c.dispose);
-      await expectLater(c.read(settingsProvider.notifier).setReminderLead(ReminderLead.min5), throwsStateError);
-      expect(c.read(settingsProvider).reminderLead, ReminderLead.onTime);
+      await expectLater(c.read(settingsProvider.notifier).setReminderOffsets([5]), throwsStateError);
+      expect(c.read(settingsProvider).reminderOffsets, [0]);
     });
   });
 }

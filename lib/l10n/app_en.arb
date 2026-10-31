@@ -559,15 +559,6 @@
   "@reminderLeadOnTime": {
     "description": "Reminder lead option"
   },
-  "reminderLeadBefore": "{minutes, plural, =1{1 minute before} other{{minutes} minutes before}}",
-  "@reminderLeadBefore": {
-    "description": "Reminder lead option, e.g. \"15 minutes before\"",
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
   "settingsPermissionsHeader": "Permissions & status",
   "@settingsPermissionsHeader": {
     "description": "Settings header"

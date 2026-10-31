@@ -148,9 +148,9 @@ void main() {
     final zh = lookupAppLocalizationsFor('zh');
     expect(en.todayProgressSemantics(0, 1), '0 of 1 task done today');
     expect(en.todayProgressSemantics(2, 3), '2 of 3 tasks done today');
-    expect(en.reminderLeadBefore(1), '1 minute before');
-    expect(en.reminderLeadBefore(15), '15 minutes before');
-    expect(zh.reminderLeadBefore(5), '提前 5 分钟');
+    expect(en.durationMinutes(1), '1 minute');
+    expect(en.durationMinutes(15), '15 minutes');
+    expect(zh.durationMinutes(5), '5 分钟');
     expect(zh.todayProgressSemantics(1, 1), '今天完成 1 / 1');
   });
 

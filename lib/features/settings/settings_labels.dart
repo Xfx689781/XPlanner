@@ -1,4 +1,6 @@
+import '../../core/data/enums.dart';
 import '../../core/data/settings/settings_enums.dart';
+import '../../core/notifications/reminder_text.dart';
 import '../../core/utils/week_start.dart';
 import '../../l10n/generated/app_localizations.dart';
 
@@ -30,5 +32,9 @@ String weekdayName(AppLocalizations l10n, int weekday) =>
 String weekStartSummary(AppLocalizations l10n, WeekStart w, String intlLocale) =>
     l10n.weekStartSummary(weekdayName(l10n, effectiveFirstWeekday(w, intlLocale)));
 
-String reminderLeadLabel(AppLocalizations l10n, ReminderLead l) =>
-    l == ReminderLead.onTime ? l10n.reminderLeadOnTime : l10n.reminderLeadBefore(l.minutes);
+/// 默认提醒的摘要："准时" / "提前 1 天和 15 分钟（闹钟）"
+String reminderDefaultsSummary(AppLocalizations l10n, List<int> offsets, ReminderKind kind) {
+  final labels = [for (final m in offsets) leadOptionLabel(l10n, m)];
+  final text = joinList(l10n, labels);
+  return kind == ReminderKind.alarm ? l10n.reminderAlarmSuffix(text) : text;
+}

@@ -97,7 +97,7 @@ void main() {
         const AppSettings(
           theme: ThemePreference.dark,
           weekStart: WeekStart.monday,
-          reminderLead: ReminderLead.min15,
+          reminderOffsets: [15, 0],
         ),
       );
 
@@ -111,7 +111,7 @@ void main() {
       await openSettings(tester);
       expect(find.text('深色 · 朱红'), findsOneWidget);
       expect(find.textContaining('周一开始'), findsOneWidget);
-      expect(find.text('提前 15 分钟'), findsOneWidget);
+      expect(find.text('提前 15 分钟和准时'), findsOneWidget);
 
       await tapText(tester, '外观');
       // 选中项是"深色"
@@ -320,15 +320,18 @@ void main() {
       await finish(tester);
     });
 
-    testWidgets('提前量是非数字 / 小数 / 空串：都按准时处理', (tester) async {
-      for (final raw in ['abc', '15.0', '']) {
-        await tester.db(() async {
-          await db.into(db.settingEntries).insertOnConflictUpdate(
-            SettingEntriesCompanion.insert(key: 'reminderLeadMinutes', value: raw),
-          );
-        });
-        final loaded = await tester.db(() => SettingsRepository(db).load());
-        expect(loaded.reminderLead, ReminderLead.onTime, reason: '"$raw"');
+    testWidgets('提前量是非数字 / 小数 / 空串（新旧两个键）：都按准时处理', (tester) async {
+      for (final key in ['reminderLeadMinutes', 'reminderDefaultOffsets']) {
+        for (final raw in ['abc', '15.0', '', '-5', '99999999']) {
+          await tester.db(() async {
+            await db.into(db.settingEntries).insertOnConflictUpdate(
+              SettingEntriesCompanion.insert(key: key, value: raw),
+            );
+          });
+          final loaded = await tester.db(() => SettingsRepository(db).load());
+          expect(loaded.reminderOffsets, [0], reason: '$key="$raw"');
+        }
+        await tester.db(() => SettingsRepository(db).remove(key));
       }
       await tester.db(db.close);
     });

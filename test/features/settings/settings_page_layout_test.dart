@@ -173,8 +173,8 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('设置保存失败，请重试'), findsOneWidget);
       expect(
-        tester.widget<GeoOptionList<ReminderLead>>(find.byType(GeoOptionList<ReminderLead>)).value,
-        ReminderLead.onTime,
+        tester.widget<GeoCheckList<int>>(find.byType(GeoCheckList<int>)).selected,
+        {0},
       );
 
       await tester.tap(find.bySemanticsLabel('返回'));

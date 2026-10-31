@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/data/app_database.dart';
+import '../../core/data/data_providers.dart';
 import '../../core/data/enums.dart';
 import '../../core/data/settings/settings_provider.dart';
 import '../../core/data/task_repository.dart';
@@ -15,7 +16,11 @@ import '../../core/utils/format.dart';
 import '../../design_system/design_system.dart';
 import 'task_actions.dart';
 import '../../l10n/locale_providers.dart';
+import '../../core/data/reminder_spec.dart';
+import '../../core/notifications/next_trigger.dart';
 import 'reminder_defaults.dart';
+import 'reminder_offset_picker.dart';
+import 'reminder_summary.dart';
 import 'reminder_permission.dart';
 import 'task_labels.dart';
 
@@ -52,7 +57,13 @@ class _TaskEditorSheetState extends ConsumerState<TaskEditorSheet> {
   late Priority _priority;
   DateTime? _dueDate;
   TimeOfDay? _dueTime;
+
+  /// 提醒锚点（自选时间）；[_anchorFollowsDue] 时实际锚点是任务时间
   DateTime? _reminderAt;
+
+  /// 锚点跟随任务时间：改任务时间后提醒跟着变
+  bool _anchorFollowsDue = false;
+  List<ReminderSpec> _specs = const [];
   late RepeatRule _repeat;
   bool _saving = false;
 
@@ -80,6 +91,18 @@ class _TaskEditorSheetState extends ConsumerState<TaskEditorSheet> {
     }
     _reminderAt = t?.reminderAt;
     _repeat = t?.reminderRepeat ?? RepeatRule.none;
+    _anchorFollowsDue =
+        t != null &&
+        t.dueHasTime &&
+        t.reminderAt != null &&
+        t.reminderAt == t.dueAt;
+    if (t?.reminderAt != null) {
+      // 旧数据可能没有提醒行：按准时处理
+      _specs = const [ReminderSpec(0)];
+      ref.read(taskRepositoryProvider).remindersFor(t!.id).then((specs) {
+        if (mounted && specs.isNotEmpty) setState(() => _specs = specs);
+      });
+    }
     _title.addListener(() => setState(() {}));
   }
 
@@ -151,61 +174,123 @@ class _TaskEditorSheetState extends ConsumerState<TaskEditorSheet> {
     }
   }
 
-  /// 默认提醒时间（含"新建提醒时默认提前"设置），规则见 reminder_defaults.dart
-  DateTime _defaultReminder() {
-    return defaultReminderTime(
-      dueDate: _dueDate,
-      dueHour: _dueTime?.hour,
-      dueMinute: _dueTime?.minute,
+  /// 任务的日期时间（有时间时）
+  DateTime? get _dueDateTime {
+    final d = _dueDate;
+    final t = _dueTime;
+    if (d == null || t == null) return null;
+    return DateTime(d.year, d.month, d.day, t.hour, t.minute);
+  }
+
+  /// 实际的提醒锚点
+  DateTime? get _anchor =>
+      _anchorFollowsDue ? (_dueDateTime ?? _reminderAt) : _reminderAt;
+
+  /// 一个流程选完日期和时间：先日期、紧接着时间；任一步取消就什么都不改
+  Future<DateTime?> _pickDateTime(DateTime initial) async {
+    final date = await _pickDate(startOfDay(initial));
+    if (date == null || !mounted) return null;
+    final time = await _pickTime(TimeOfDay.fromDateTime(initial));
+    if (time == null) return null;
+    return DateTime(date.year, date.month, date.day, time.hour, time.minute);
+  }
+
+  List<ReminderSpec> _defaultSpecs(DateTime anchor) {
+    final settings = ref.read(settingsProvider);
+    return defaultReminderSpecs(
+      anchor: anchor,
       now: ref.read(clockProvider).now(),
-      leadMinutes: ref.read(settingsProvider).reminderLead.minutes,
+      offsets: settings.reminderOffsets,
+      kind: settings.reminderKind,
+      repeat: _repeat,
     );
   }
 
-  Future<void> _editReminderTime() async {
-    final current = _reminderAt ?? _defaultReminder();
-    final picked = await _pickTime(TimeOfDay.fromDateTime(current));
-    if (picked == null) return;
-    setState(() {
-      _reminderAt = DateTime(
-        current.year,
-        current.month,
-        current.day,
-        picked.hour,
-        picked.minute,
-      );
-    });
-  }
-
-  /// 新加提醒：先选时间，取消选择就不加
+  /// "+ 添加提醒"：任务有时间时以任务时间为准，否则选日期和时间；默认选中设置里的提前量
   Future<void> _addReminder() async {
-    final initial = _defaultReminder();
-    final picked = await _pickTime(TimeOfDay.fromDateTime(initial));
+    final due = _dueDateTime;
+    if (due != null) {
+      setState(() {
+        _anchorFollowsDue = true;
+        _reminderAt = due;
+        _specs = _defaultSpecs(due);
+      });
+      return;
+    }
+    final initial = defaultReminderTime(
+      dueDate: _dueDate,
+      now: ref.read(clockProvider).now(),
+    );
+    final picked = await _pickDateTime(initial);
     if (picked == null) return;
     setState(() {
-      _reminderAt = DateTime(
-        initial.year,
-        initial.month,
-        initial.day,
-        picked.hour,
-        picked.minute,
-      );
+      _anchorFollowsDue = false;
+      _reminderAt = picked;
+      _specs = _defaultSpecs(picked);
     });
   }
 
-  Future<void> _editReminderDate() async {
-    final current = _reminderAt ?? _defaultReminder();
-    final picked = await _pickDate(startOfDay(current));
+  /// 改提醒基准时间：选日期和时间；选的正好是任务时间就重新跟随任务时间
+  Future<void> _editAnchor() async {
+    final current =
+        _anchor ??
+        defaultReminderTime(
+          dueDate: _dueDate,
+          now: ref.read(clockProvider).now(),
+        );
+    final picked = await _pickDateTime(current);
     if (picked == null) return;
     setState(() {
-      _reminderAt = DateTime(
-        picked.year,
-        picked.month,
-        picked.day,
-        current.hour,
-        current.minute,
-      );
+      _reminderAt = picked;
+      _anchorFollowsDue = picked == _dueDateTime;
     });
+  }
+
+  void _setOffsets(List<int> offsets) {
+    if (offsets.isEmpty) {
+      // 最后一个也取消 = 去掉提醒
+      setState(_removeReminder);
+      return;
+    }
+    final kindOf = {for (final s in _specs) s.offsetMinutes: s.kind};
+    final defaultKind = ref.read(settingsProvider).reminderKind;
+    setState(() {
+      _specs = ReminderSpec.normalize([
+        for (final m in offsets) ReminderSpec(m, kindOf[m] ?? defaultKind),
+      ], _repeat);
+    });
+  }
+
+  void _setKind(int offset, ReminderKind kind) {
+    setState(() {
+      _specs = [
+        for (final s in _specs)
+          s.offsetMinutes == offset ? s.copyWith(kind: kind) : s,
+      ];
+    });
+  }
+
+  void _setRepeat(RepeatRule r) {
+    setState(() {
+      _repeat = r;
+      // 去掉与重复周期冲突的提前量；全去掉时保留准时
+      final kept = ReminderSpec.normalize(_specs, r);
+      _specs = kept.isEmpty
+          ? [
+              ReminderSpec(
+                0,
+                _specs.firstOrNull?.kind ?? ReminderKind.notification,
+              ),
+            ]
+          : kept;
+    });
+  }
+
+  void _removeReminder() {
+    _reminderAt = null;
+    _anchorFollowsDue = false;
+    _specs = const [];
+    _repeat = RepeatRule.none;
   }
 
   TaskDraft _draft() {
@@ -219,8 +304,9 @@ class _TaskEditorSheetState extends ConsumerState<TaskEditorSheet> {
           : DateTime(d.year, d.month, d.day, t?.hour ?? 0, t?.minute ?? 0),
       dueHasTime: t != null,
       priority: _priority,
-      reminderAt: _reminderAt,
+      reminderAt: _anchor,
       reminderRepeat: _repeat,
+      reminders: _specs,
     );
   }
 
@@ -288,11 +374,14 @@ class _TaskEditorSheetState extends ConsumerState<TaskEditorSheet> {
     final dates = AppDateFormat.of(context);
     final today = ref.watch(currentDayProvider);
     final now = ref.read(clockProvider).now();
-    final reminder = _reminderAt;
+    final reminder = _anchor;
+    // 不重复的任务：所有提醒都已经过去
     final reminderPast =
         reminder != null &&
         _repeat == RepeatRule.none &&
-        !reminder.isAfter(now);
+        _specs.every(
+          (sp) => !shiftBack(reminder, sp.offsetMinutes).isAfter(now),
+        );
     final status = reminder == null
         ? null
         : ref.watch(reminderStatusProvider).value;
@@ -422,53 +511,65 @@ class _TaskEditorSheetState extends ConsumerState<TaskEditorSheet> {
                 ),
               )
             else ...[
+              // 一句话摘要 + 基准时间（点按改日期和时间）
               Row(
                 children: [
-                  GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: _editReminderTime,
-                    child: SizedBox(
-                      height: Sizes.tapTarget,
-                      child: Center(
+                  Expanded(
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: _editAnchor,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: Space.s),
                         child: ReminderMark(
-                          label: dates.time(reminder),
+                          label: reminderSummary(
+                            dates,
+                            reminder,
+                            _repeat,
+                            _specs,
+                            today: today,
+                          ),
                           semanticLabel: l10n.reminderSemantics(
-                            dates.time(reminder),
+                            reminderSummary(
+                              dates,
+                              reminder,
+                              _repeat,
+                              _specs,
+                              today: today,
+                            ),
                           ),
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(width: Space.m),
-                  // 按钮占满剩余宽度、靠左对齐：长文字（Every Wednesday）在这里换行，而不是被拆成字母
-                  Expanded(
-                    child: _repeat == RepeatRule.daily
-                        ? const SizedBox.shrink()
-                        : Align(
-                            alignment: AlignmentDirectional.centerStart,
-                            child: GeoButton(
-                              label: _repeat == RepeatRule.weekly
-                                  ? l10n.repeatEveryWeekday(weekdayKey(reminder))
-                                  : dates.relative(reminder, today),
-                              style: GeoButtonStyle.text,
-                              onPressed: _editReminderDate,
-                            ),
-                          ),
-                  ),
                   GeoIconButton(
                     glyph: GeoGlyph.close,
                     semanticLabel: l10n.taskEditorRemoveReminder,
                     color: colors.muted,
-                    onPressed: () => setState(() {
-                      _reminderAt = null;
-                      _repeat = RepeatRule.none;
-                    }),
+                    onPressed: () => setState(_removeReminder),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  Flexible(child: Text(l10n.reminderAnchorLabel, style: context.text.small)),
+                  const SizedBox(width: Space.s),
+                  Flexible(
+                    child: GeoButton(
+                      label: _anchorFollowsDue
+                          ? l10n.reminderAnchorTaskTime
+                          : l10n.dateWithTime(
+                              dates.relative(reminder, today),
+                              dates.time(reminder),
+                            ),
+                      style: GeoButtonStyle.text,
+                      onPressed: _editAnchor,
+                    ),
                   ),
                 ],
               ),
               GeoChoice<RepeatRule>(
                 value: _repeat,
-                onChanged: (r) => setState(() => _repeat = r),
+                onChanged: _setRepeat,
                 options: [
                   GeoChoiceOption(
                     value: RepeatRule.none,
@@ -483,6 +584,19 @@ class _TaskEditorSheetState extends ConsumerState<TaskEditorSheet> {
                     label: l10n.repeatWeekly,
                   ),
                 ],
+              ),
+              const SizedBox(height: Space.s),
+              ReminderOffsetPicker(
+                selected: [for (final sp in _specs) sp.offsetMinutes],
+                repeat: _repeat,
+                onChanged: _setOffsets,
+                kindOf: (m) => _specs
+                    .firstWhere(
+                      (sp) => sp.offsetMinutes == m,
+                      orElse: () => ReminderSpec(m),
+                    )
+                    .kind,
+                onKindChanged: _setKind,
               ),
               if (reminderPast) _Hint(l10n.taskEditorHintPast),
               if (_repeat == RepeatRule.none &&

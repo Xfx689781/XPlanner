@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../data_providers.dart';
 import 'app_settings.dart';
 import 'setting_keys.dart';
+import '../enums.dart';
+import '../reminder_spec.dart';
 import 'settings_enums.dart';
 import 'settings_repository.dart';
 
@@ -29,8 +31,18 @@ class SettingsController extends Notifier<AppSettings> {
   Future<void> setWeekStart(WeekStart v) =>
       _update(SettingKeys.weekStart, v, (s) => s.weekStart, (s, v) => s.copyWith(weekStart: v));
 
-  Future<void> setReminderLead(ReminderLead v) =>
-      _update(SettingKeys.reminderLead, v, (s) => s.reminderLead, (s, v) => s.copyWith(reminderLead: v));
+  /// 默认提前量：规范化（去重、先响的在前、最多 5 个），至少保留一个
+  Future<void> setReminderOffsets(List<int> offsets) async {
+    final specs = ReminderSpec.normalize([for (final m in offsets) ReminderSpec(m)], RepeatRule.none);
+    if (specs.isEmpty) return;
+    final normalized = [for (final s in specs) s.offsetMinutes];
+    await _update(SettingKeys.reminderOffsets, normalized, (s) => s.reminderOffsets, (s, v) => s.copyWith(reminderOffsets: v));
+    // 新键写成功后删掉旧版单选键
+    await ref.read(settingsRepositoryProvider).remove(SettingKeys.legacyReminderLead);
+  }
+
+  Future<void> setReminderKind(ReminderKind v) =>
+      _update(SettingKeys.reminderKind, v, (s) => s.reminderKind, (s, v) => s.copyWith(reminderKind: v));
 
   Future<void> setLanguageTag(String? v) =>
       _update(SettingKeys.language, v, (s) => s.languageTag, (s, v) => s.copyWith(languageTag: () => v));

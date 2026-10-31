@@ -120,6 +120,9 @@ void main() {
     await openSection(tester, '提醒');
 
     expect(find.text('未开启，提醒可能晚几分钟到十几分钟'), findsOneWidget);
+    // 提醒分组上方是默认提醒的多选列表，按钮在下面：先滚动到可见
+    await tester.ensureVisible(find.text('开启'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('开启'));
     expect(scheduler.log, contains('requestExactAlarmPermission'));
     await finish(tester);
@@ -132,6 +135,8 @@ void main() {
     await tester.pumpAndSettle();
     await openSection(tester, '提醒');
 
+    await tester.ensureVisible(find.text('开启'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('开启'));
     await tester.pumpAndSettle();
     expect(scheduler.log, contains('requestNotificationPermission'));
@@ -145,7 +150,8 @@ void main() {
     await tester.pumpAndSettle();
     await openSection(tester, '提醒');
 
-    await tester.scrollUntilVisible(find.text('5 秒后发一条测试通知'), 200);
+    await tester.ensureVisible(find.text('5 秒后发一条测试通知'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('5 秒后发一条测试通知'));
     await tester.pumpAndSettle();
     expect(scheduler.pending.keys, [testNotificationId]);
@@ -153,7 +159,7 @@ void main() {
     await finish(tester);
   });
 
-  testWidgets('提醒分组：默认提前时间可选并保存', (tester) async {
+  testWidgets('提醒分组：默认提前量多选并保存', (tester) async {
     await setWidth(tester, 390);
     await tester.pumpWidget(app(FakeScheduler()));
     await tester.pumpAndSettle();
@@ -163,7 +169,7 @@ void main() {
     await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 50)));
     await tester.pumpAndSettle();
     final saved = await tester.db(() => SettingsRepository(db).load());
-    expect(saved.reminderLead, ReminderLead.min15);
+    expect(saved.reminderOffsets, [15, 0]);
     await finish(tester);
   });
 

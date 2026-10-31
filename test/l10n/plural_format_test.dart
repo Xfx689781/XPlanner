@@ -1,6 +1,5 @@
-import 'package:facet/core/data/settings/settings_enums.dart';
+import 'package:facet/core/notifications/reminder_text.dart';
 import 'package:facet/core/utils/format.dart';
-import 'package:facet/features/settings/settings_labels.dart';
 import 'package:facet/l10n/generated/app_localizations.dart';
 import 'package:facet/l10n/supported_locales.dart';
 import 'package:flutter/material.dart';
@@ -28,26 +27,28 @@ void main() {
       expect(l.todayProgressSemantics(2, 3), '2 of 3 tasks done today');
       expect(l.todayProgressSemantics(0, 0), '0 of 0 tasks done today');
       expect(l.todayProgressSemantics(365, 365), '365 of 365 tasks done today');
-      expect(l.reminderLeadBefore(1), '1 minute before');
-      expect(l.reminderLeadBefore(0), '0 minutes before');
-      expect(l.reminderLeadBefore(5), '5 minutes before');
-      expect(l.reminderLeadBefore(15), '15 minutes before');
+      expect(l.durationMinutes(1), '1 minute');
+      expect(l.durationMinutes(0), '0 minutes');
+      expect(l.durationMinutes(5), '5 minutes');
+      expect(l.durationHours(1), '1 hour');
+      expect(l.durationDays(2), '2 days');
+      expect(l.durationWeeks(1), '1 week');
     });
 
     test('简体中文：没有单复数区别', () {
       final l = l10nOf('zh-Hans');
       expect(l.todayProgressSemantics(0, 1), '今天完成 0 / 1');
       expect(l.todayProgressSemantics(2, 3), '今天完成 2 / 3');
-      expect(l.reminderLeadBefore(1), '提前 1 分钟');
-      expect(l.reminderLeadBefore(15), '提前 15 分钟');
+      expect(l.durationMinutes(1), '1 分钟');
+      expect(l.durationHours(2), '2 小时');
     });
 
     test('繁體中文：没有单复数区别，用繁体字', () {
       final l = l10nOf('zh-Hant');
       expect(l.todayProgressSemantics(0, 1), '今天完成 0 / 1');
       expect(l.todayProgressSemantics(2, 3), '今天完成 2 / 3');
-      expect(l.reminderLeadBefore(1), '提前 1 分鐘');
-      expect(l.reminderLeadBefore(15), '提前 15 分鐘');
+      expect(l.durationMinutes(1), '1 分鐘');
+      expect(l.durationWeeks(1), '1 週');
     });
 
     test('设置里提前量选项的文字（每种语言）', () {
@@ -60,8 +61,8 @@ void main() {
       for (final MapEntry(:key, :value) in expected.entries) {
         expect(
           [
-            for (final r in ReminderLead.values)
-              reminderLeadLabel(l10nOf(key), r),
+            for (final m in const [0, 5, 15])
+              leadOptionLabel(l10nOf(key), m),
           ],
           value,
           reason: key,

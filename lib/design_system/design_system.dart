@@ -6,6 +6,7 @@ export 'typography.dart';
 export 'widgets/day_circle.dart';
 export 'widgets/empty_state.dart';
 export 'widgets/geo_button.dart';
+export 'widgets/geo_check_list.dart';
 export 'widgets/geo_choice.dart';
 export 'widgets/geo_dialog.dart';
 export 'widgets/geo_icon.dart';

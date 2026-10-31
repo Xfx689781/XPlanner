@@ -65,7 +65,10 @@ final settingsSections = <SettingsSection>[
   SettingsSection(
     id: 'reminders',
     title: (l10n) => l10n.settingsSectionReminders,
-    summary: (l10n, ref) => reminderLeadLabel(l10n, ref.watch(settingsProvider.select((s) => s.reminderLead))),
+    summary: (l10n, ref) {
+      final (offsets, kind) = ref.watch(settingsProvider.select((s) => (s.reminderOffsets, s.reminderKind)));
+      return reminderDefaultsSummary(l10n, offsets, kind);
+    },
     needsAttention: (ref) => remindersNeedAttention(ref.watch(reminderStatusProvider).value),
     attentionLabel: (l10n) => l10n.settingsRemindersAttention,
     content: (_) => const RemindersSection(),

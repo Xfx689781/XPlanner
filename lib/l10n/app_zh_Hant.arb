@@ -113,7 +113,6 @@
   "accentPlum": "紫",
   "settingsReminderLead": "新增提醒時預設",
   "reminderLeadOnTime": "準時",
-  "reminderLeadBefore": "{minutes, plural, other{提前 {minutes} 分鐘}}",
   "settingsPermissionsHeader": "權限與狀態",
   "settingsUnsupported": "這個平台暫不支援提醒。任務和提醒時間會正常儲存，在手機上會準時跳出。",
   "settingsNotifications": "通知權限",
