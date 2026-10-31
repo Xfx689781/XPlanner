@@ -15,9 +15,16 @@ Future<void> configureNotificationChannel(ProviderContainer container, [AppLangu
       ? container.read(appLocalizationsProvider)
       : lookupAppLocalizations(language.locale);
   try {
-    await container.read(reminderSchedulerProvider).configureChannel(
+    final scheduler = container.read(reminderSchedulerProvider);
+    await scheduler.configureChannel(
       name: l10n.notificationChannelName,
       description: l10n.notificationChannelDescription,
+    );
+    await scheduler.configureAlarm(
+      name: l10n.alarmChannelName,
+      description: l10n.alarmChannelDescription,
+      doneLabel: l10n.notificationActionDone,
+      snoozeLabel: l10n.notificationActionSnooze,
     );
   } catch (e) {
     debugPrint('设置通知渠道失败：$e');

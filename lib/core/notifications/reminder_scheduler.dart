@@ -23,6 +23,15 @@ class ReminderRequest {
   final bool alarm;
 }
 
+/// 一次通知点按：点通知本身时 [actionId] 为空；点「完成 / 稍后」按钮时是按钮 id
+class NotificationTap {
+  const NotificationTap({this.payload, this.actionId, this.notificationId});
+
+  final String? payload;
+  final String? actionId;
+  final int? notificationId;
+}
+
 /// 实际用了哪种调度方式
 enum ScheduleMode { exact, inexact }
 
@@ -31,11 +40,14 @@ abstract interface class ReminderScheduler {
   /// 这个平台是否支持定时提醒
   bool get supported;
 
-  /// 初始化插件；[onTap] 在 App 运行中点击通知时调用
-  Future<void> init({required void Function(String? payload) onTap});
+  /// 初始化插件；[onTap] 在 App 运行中点击通知（或通知上的按钮）时调用
+  Future<void> init({required void Function(NotificationTap tap) onTap});
 
-  /// 如果 App 是被点通知冷启动的，返回那条通知的 payload
-  Future<String?> launchPayload();
+  /// 如果 App 是被点通知（或全屏闹钟）冷启动的，返回那次点按
+  Future<NotificationTap?> launchTap();
+
+  /// 这条通知是否还在通知栏里（闹钟还在响）
+  Future<bool> isShowing(int id);
 
   /// 安排一条提醒。有精确闹钟权限时精确调度，否则降级为不精确调度。
   Future<ScheduleMode> schedule(ReminderRequest request);
@@ -62,6 +74,17 @@ abstract interface class ReminderScheduler {
 
   /// 设置通知渠道的名称和描述（系统设置里可见），按当前界面语言
   Future<void> configureChannel({required String name, required String description});
+
+  /// 设置闹钟渠道的名称、描述和通知按钮文字，按当前界面语言
+  Future<void> configureAlarm({
+    required String name,
+    required String description,
+    required String doneLabel,
+    required String snoozeLabel,
+  });
+
+  /// 打开系统的"全屏通知"授权页（Android 14+）
+  Future<void> requestFullScreenPermission();
 
   /// 立即显示一条通知（测试用）
   Future<void> showNow({required int id, required String title, String? body});

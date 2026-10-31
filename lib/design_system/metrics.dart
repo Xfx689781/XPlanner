@@ -36,6 +36,12 @@ abstract final class Sizes {
   /// 确认框最大宽度
   static const double dialogMaxWidth = 360;
 
+  /// 闹钟页的大按钮高度
+  static const double largeButton = 64;
+
+  /// 闹钟页的任务方块边长
+  static const double alarmSquare = 64;
+
   /// 设置页主题色色块直径
   static const double swatch = 24;
 

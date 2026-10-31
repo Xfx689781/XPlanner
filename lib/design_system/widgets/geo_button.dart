@@ -25,6 +25,7 @@ class GeoButton extends StatefulWidget {
     required this.onPressed,
     this.style = GeoButtonStyle.outline,
     this.destructive = false,
+    this.large = false,
   });
 
   final String label;
@@ -33,6 +34,9 @@ class GeoButton extends StatefulWidget {
 
   /// 危险操作（删除等）：文字用固定的警示红，不随主题色变
   final bool destructive;
+
+  /// 大按钮（闹钟页）：更高，便于刚醒时点中
+  final bool large;
 
   @override
   State<GeoButton> createState() => _GeoButtonState();
@@ -46,9 +50,10 @@ class _GeoButtonState extends State<GeoButton> {
     final colors = context.colors;
     final enabled = widget.onPressed != null;
     final (Color bg, Color fg, Color? border) = switch (widget.style) {
-      GeoButtonStyle.primary => widget.destructive
-          ? (colors.danger, colors.onDanger, null)
-          : (colors.accent, colors.onAccent, null),
+      GeoButtonStyle.primary =>
+        widget.destructive
+            ? (colors.danger, colors.onDanger, null)
+            : (colors.accent, colors.onAccent, null),
       GeoButtonStyle.outline => (
         FacetColors.transparent,
         widget.destructive ? colors.danger : colors.ink,
@@ -73,7 +78,9 @@ class _GeoButtonState extends State<GeoButton> {
           duration: Motion.quick,
           opacity: !enabled ? 0.4 : (_pressed ? 0.6 : 1),
           child: Container(
-            constraints: const BoxConstraints(minHeight: Sizes.tapTarget),
+            constraints: BoxConstraints(
+              minHeight: widget.large ? Sizes.largeButton : Sizes.tapTarget,
+            ),
             padding: const EdgeInsets.symmetric(horizontal: Space.m),
             alignment: Alignment.center,
             decoration: BoxDecoration(

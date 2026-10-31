@@ -7,6 +7,9 @@
     <!-- 精确到分钟的提醒。Android 14+ 新安装默认未授予，需要用户在系统页打开；
          没有权限时降级为不精确提醒。不用 USE_EXACT_ALARM（Play 只允许闹钟/日历类 App） -->
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
+    <!-- 闹钟模式：锁屏时弹出全屏提醒页。Google Play 上如实申报"非核心闹钟功能"，
+         从 Play 安装时默认不授予，App 内引导用户开启；没有时降级为持续响铃 + 横幅 -->
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT"/>
 
     <application
         android:label="@string/app_name"
@@ -37,6 +40,10 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <!-- flutter_local_notifications：通知上的「完成 / 稍后」按钮（App 没打开时也能用） -->
+        <receiver
+            android:exported="false"
+            android:name="com.dexterous.flutterlocalnotifications.ActionBroadcastReceiver" />
         <!-- flutter_local_notifications：到点显示通知 -->
         <receiver
             android:exported="false"

@@ -30,16 +30,39 @@ class FakeScheduler implements ReminderScheduler {
       if (l.startsWith('cancel ')) int.parse(l.substring(7)) ~/ slotsPerTask,
   }.toList();
   final List<String> log = [];
-  void Function(String? payload)? onTap;
-  String? launch;
+  void Function(NotificationTap tap)? onTap;
+  NotificationTap? launch;
+
+  /// 模拟通知栏里正在显示的通知 id
+  final Set<int> showing = {};
+  String? alarmChannelName;
 
   @override
-  Future<void> init({required void Function(String? payload) onTap}) async {
+  Future<void> init({required void Function(NotificationTap tap) onTap}) async {
     this.onTap = onTap;
   }
 
   @override
-  Future<String?> launchPayload() async => launch;
+  Future<NotificationTap?> launchTap() async => launch;
+
+  @override
+  Future<bool> isShowing(int id) async => showing.contains(id);
+
+  @override
+  Future<void> configureAlarm({
+    required String name,
+    required String description,
+    required String doneLabel,
+    required String snoozeLabel,
+  }) async {
+    log.add('configureAlarm $name');
+    alarmChannelName = name;
+  }
+
+  @override
+  Future<void> requestFullScreenPermission() async {
+    log.add('requestFullScreenPermission');
+  }
 
   @override
   Future<ScheduleMode> schedule(ReminderRequest request) async {
@@ -53,6 +76,7 @@ class FakeScheduler implements ReminderScheduler {
   Future<void> cancel(int id) async {
     log.add('cancel $id');
     pending.remove(id);
+    showing.remove(id);
   }
 
   @override

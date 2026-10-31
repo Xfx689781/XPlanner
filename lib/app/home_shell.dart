@@ -6,7 +6,9 @@ import '../core/notifications/notification_providers.dart';
 import '../core/notifications/reminder_status.dart';
 import '../core/utils/current_day.dart';
 import '../design_system/design_system.dart';
+import '../core/notifications/notification_tap_handler.dart';
 import '../features/log/log_page.dart';
+import '../features/plan/alarm_page.dart';
 import '../features/plan/task_editor_sheet.dart';
 import '../features/plan/tasks_page.dart';
 import '../features/today/today_page.dart';
@@ -35,6 +37,8 @@ class _HomeShellState extends ConsumerState<HomeShell> {
       // 冷启动时 main 已经把要打开的任务放进来了
       final pending = ref.read(pendingNavigationProvider);
       if (pending != null) _openTask(pending);
+      final alarm = ref.read(pendingAlarmProvider);
+      if (alarm != null) _openAlarm(alarm);
       ref.read(reminderMonitorProvider).onResume();
     });
   }
@@ -68,12 +72,20 @@ class _HomeShellState extends ConsumerState<HomeShell> {
     await showTaskEditor(context, task: task);
   }
 
+  void _openAlarm(AlarmRequest alarm) {
+    ref.read(pendingAlarmProvider.notifier).clear();
+    AlarmPage.open(context, alarm);
+  }
+
   void _select(int i) => setState(() => _index = i);
 
   @override
   Widget build(BuildContext context) {
     ref.listen<int?>(pendingNavigationProvider, (_, id) {
       if (id != null) _openTask(id);
+    });
+    ref.listen<AlarmRequest?>(pendingAlarmProvider, (_, alarm) {
+      if (alarm != null) _openAlarm(alarm);
     });
 
     final wide = MediaQuery.sizeOf(context).width >= Sizes.wideBreakpoint;

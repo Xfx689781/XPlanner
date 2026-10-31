@@ -17,6 +17,7 @@ class ReminderStatus {
     required this.timezone,
     this.batteryUnrestricted,
     this.timezoneGuessed = false,
+    this.fullScreenAllowed,
   });
 
   /// 平台是否支持提醒（Windows 为 false）
@@ -37,6 +38,9 @@ class ReminderStatus {
   /// 没取到设备时区名，按 UTC 偏移推测
   final bool timezoneGuessed;
 
+  /// 能否用全屏闹钟；null = 无法判断（非 Android）。没有时闹钟降级为持续响铃 + 横幅，不算"需要处理"
+  final bool? fullScreenAllowed;
+
   bool get exactMissing => exactAllowed == false;
   bool get notificationsMissing => notificationsEnabled == false;
 }
@@ -50,6 +54,7 @@ final reminderStatusProvider = FutureProvider<ReminderStatus>((ref) async {
     timezone: tz.local.name,
     batteryUnrestricted: await ref.watch(systemSettingsProvider).isIgnoringBatteryOptimizations(),
     timezoneGuessed: timezoneIsFallback,
+    fullScreenAllowed: await ref.watch(systemSettingsProvider).canUseFullScreenIntent(),
   );
 });
 

@@ -38,4 +38,32 @@ class SystemSettings {
   }
 }
 
+extension SystemSettingsAlarm on SystemSettings {
+  static const _channel = MethodChannel('facet/system_settings');
+
+  /// 能否使用全屏通知；null = 无法判断（非 Android）
+  Future<bool?> canUseFullScreenIntent() async {
+    if (kIsWeb || !Platform.isAndroid) return null;
+    try {
+      return await _channel.invokeMethod<bool>('canUseFullScreenIntent');
+    } on PlatformException {
+      return null;
+    } on MissingPluginException {
+      return null;
+    }
+  }
+
+  /// 闹钟页显示期间允许出现在锁屏上方；离开时传 false
+  Future<void> setShowOnLockScreen(bool show) async {
+    if (kIsWeb || !Platform.isAndroid) return;
+    try {
+      await _channel.invokeMethod<bool>('setShowOnLockScreen', {'show': show});
+    } on PlatformException catch (e) {
+      debugPrint('设置锁屏显示失败：$e');
+    } on MissingPluginException {
+      return;
+    }
+  }
+}
+
 final systemSettingsProvider = Provider<SystemSettings>((ref) => const SystemSettings());

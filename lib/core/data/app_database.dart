@@ -12,7 +12,8 @@ part 'app_database.g.dart';
 @DriftDatabase(tables: [Tasks, LogEntries, SettingEntries, TaskReminders])
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor])
-    : super(executor ?? driftDatabase(name: 'facet'));
+    // shareAcrossIsolates：App 没打开时点通知按钮，后台 isolate 打开的是同一个数据库连接，前台列表会自动刷新
+    : super(executor ?? driftDatabase(name: 'facet', native: const DriftNativeOptions(shareAcrossIsolates: true)));
 
   /// 发布后任何表结构改动都要写迁移并 +1
   @override

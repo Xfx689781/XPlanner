@@ -8,10 +8,24 @@ class NoopReminderScheduler implements ReminderScheduler {
   bool get supported => false;
 
   @override
-  Future<void> init({required void Function(String? payload) onTap}) async {}
+  Future<void> init({required void Function(NotificationTap tap) onTap}) async {}
 
   @override
-  Future<String?> launchPayload() async => null;
+  Future<NotificationTap?> launchTap() async => null;
+
+  @override
+  Future<bool> isShowing(int id) async => false;
+
+  @override
+  Future<void> configureAlarm({
+    required String name,
+    required String description,
+    required String doneLabel,
+    required String snoozeLabel,
+  }) async {}
+
+  @override
+  Future<void> requestFullScreenPermission() async {}
 
   @override
   Future<ScheduleMode> schedule(ReminderRequest request) async => ScheduleMode.inexact;

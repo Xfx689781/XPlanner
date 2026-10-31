@@ -10,9 +10,9 @@ import 'core/data/data_providers.dart';
 import 'core/data/settings/app_settings.dart';
 import 'core/data/settings/settings_provider.dart';
 import 'core/data/settings/settings_repository.dart';
-import 'core/notifications/notification_ids.dart';
 import 'core/notifications/notification_language.dart';
 import 'core/notifications/notification_providers.dart';
+import 'core/notifications/notification_tap_handler.dart';
 import 'core/notifications/noop_reminder_scheduler.dart';
 import 'core/notifications/reminder_scheduler.dart';
 import 'core/utils/timezone_setup.dart';
@@ -36,15 +36,11 @@ Future<void> main() async {
     retry: (_, _) => null,
   );
 
-  void openFromPayload(String? payload) {
-    final id = parseTaskPayload(payload);
-    if (id != null) container.read(pendingNavigationProvider.notifier).open(id);
-  }
-
-  _onNotificationTap = openFromPayload;
-  // 冷启动：App 是被点通知打开的
+  _onNotificationTap = (tap) => unawaited(handleNotificationTap(container, tap));
+  // 冷启动：App 是被点通知（或锁屏全屏闹钟）打开的
   try {
-    openFromPayload(await scheduler.launchPayload());
+    final tap = await scheduler.launchTap();
+    if (tap != null) await handleNotificationTap(container, tap, coldStart: true);
   } catch (e) {
     debugPrint('读取启动通知失败：$e');
   }
@@ -59,7 +55,7 @@ Future<void> main() async {
   listenLanguageForNotifications(container);
 }
 
-void Function(String? payload)? _onNotificationTap;
+void Function(NotificationTap tap)? _onNotificationTap;
 
 Future<AppSettings> _loadSettings(AppDatabase db) async {
   try {
@@ -74,7 +70,7 @@ Future<AppSettings> _loadSettings(AppDatabase db) async {
 Future<ReminderScheduler> _initScheduler() async {
   final scheduler = createPlatformScheduler();
   try {
-    await scheduler.init(onTap: (payload) => _onNotificationTap?.call(payload));
+    await scheduler.init(onTap: (tap) => _onNotificationTap?.call(tap));
     return scheduler;
   } catch (e) {
     debugPrint('通知初始化失败，提醒不可用：$e');
