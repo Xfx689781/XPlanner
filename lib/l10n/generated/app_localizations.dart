@@ -168,7 +168,7 @@ abstract class AppLocalizations {
   /// Title of the test notification
   ///
   /// In en, this message translates to:
-  /// **'Facet test reminder'**
+  /// **'XPlanner test reminder'**
   String get notificationTestTitle;
 
   /// Body of the test notification
@@ -864,7 +864,7 @@ abstract class AppLocalizations {
   /// Explanation about time zone changes
   ///
   /// In en, this message translates to:
-  /// **'Reminders follow local time: after changing time zones, open Facet once and reminders will ring at the same local time.'**
+  /// **'Reminders follow local time: after changing time zones, open XPlanner once and reminders will ring at the same local time.'**
   String get settingsTimezoneNote;
 
   /// Status that cannot be detected
@@ -900,13 +900,13 @@ abstract class AppLocalizations {
   /// Snackbar when the permission dialog cannot be shown
   ///
   /// In en, this message translates to:
-  /// **'Turn them on in Settings → Apps → Facet → Notifications'**
+  /// **'Turn them on in Settings → Apps → XPlanner → Notifications'**
   String get settingsNotificationsManual;
 
   /// Snackbar when app settings cannot be opened
   ///
   /// In en, this message translates to:
-  /// **'Open Settings → Apps → Facet manually'**
+  /// **'Open Settings → Apps → XPlanner manually'**
   String get settingsOpenAppManual;
 
   /// Header. Menu names must match Samsung One UI in this language
@@ -924,19 +924,19 @@ abstract class AppLocalizations {
   /// Step; One UI menu names
   ///
   /// In en, this message translates to:
-  /// **'Settings → Apps → Facet → Battery → choose \"Unrestricted\". \"Open app settings\" above takes you there.'**
+  /// **'Settings → Apps → XPlanner → Battery → choose \"Unrestricted\". \"Open app settings\" above takes you there.'**
   String get settingsSamsungStep1;
 
   /// Step; One UI menu names
   ///
   /// In en, this message translates to:
-  /// **'Settings → Battery → Background usage limits: make sure Facet isn\'t in \"Sleeping apps\" or \"Deep sleeping apps\". You can add it to \"Never sleeping apps\".'**
+  /// **'Settings → Battery → Background usage limits: make sure XPlanner isn\'t in \"Sleeping apps\" or \"Deep sleeping apps\". You can add it to \"Never sleeping apps\".'**
   String get settingsSamsungStep2;
 
   /// Step; One UI menu names
   ///
   /// In en, this message translates to:
-  /// **'Settings → Apps → Facet → Notifications: allow notifications and turn on showing them on the lock screen.'**
+  /// **'Settings → Apps → XPlanner → Notifications: allow notifications and turn on showing them on the lock screen.'**
   String get settingsSamsungStep3;
 
   /// Step
@@ -972,7 +972,7 @@ abstract class AppLocalizations {
   /// Privacy statement
   ///
   /// In en, this message translates to:
-  /// **'Your tasks, log and settings are stored on this device. Facet has no accounts, collects no usage data and doesn\'t send your data to any server. If Android backup is turned on, the system backs up your data, encrypted, to your own Google account; the developer can\'t access it.'**
+  /// **'Your tasks, log and settings are stored on this device. XPlanner has no accounts, collects no usage data and doesn\'t send your data to any server. If Android backup is turned on, the system backs up your data, encrypted, to your own Google account; the developer can\'t access it.'**
   String get settingsPrivacyText;
 
   /// A duration in minutes

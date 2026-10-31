@@ -43,7 +43,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get notificationChannelDescription => '任务到点时的提醒';
 
   @override
-  String get notificationTestTitle => 'Facet 测试提醒';
+  String get notificationTestTitle => 'XPlanner 测试提醒';
 
   @override
   String get notificationTestBody => '能看到这条，说明提醒正常';
@@ -452,7 +452,8 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get settingsTimezoneNote => '提醒按当地钟点：换了时区后请打开一次 Facet，提醒会改按新时区的钟点响。';
+  String get settingsTimezoneNote =>
+      '提醒按当地钟点：换了时区后请打开一次 XPlanner，提醒会改按新时区的钟点响。';
 
   @override
   String get settingsCannotDetect => '无法检测';
@@ -472,10 +473,10 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get settingsNotificationsManual => '请在系统设置 → 应用 → Facet → 通知 中开启';
+  String get settingsNotificationsManual => '请在系统设置 → 应用 → XPlanner → 通知 中开启';
 
   @override
-  String get settingsOpenAppManual => '请手动打开 设置 → 应用 → Facet';
+  String get settingsOpenAppManual => '请手动打开 设置 → 应用 → XPlanner';
 
   @override
   String get settingsSamsungHeader => '三星手机：防止提醒被拦截';
@@ -485,14 +486,15 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get settingsSamsungStep1 =>
-      '设置 → 应用 → Facet → 电池 → 选「不受限制」。上面「打开应用设置」可以直接跳到这里。';
+      '设置 → 应用 → XPlanner → 电池 → 选「不受限制」。上面「打开应用设置」可以直接跳到这里。';
 
   @override
   String get settingsSamsungStep2 =>
-      '设置 → 电池 → 后台使用限制：确认 Facet 不在「休眠应用」或「深度休眠应用」里；可以把它加入「永不休眠的应用」。';
+      '设置 → 电池 → 后台使用限制：确认 XPlanner 不在「休眠应用」或「深度休眠应用」里；可以把它加入「永不休眠的应用」。';
 
   @override
-  String get settingsSamsungStep3 => '设置 → 应用 → Facet → 通知：允许通知，并打开「锁定屏幕」上的显示。';
+  String get settingsSamsungStep3 =>
+      '设置 → 应用 → XPlanner → 通知：允许通知，并打开「锁定屏幕」上的显示。';
 
   @override
   String get settingsSamsungStep4 =>
@@ -512,7 +514,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get settingsPrivacyText =>
-      '你的任务、日志和设置保存在本机。Facet 没有账号，不收集使用数据，也不会把数据发送到任何服务器。如果你开启了安卓系统备份，系统会把数据加密备份到你自己的 Google 账号，开发者无法访问。';
+      '你的任务、日志和设置保存在本机。XPlanner 没有账号，不收集使用数据，也不会把数据发送到任何服务器。如果你开启了安卓系统备份，系统会把数据加密备份到你自己的 Google 账号，开发者无法访问。';
 
   @override
   String durationMinutes(int n) {
@@ -714,7 +716,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get notificationChannelDescription => '任務到時的提醒';
 
   @override
-  String get notificationTestTitle => 'Facet 測試提醒';
+  String get notificationTestTitle => 'XPlanner 測試提醒';
 
   @override
   String get notificationTestBody => '看得到這則通知，就表示提醒正常';
@@ -1123,7 +1125,8 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   }
 
   @override
-  String get settingsTimezoneNote => '提醒依當地時間：換了時區後請開啟一次 Facet，提醒會改依新時區的時間響起。';
+  String get settingsTimezoneNote =>
+      '提醒依當地時間：換了時區後請開啟一次 XPlanner，提醒會改依新時區的時間響起。';
 
   @override
   String get settingsCannotDetect => '無法偵測';
@@ -1143,10 +1146,11 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   }
 
   @override
-  String get settingsNotificationsManual => '請到系統的 設定 → 應用程式 → Facet → 通知 中開啟';
+  String get settingsNotificationsManual =>
+      '請到系統的 設定 → 應用程式 → XPlanner → 通知 中開啟';
 
   @override
-  String get settingsOpenAppManual => '請手動開啟 設定 → 應用程式 → Facet';
+  String get settingsOpenAppManual => '請手動開啟 設定 → 應用程式 → XPlanner';
 
   @override
   String get settingsSamsungHeader => '三星手機：避免提醒被攔截';
@@ -1156,15 +1160,15 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get settingsSamsungStep1 =>
-      '設定 → 應用程式 → Facet → 電池 → 選擇「不受限制」。上方的「開啟應用程式設定」可以直接前往這裡。';
+      '設定 → 應用程式 → XPlanner → 電池 → 選擇「不受限制」。上方的「開啟應用程式設定」可以直接前往這裡。';
 
   @override
   String get settingsSamsungStep2 =>
-      '設定 → 電池 → 背景使用限制：確認 Facet 不在「休眠應用程式」或「深度休眠應用程式」中；可以把它加入「永不休眠的應用程式」。';
+      '設定 → 電池 → 背景使用限制：確認 XPlanner 不在「休眠應用程式」或「深度休眠應用程式」中；可以把它加入「永不休眠的應用程式」。';
 
   @override
   String get settingsSamsungStep3 =>
-      '設定 → 應用程式 → Facet → 通知：允許通知，並開啟在「鎖定畫面」上顯示。';
+      '設定 → 應用程式 → XPlanner → 通知：允許通知，並開啟在「鎖定畫面」上顯示。';
 
   @override
   String get settingsSamsungStep4 =>
@@ -1184,7 +1188,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get settingsPrivacyText =>
-      '你的任務、日誌和設定都儲存在這台裝置上。Facet 沒有帳號，不收集使用資料，也不會把資料傳送到任何伺服器。如果你開啟了 Android 系統備份，系統會將資料加密備份到你自己的 Google 帳戶，開發者無法存取。';
+      '你的任務、日誌和設定都儲存在這台裝置上。XPlanner 沒有帳號，不收集使用資料，也不會把資料傳送到任何伺服器。如果你開啟了 Android 系統備份，系統會將資料加密備份到你自己的 Google 帳戶，開發者無法存取。';
 
   @override
   String durationMinutes(int n) {

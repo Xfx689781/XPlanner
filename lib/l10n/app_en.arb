@@ -44,7 +44,7 @@
   "@notificationChannelDescription": {
     "description": "Android notification channel description"
   },
-  "notificationTestTitle": "Facet test reminder",
+  "notificationTestTitle": "XPlanner test reminder",
   "@notificationTestTitle": {
     "description": "Title of the test notification"
   },
@@ -620,7 +620,7 @@
       }
     }
   },
-  "settingsTimezoneNote": "Reminders follow local time: after changing time zones, open Facet once and reminders will ring at the same local time.",
+  "settingsTimezoneNote": "Reminders follow local time: after changing time zones, open XPlanner once and reminders will ring at the same local time.",
   "@settingsTimezoneNote": {
     "description": "Explanation about time zone changes"
   },
@@ -649,11 +649,11 @@
       }
     }
   },
-  "settingsNotificationsManual": "Turn them on in Settings → Apps → Facet → Notifications",
+  "settingsNotificationsManual": "Turn them on in Settings → Apps → XPlanner → Notifications",
   "@settingsNotificationsManual": {
     "description": "Snackbar when the permission dialog cannot be shown"
   },
-  "settingsOpenAppManual": "Open Settings → Apps → Facet manually",
+  "settingsOpenAppManual": "Open Settings → Apps → XPlanner manually",
   "@settingsOpenAppManual": {
     "description": "Snackbar when app settings cannot be opened"
   },
@@ -665,15 +665,15 @@
   "@settingsSamsungIntro": {
     "description": "Intro"
   },
-  "settingsSamsungStep1": "Settings → Apps → Facet → Battery → choose \"Unrestricted\". \"Open app settings\" above takes you there.",
+  "settingsSamsungStep1": "Settings → Apps → XPlanner → Battery → choose \"Unrestricted\". \"Open app settings\" above takes you there.",
   "@settingsSamsungStep1": {
     "description": "Step; One UI menu names"
   },
-  "settingsSamsungStep2": "Settings → Battery → Background usage limits: make sure Facet isn't in \"Sleeping apps\" or \"Deep sleeping apps\". You can add it to \"Never sleeping apps\".",
+  "settingsSamsungStep2": "Settings → Battery → Background usage limits: make sure XPlanner isn't in \"Sleeping apps\" or \"Deep sleeping apps\". You can add it to \"Never sleeping apps\".",
   "@settingsSamsungStep2": {
     "description": "Step; One UI menu names"
   },
-  "settingsSamsungStep3": "Settings → Apps → Facet → Notifications: allow notifications and turn on showing them on the lock screen.",
+  "settingsSamsungStep3": "Settings → Apps → XPlanner → Notifications: allow notifications and turn on showing them on the lock screen.",
   "@settingsSamsungStep3": {
     "description": "Step; One UI menu names"
   },
@@ -697,7 +697,7 @@
   "@settingsPrivacy": {
     "description": "About section header"
   },
-  "settingsPrivacyText": "Your tasks, log and settings are stored on this device. Facet has no accounts, collects no usage data and doesn't send your data to any server. If Android backup is turned on, the system backs up your data, encrypted, to your own Google account; the developer can't access it.",
+  "settingsPrivacyText": "Your tasks, log and settings are stored on this device. XPlanner has no accounts, collects no usage data and doesn't send your data to any server. If Android backup is turned on, the system backs up your data, encrypted, to your own Google account; the developer can't access it.",
   "@settingsPrivacyText": {
     "description": "Privacy statement"
   },

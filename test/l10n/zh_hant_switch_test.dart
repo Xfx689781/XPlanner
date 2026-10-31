@@ -138,11 +138,11 @@ void main() {
     // 期望值直接写出 ARB 里的文字，防止 ARB 被误改
     const expected = {
       'en': (
-        'Facet test reminder',
+        'XPlanner test reminder',
         'If you can see this, reminders are working',
       ),
-      'zh-Hans': ('Facet 测试提醒', '能看到这条，说明提醒正常'),
-      'zh-Hant': ('Facet 測試提醒', '看得到這則通知，就表示提醒正常'),
+      'zh-Hans': ('XPlanner 测试提醒', '能看到这条，说明提醒正常'),
+      'zh-Hant': ('XPlanner 測試提醒', '看得到這則通知，就表示提醒正常'),
     };
     test('期望表覆盖所有语言', () {
       expect(expected.keys.toSet(), {for (final l in appLanguages) l.tag});
@@ -209,7 +209,7 @@ void main() {
         tester,
         lookupAppLocalizations(appLanguages.last.locale),
       );
-      expect(scheduler.pending[testNotificationId]!.title, 'Facet 測試提醒');
+      expect(scheduler.pending[testNotificationId]!.title, 'XPlanner 測試提醒');
       expect(scheduler.pending[testNotificationId]!.body, '看得到這則通知，就表示提醒正常');
       await finish(tester);
     });

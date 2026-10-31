@@ -69,7 +69,7 @@ android {
         versionCode = flutter.versionCode
         versionName = flutter.versionName
         // 桌面图标下的名字（AndroidManifest 里引用 @string/app_name）
-        resValue("string", "app_name", "Facet")
+        resValue("string", "app_name", "XPlanner")
     }
 
     signingConfigs {
@@ -91,9 +91,9 @@ android {
             signingConfig = signingConfigs.getByName("release")
         }
         debug {
-            // 调试版和正式版可以同时装在手机上：包名加 .debug，名字显示 Facet Dev
+            // 调试版和正式版可以同时装在手机上：包名加 .debug，名字显示 XPlanner Dev
             applicationIdSuffix = ".debug"
-            resValue("string", "app_name", "Facet Dev")
+            resValue("string", "app_name", "XPlanner Dev")
         }
     }
 }

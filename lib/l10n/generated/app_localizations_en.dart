@@ -43,7 +43,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notificationChannelDescription => 'Reminders when a task is due';
 
   @override
-  String get notificationTestTitle => 'Facet test reminder';
+  String get notificationTestTitle => 'XPlanner test reminder';
 
   @override
   String get notificationTestBody =>
@@ -464,7 +464,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsTimezoneNote =>
-      'Reminders follow local time: after changing time zones, open Facet once and reminders will ring at the same local time.';
+      'Reminders follow local time: after changing time zones, open XPlanner once and reminders will ring at the same local time.';
 
   @override
   String get settingsCannotDetect => 'Can\'t detect';
@@ -487,10 +487,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsNotificationsManual =>
-      'Turn them on in Settings → Apps → Facet → Notifications';
+      'Turn them on in Settings → Apps → XPlanner → Notifications';
 
   @override
-  String get settingsOpenAppManual => 'Open Settings → Apps → Facet manually';
+  String get settingsOpenAppManual =>
+      'Open Settings → Apps → XPlanner manually';
 
   @override
   String get settingsSamsungHeader =>
@@ -502,15 +503,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsSamsungStep1 =>
-      'Settings → Apps → Facet → Battery → choose \"Unrestricted\". \"Open app settings\" above takes you there.';
+      'Settings → Apps → XPlanner → Battery → choose \"Unrestricted\". \"Open app settings\" above takes you there.';
 
   @override
   String get settingsSamsungStep2 =>
-      'Settings → Battery → Background usage limits: make sure Facet isn\'t in \"Sleeping apps\" or \"Deep sleeping apps\". You can add it to \"Never sleeping apps\".';
+      'Settings → Battery → Background usage limits: make sure XPlanner isn\'t in \"Sleeping apps\" or \"Deep sleeping apps\". You can add it to \"Never sleeping apps\".';
 
   @override
   String get settingsSamsungStep3 =>
-      'Settings → Apps → Facet → Notifications: allow notifications and turn on showing them on the lock screen.';
+      'Settings → Apps → XPlanner → Notifications: allow notifications and turn on showing them on the lock screen.';
 
   @override
   String get settingsSamsungStep4 =>
@@ -530,7 +531,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsPrivacyText =>
-      'Your tasks, log and settings are stored on this device. Facet has no accounts, collects no usage data and doesn\'t send your data to any server. If Android backup is turned on, the system backs up your data, encrypted, to your own Google account; the developer can\'t access it.';
+      'Your tasks, log and settings are stored on this device. XPlanner has no accounts, collects no usage data and doesn\'t send your data to any server. If Android backup is turned on, the system backs up your data, encrypted, to your own Google account; the developer can\'t access it.';
 
   @override
   String durationMinutes(int n) {

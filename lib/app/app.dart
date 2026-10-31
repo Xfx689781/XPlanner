@@ -7,6 +7,7 @@ import '../l10n/generated/app_localizations.dart';
 import '../l10n/locale_providers.dart';
 import '../l10n/supported_locales.dart';
 import 'accent.dart';
+import 'app_info.dart';
 import 'home_shell.dart';
 import 'theme.dart';
 import 'week_start_localizations.dart';
@@ -44,7 +45,7 @@ class _FacetAppState extends ConsumerState<FacetApp> with WidgetsBindingObserver
     final accent = paletteOf(ref.watch(settingsProvider.select((s) => s.accent)));
     final language = ref.watch(appLanguageProvider);
     return MaterialApp(
-      title: 'Facet',
+      title: appName,
       debugShowCheckedModeBanner: false,
       theme: buildFacetTheme(Brightness.light, accent),
       darkTheme: buildFacetTheme(Brightness.dark, accent),
