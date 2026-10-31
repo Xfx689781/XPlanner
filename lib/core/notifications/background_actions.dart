@@ -16,6 +16,7 @@ import '../utils/date_utils.dart';
 import '../utils/format.dart';
 import '../utils/timezone_setup.dart';
 import 'local_notification_scheduler.dart';
+import 'next_trigger.dart';
 import 'notification_ids.dart';
 import 'reminder_sync_service.dart';
 
@@ -24,21 +25,38 @@ const actionDone = 'done';
 const actionSnooze = 'snooze';
 
 /// 只把「完成 / 稍后 10 分钟」写进数据库，不排提醒。返回更新后的任务（任务已删除时为 null）。
+/// [offsetMinutes]：被点的那条提醒的提前量（来自 payload），用来判断完成的是哪一天的那次。
 Future<Task?> recordNotificationAction({
   required String actionId,
   required int taskId,
   required TaskRepository repository,
   required Clock clock,
+  int? offsetMinutes,
 }) async {
   final now = clock.now();
   final task = await repository.getById(taskId);
   if (task == null) return null;
   return switch (actionId) {
-    // 重复任务只完成今天；已经完成的不重复记
-    actionDone => task.isDoneOn(startOfDay(now)) ? task : await repository.setCompleted(taskId, now, now: now),
+    actionDone => await _complete(task, repository, now, offsetMinutes),
     actionSnooze => await repository.setSnoozed(taskId, now.add(ReminderSyncService.snoozeDuration)),
     _ => task,
   };
+}
+
+/// 不重复任务：记为完成。重复任务：只完成这条提醒对应的那一次（前一晚的提醒 → 明天那次），
+/// 已经完成的、或已经记了更晚一次的，不改。
+Future<Task?> _complete(Task task, TaskRepository repository, DateTime now, int? offsetMinutes) async {
+  if (!task.isRepeating) {
+    return task.completedAt != null ? task : repository.setCompleted(task.id, now, now: now);
+  }
+  final specs = await repository.remindersFor(task.id);
+  final day = occurrenceDayForAction(task, specs, now, offsetMinutes: offsetMinutes);
+  final previous = task.completedAt;
+  if (task.isDoneOn(day) || (previous != null && isBeforeDay(day, previous))) return task;
+  // 完成时间要落在那一天（重复任务按 completedAt 的日期判断哪天完成）
+  final r = task.reminderAt!;
+  final at = isSameDay(day, now) ? now : DateTime(day.year, day.month, day.day, r.hour, r.minute);
+  return repository.setCompleted(task.id, at, now: now);
 }
 
 /// 处理「完成 / 稍后 10 分钟」：写数据库并重排提醒。闹钟页和测试使用；
@@ -51,9 +69,16 @@ Future<void> applyNotificationAction({
   required TaskRepository repository,
   required ReminderSyncService sync,
   required Clock clock,
+  int? offsetMinutes,
 }) async {
   if (actionId != actionDone && actionId != actionSnooze) return;
-  final updated = await recordNotificationAction(actionId: actionId, taskId: taskId, repository: repository, clock: clock);
+  final updated = await recordNotificationAction(
+    actionId: actionId,
+    taskId: taskId,
+    repository: repository,
+    clock: clock,
+    offsetMinutes: offsetMinutes,
+  );
   if (updated == null) {
     await sync.cancelTask(taskId);
   } else {
@@ -76,7 +101,13 @@ Future<void> notificationBackgroundHandler(NotificationResponse response) async 
     // 先把用户的操作写进数据库：接收器不会等我们，进程随时可能被回收。
     // 写进去之后，即使后面没来得及重排，下次启动的全量重建也会按数据库补上
     final repository = TaskRepository(db);
-    await recordNotificationAction(actionId: actionId, taskId: taskId, repository: repository, clock: const SystemClock());
+    await recordNotificationAction(
+      actionId: actionId,
+      taskId: taskId,
+      repository: repository,
+      clock: const SystemClock(),
+      offsetMinutes: parseReminderOffset(response.payload),
+    );
 
     await initializeDateFormatting();
     await initLocalTimezone();

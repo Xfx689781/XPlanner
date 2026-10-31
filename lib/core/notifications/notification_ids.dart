@@ -33,19 +33,33 @@ int? taskIdOfNotification(int id) => id >= reservedIdBase ? null : id ~/ slotsPe
 const _taskPayloadPrefix = 'task:';
 const _alarmPayloadPrefix = 'alarm:';
 
-/// 普通提醒：点击打开任务
-String taskPayload(int taskId) => '$_taskPayloadPrefix$taskId';
+/// 普通提醒：点击打开任务。[offsetMinutes] 是这条提醒的提前量（稍后提醒没有）
+String taskPayload(int taskId, [int? offsetMinutes]) => '$_taskPayloadPrefix$taskId${_offsetSuffix(offsetMinutes)}';
 
 /// 闹钟提醒：点击 / 全屏拉起闹钟页
-String alarmPayload(int taskId) => '$_alarmPayloadPrefix$taskId';
+String alarmPayload(int taskId, [int? offsetMinutes]) => '$_alarmPayloadPrefix$taskId${_offsetSuffix(offsetMinutes)}';
 
-/// 'task:12' 或 'alarm:12' → 12；格式不对返回 null
-int? parseTaskPayload(String? payload) {
+String _offsetSuffix(int? offsetMinutes) => offsetMinutes == null ? '' : ':$offsetMinutes';
+
+/// 'task:12' / 'alarm:12' / 'alarm:12:15' → (12, 15)；格式不对返回 null
+(int, int?)? _parsePayload(String? payload) {
   if (payload == null) return null;
   for (final prefix in [_taskPayloadPrefix, _alarmPayloadPrefix]) {
-    if (payload.startsWith(prefix)) return int.tryParse(payload.substring(prefix.length));
+    if (!payload.startsWith(prefix)) continue;
+    final parts = payload.substring(prefix.length).split(':');
+    final id = int.tryParse(parts[0]);
+    if (id == null || parts.length > 2) return null;
+    if (parts.length == 1) return (id, null);
+    final offset = int.tryParse(parts[1]);
+    return offset == null ? null : (id, offset);
   }
   return null;
 }
+
+/// payload → 任务 id；格式不对返回 null
+int? parseTaskPayload(String? payload) => _parsePayload(payload)?.$1;
+
+/// payload → 这条提醒的提前量（旧格式 / 稍后提醒返回 null）
+int? parseReminderOffset(String? payload) => _parsePayload(payload)?.$2;
 
 bool isAlarmPayload(String? payload) => payload != null && payload.startsWith(_alarmPayloadPrefix);

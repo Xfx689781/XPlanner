@@ -3,6 +3,7 @@ import 'package:facet/core/data/data_providers.dart';
 import 'package:facet/core/data/enums.dart';
 import 'package:facet/core/data/reminder_spec.dart';
 import 'package:facet/core/data/task_repository.dart';
+import 'package:facet/core/data/task_rules.dart';
 import 'package:facet/core/notifications/background_actions.dart';
 import 'package:facet/core/notifications/notification_ids.dart';
 import 'package:facet/core/notifications/notification_providers.dart';
@@ -98,6 +99,40 @@ void main() {
       await act(actionDone, t.id);
       expect(scheduler.pending[notificationIdForTask(t.id, snoozeSlot)], isNull);
       expect((await repo.getById(t.id))!.snoozedUntil, isNull);
+    });
+
+    test('每周二 14:00、提前 1 天（闹钟）+ 准时：周一的闹钟上点完成 → 记到周二，周二的准时提醒不再响，下周照常', () async {
+      final saved = clock.value;
+      addTearDown(() => clock.value = saved);
+      clock.value = DateTime(2026, 11, 9, 14, 2); // 周一
+      final t = await repo.create(
+        TaskDraft(
+          title: '倒垃圾',
+          reminderAt: DateTime(2026, 11, 3, 14),
+          reminderRepeat: RepeatRule.weekly,
+          reminders: const [ReminderSpec(1440, ReminderKind.alarm), ReminderSpec(0)],
+        ),
+        now: clock.value,
+      );
+      await sync.syncTask(t);
+      final alarm = scheduler.requestsFor(t.id).firstWhere((r) => r.alarm);
+      expect(parseReminderOffset(alarm.payload), 1440);
+
+      await applyNotificationAction(
+        actionId: actionDone,
+        taskId: t.id,
+        repository: repo,
+        sync: sync,
+        clock: clock,
+        offsetMinutes: parseReminderOffset(alarm.payload),
+      );
+      final done = (await repo.getById(t.id))!;
+      expect(done.isDoneOn(DateTime(2026, 11, 10)), isTrue);
+      expect(done.isDoneOn(DateTime(2026, 11, 9)), isFalse);
+      final times = [for (final r in scheduler.requestsFor(t.id)) r.at.millisecondsSinceEpoch];
+      expect(times, isNot(contains(DateTime(2026, 11, 10, 14).millisecondsSinceEpoch)));
+      expect(times, contains(DateTime(2026, 11, 17, 14).millisecondsSinceEpoch));
+      expect(times, contains(DateTime(2026, 11, 16, 14).millisecondsSinceEpoch));
     });
 
     test('任务已删除：只取消它的通知，不报错', () async {

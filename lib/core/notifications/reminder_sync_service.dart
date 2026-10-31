@@ -127,10 +127,12 @@ class ReminderSyncService {
     if (task.reminderAt != null) {
       var specs = await _repo.remindersFor(task.id);
       if (specs.isEmpty) specs = const [ReminderSpec(0)];
-      final doneToday = task.isDoneOn(today);
+      // 重复任务完成的那一次（可能是明天：前一晚的提醒上点了完成）
+      final completed = task.completedAt;
+      final doneDay = task.isRepeating && completed != null ? startOfDay(completed) : null;
       for (var i = 0; i < specs.length && i < ReminderSpec.maxPerTask; i++) {
         final spec = specs[i];
-        final plans = planSpec(task, spec, now, doneToday: doneToday);
+        final plans = planSpec(task, spec, now, doneToday: false, doneDay: doneDay);
         for (var k = 0; k < plans.length && k < slotsPerReminder; k++) {
           requests.add(ReminderRequest(
             id: notificationIdForReminder(task.id, i, k),
@@ -138,7 +140,9 @@ class ReminderSyncService {
             body: task.note,
             at: plans[k].at,
             match: plans[k].match,
-            payload: spec.kind == ReminderKind.alarm ? alarmPayload(task.id) : taskPayload(task.id),
+            payload: spec.kind == ReminderKind.alarm
+                ? alarmPayload(task.id, spec.offsetMinutes)
+                : taskPayload(task.id, spec.offsetMinutes),
             alarm: spec.kind == ReminderKind.alarm,
           ));
         }

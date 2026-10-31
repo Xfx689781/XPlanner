@@ -79,6 +79,7 @@ class _AlarmPageState extends ConsumerState<AlarmPage> {
         repository: ref.read(taskRepositoryProvider),
         sync: ref.read(reminderSyncProvider),
         clock: ref.read(clockProvider),
+        offsetMinutes: widget.request.offsetMinutes,
       );
     } finally {
       if (widget.request.fromLockScreen) {

@@ -11,10 +11,18 @@ import 'reminder_scheduler.dart';
 /// 要显示的闹钟页：哪个任务、哪条通知（用来停止响铃）、是否从锁屏冷启动
 @immutable
 class AlarmRequest {
-  const AlarmRequest({required this.taskId, required this.notificationId, this.fromLockScreen = false});
+  const AlarmRequest({
+    required this.taskId,
+    required this.notificationId,
+    this.fromLockScreen = false,
+    this.offsetMinutes,
+  });
 
   final int taskId;
   final int notificationId;
+
+  /// 这条闹钟的提前量（来自 payload；稍后提醒 / 旧通知为 null），用来判断完成的是哪一天
+  final int? offsetMinutes;
 
   /// 冷启动拉起（锁屏全屏）：处理完回到锁屏，不停留在 App 里
   final bool fromLockScreen;
@@ -46,6 +54,7 @@ Future<void> handleNotificationTap(ProviderContainer container, NotificationTap 
       repository: container.read(taskRepositoryProvider),
       sync: container.read(reminderSyncProvider),
       clock: container.read(clockProvider),
+      offsetMinutes: parseReminderOffset(tap.payload),
     );
     return;
   }
@@ -60,7 +69,12 @@ Future<void> handleNotificationTap(ProviderContainer container, NotificationTap 
   }
   if (ringing && notificationId != null) {
     container.read(pendingAlarmProvider.notifier).open(
-      AlarmRequest(taskId: taskId, notificationId: notificationId, fromLockScreen: coldStart),
+      AlarmRequest(
+        taskId: taskId,
+        notificationId: notificationId,
+        fromLockScreen: coldStart,
+        offsetMinutes: parseReminderOffset(tap.payload),
+      ),
     );
     return;
   }

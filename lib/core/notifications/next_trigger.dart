@@ -34,8 +34,9 @@ const weeklyWindow = 2;
 /// reminderAt 是当地钟点（年月日时分），在 [now] 所在时区里解释，
 /// 所以换了时区后重新计算，9:00 仍是当地 9:00。
 /// [doneToday]：重复任务今天已完成时，从下一次开始（今天剩下的那次不再响）。
+/// [skipDay]：跳过这一天的那次（可以是以后的某天）；给出时优先于 [doneToday]。
 /// 一次性提醒落在夏令时跳过的钟点（如 02:30）时规范化到跳变之后。
-TriggerPlan? nextTrigger(Task task, tz.TZDateTime now, {required bool doneToday}) {
+TriggerPlan? nextTrigger(Task task, tz.TZDateTime now, {required bool doneToday, DateTime? skipDay}) {
   final r = task.reminderAt;
   if (r == null) return null;
 
@@ -47,7 +48,7 @@ TriggerPlan? nextTrigger(Task task, tz.TZDateTime now, {required bool doneToday}
 
     case RepeatRule.daily:
     case RepeatRule.weekly:
-      final first = _nextOccurrence(task, now, skipToday: doneToday, respectStart: true);
+      final first = _nextOccurrence(task, now, skipDay: _skip(now, doneToday, skipDay), respectStart: true);
       if (first == null) return null;
       final weekly = task.reminderRepeat == RepeatRule.weekly;
       return TriggerPlan(
@@ -61,16 +62,19 @@ TriggerPlan? nextTrigger(Task task, tz.TZDateTime now, {required bool doneToday}
 ///
 /// - 不重复：0 或 1 条
 /// - 重复，且第一次就是"从现在起下一个匹配的钟点"：1 条，交给系统无限重复
-/// - 重复，但要跳过今天（今天已完成）或开始日期在以后：系统重复做不到，
+/// - 重复，但要跳过今天 / 以后的某天（那一次已完成）或开始日期在以后：系统重复做不到，
 ///   改为连续 [dailyWindow] / [weeklyWindow] 条一次性提醒
-List<TriggerPlan> planReminders(Task task, tz.TZDateTime now, {required bool doneToday}) {
-  final plan = nextTrigger(task, now, doneToday: doneToday);
+List<TriggerPlan> planReminders(Task task, tz.TZDateTime now, {required bool doneToday, DateTime? skipDay}) {
+  final plan = nextTrigger(task, now, doneToday: doneToday, skipDay: skipDay);
   if (plan == null) return const [];
   if (plan.match == null) return [plan];
 
-  final first = _nextOccurrence(task, now, skipToday: doneToday, respectStart: true)!;
-  final systemWouldPick = _nextOccurrence(task, now, skipToday: false, respectStart: false);
-  if (first == systemWouldPick) return [plan];
+  final skip = _skip(now, doneToday, skipDay);
+  final first = _nextOccurrence(task, now, skipDay: skip, respectStart: true)!;
+  final systemWouldPick = _nextOccurrence(task, now, skipDay: null, respectStart: false);
+  // 要跳过的是以后的某天：系统重复迟早会响到那天
+  final skipAhead = skip != null && skip.isAfter(DateTime(now.year, now.month, now.day));
+  if (first == systemWouldPick && !skipAhead) return [plan];
 
   final weekly = task.reminderRepeat == RepeatRule.weekly;
   final count = weekly ? weeklyWindow : dailyWindow;
@@ -78,19 +82,22 @@ List<TriggerPlan> planReminders(Task task, tz.TZDateTime now, {required bool don
   var cursor = first;
   while (result.length < count) {
     result.add(TriggerPlan(cursor, null));
-    final next = _nextOccurrence(task, cursor, skipToday: false, respectStart: true);
+    final next = _nextOccurrence(task, cursor, skipDay: skip, respectStart: true);
     if (next == null) break;
     cursor = next;
   }
   return result;
 }
 
+DateTime? _skip(tz.TZDateTime now, bool doneToday, DateTime? skipDay) =>
+    skipDay ?? (doneToday ? DateTime(now.year, now.month, now.day) : null);
+
 /// 严格晚于 [now] 的下一次重复。
-/// [respectStart]：不早于 reminderAt 的日期；[skipToday]：跳过 [now] 所在的那天。
+/// [respectStart]：不早于 reminderAt 的日期；[skipDay]：跳过这一天（当地日期 00:00）。
 tz.TZDateTime? _nextOccurrence(
   Task task,
   tz.TZDateTime now, {
-  required bool skipToday,
+  required DateTime? skipDay,
   required bool respectStart,
 }) {
   final r = task.reminderAt!;
@@ -100,9 +107,8 @@ tz.TZDateTime? _nextOccurrence(
   var day = respectStart && startDay.isAfter(today) ? startDay : today;
   // 每周最坏情况：今天是那个星期几但已过或已完成 → 7 天后。留足余量
   for (var i = 0; i < 15; i++) {
-    final isToday = day == today;
     final weekdayOk = !weekly || day.weekday == r.weekday;
-    if (weekdayOk && !(isToday && skipToday)) {
+    if (weekdayOk && day != skipDay) {
       final t = tz.TZDateTime(now.location, day.year, day.month, day.day, r.hour, r.minute);
       if (t.isAfter(now)) return t;
     }
@@ -128,13 +134,62 @@ DateTime shiftBack(DateTime anchor, int minutes) {
 
 /// 一个提醒（提前量）要交给系统的调度列表。
 ///
-/// "今天已完成就跳过"按锚点那天判断：提前量跨过零点时（锚点 00:10 提前 15 分钟 → 前一天 23:55），
-/// 今天 23:55 那条属于明天的锚点，不跳过。
-List<TriggerPlan> planSpec(Task task, ReminderSpec spec, tz.TZDateTime now, {required bool doneToday}) {
+/// 已完成的那一次（[doneDay]，锚点那天；不给时 [doneToday] 表示今天）的提醒全部跳过，按锚点那天判断：
+/// 提前量跨过零点时（锚点 00:10 提前 15 分钟 → 前一天 23:55），今天完成不影响今晚 23:55（属于明天）；
+/// 而明天那次已完成时，今晚 23:55 和明天 00:10 都不再响。
+List<TriggerPlan> planSpec(
+  Task task,
+  ReminderSpec spec,
+  tz.TZDateTime now, {
+  required bool doneToday,
+  DateTime? doneDay,
+}) {
   final anchor = task.reminderAt;
   if (anchor == null) return const [];
   if (!ReminderSpec.allowedFor(spec.offsetMinutes, task.reminderRepeat)) return const [];
   final fire = shiftBack(anchor, spec.offsetMinutes);
-  final sameDay = fire.year == anchor.year && fire.month == anchor.month && fire.day == anchor.day;
-  return planReminders(task.copyWith(reminderAt: Value(fire)), now, doneToday: doneToday && sameDay);
+  final done = doneDay ?? (doneToday ? DateTime(now.year, now.month, now.day) : null);
+  DateTime? skip;
+  if (done != null) {
+    final f = shiftBack(DateTime(done.year, done.month, done.day, anchor.hour, anchor.minute), spec.offsetMinutes);
+    skip = DateTime(f.year, f.month, f.day);
+  }
+  return planReminders(task.copyWith(reminderAt: Value(fire)), now, doneToday: false, skipDay: skip);
+}
+
+/// 重复任务在 [now] 点了「完成」：这条提醒属于哪一天的那次（当地日期 00:00）。
+///
+/// 取"最近一次已经响过的提醒"对应的锚点那天；[offsetMinutes]（来自通知 payload）已知时只看这个提前量，
+/// 否则（稍后提醒、旧通知）看所有提前量。不早于今天：点了以前留下的旧通知，按今天处理。
+/// 例：每天 00:10、提前 15 分钟，今晚 23:55 的闹钟上点完成 → 明天。
+DateTime occurrenceDayForAction(Task task, List<ReminderSpec> specs, DateTime now, {int? offsetMinutes}) {
+  final today = DateTime(now.year, now.month, now.day);
+  final r = task.reminderAt;
+  if (r == null || task.reminderRepeat == RepeatRule.none) return today;
+  final offsets = offsetMinutes != null
+      ? [offsetMinutes]
+      : specs.isEmpty
+      ? [0]
+      : [for (final s in specs) s.offsetMinutes];
+  final weekly = task.reminderRepeat == RepeatRule.weekly;
+  final start = DateTime(r.year, r.month, r.day);
+  DateTime? bestFire;
+  DateTime? bestDay;
+  for (final m in offsets) {
+    // 从晚到早找第一个已经响过的；提前量不超过 7 天，前后各看 8 天足够
+    for (var i = 8; i >= -8; i--) {
+      final day = DateTime(today.year, today.month, today.day + i);
+      if (day.isBefore(start)) break;
+      if (weekly && day.weekday != r.weekday) continue;
+      final fire = shiftBack(DateTime(day.year, day.month, day.day, r.hour, r.minute), m);
+      if (fire.isAfter(now)) continue;
+      if (bestFire == null || fire.isAfter(bestFire)) {
+        bestFire = fire;
+        bestDay = day;
+      }
+      break;
+    }
+  }
+  if (bestDay == null || bestDay.isBefore(today)) return today;
+  return bestDay;
 }

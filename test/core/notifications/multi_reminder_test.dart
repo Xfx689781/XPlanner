@@ -97,6 +97,42 @@ void main() {
     });
   });
 
+  group('完成的是哪一天的那次', () {
+    test('payload 带提前量；旧格式仍能解析；格式不对返回 null', () {
+      expect(alarmPayload(12, 15), 'alarm:12:15');
+      expect((parseTaskPayload('alarm:12:15'), parseReminderOffset('alarm:12:15')), (12, 15));
+      expect((parseTaskPayload('task:12'), parseReminderOffset('task:12')), (12, null));
+      expect(parseTaskPayload('alarm:12:x'), isNull);
+      expect(parseTaskPayload('task:12:1:2'), isNull);
+    });
+
+    test('每天 00:10、提前 15 分钟：今晚 23:55 之后点完成 → 明天；只看准时那条 → 今天', () {
+      final t = task(reminderAt: DateTime(2026, 11, 1, 0, 10), repeat: RepeatRule.daily);
+      const specs = [ReminderSpec(15), ReminderSpec(0)];
+      expect(occurrenceDayForAction(t, specs, DateTime(2026, 11, 3, 23, 56)), DateTime(2026, 11, 4));
+      expect(occurrenceDayForAction(t, specs, DateTime(2026, 11, 3, 23, 56), offsetMinutes: 0), DateTime(2026, 11, 3));
+      expect(occurrenceDayForAction(t, specs, DateTime(2026, 11, 4, 0, 12)), DateTime(2026, 11, 4));
+    });
+
+    test('今天的提醒还没响（点的是以前的旧通知）：按今天', () {
+      final t = task(reminderAt: DateTime(2026, 11, 1, 14), repeat: RepeatRule.daily);
+      expect(occurrenceDayForAction(t, const [ReminderSpec(0)], DateTime(2026, 11, 3, 13)), DateTime(2026, 11, 3));
+    });
+
+    test('每周二 14:00 提前 1 天：周一的提醒上点完成 → 周二；跨月', () {
+      // 2026-11-03 是周二
+      final t = task(reminderAt: DateTime(2026, 11, 3, 14), repeat: RepeatRule.weekly);
+      const specs = [ReminderSpec(1440)];
+      expect(occurrenceDayForAction(t, specs, DateTime(2026, 11, 30, 14, 1)), DateTime(2026, 12, 1));
+      expect(occurrenceDayForAction(t, specs, DateTime(2026, 11, 2, 14, 1), offsetMinutes: 1440), DateTime(2026, 11, 3));
+    });
+
+    test('不重复任务：总是今天', () {
+      final t = task(reminderAt: DateTime(2026, 11, 10, 14));
+      expect(occurrenceDayForAction(t, const [ReminderSpec(1440)], DateTime(2026, 11, 9, 14, 1)), DateTime(2026, 11, 9));
+    });
+  });
+
   group('planSpec', () {
     late tz.Location ny;
     setUpAll(() => ny = tz.getLocation('America/New_York'));

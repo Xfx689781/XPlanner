@@ -3,6 +3,7 @@ import 'package:facet/core/data/data_providers.dart';
 import 'package:facet/core/data/enums.dart';
 import 'package:facet/core/data/reminder_spec.dart';
 import 'package:facet/core/data/task_repository.dart';
+import 'package:facet/core/data/task_rules.dart';
 import 'package:facet/core/notifications/background_actions.dart';
 import 'package:facet/core/notifications/notification_ids.dart';
 import 'package:facet/core/notifications/notification_providers.dart';
@@ -148,9 +149,8 @@ void main() {
     });
   });
 
-  // 可疑行为：提前量跨零点的重复任务，在前一天晚上的闹钟上点「完成」，记成的是"今天"完成，
-  // 而这个闹钟属于明天 00:10 那次；15 分钟后（明天 00:10）准时提醒照样响，明天的任务也仍显示未完成。
-  // 复现：每天 00:10、提醒 [提前 15 分钟（闹钟）, 准时]；11/3 23:55 在闹钟上点「完成」→ 11/4 00:10 的准时提醒仍在排。
+  // 提前量跨零点的重复任务，在前一天晚上的闹钟上点「完成」：记到这个闹钟所属的明天那次（方案 A），
+  // 明天 00:10 的准时提醒不再响，明天的任务显示已完成。
   test('跨零点：前一晚 23:55 的闹钟点「完成」后，明天 00:10 的准时提醒不再响', () async {
     clock.value = DateTime(2026, 11, 3, 23, 55);
     addTearDown(() => clock.value = DateTime(2026, 11, 3, 13));
@@ -163,5 +163,8 @@ void main() {
     final onTime = scheduler.requestsFor(t.id).where((r) => (r.id - t.id * slotsPerTask) ~/ slotsPerReminder == 1);
     final tomorrow0010 = tz.TZDateTime.from(DateTime(2026, 11, 4, 0, 10), deviceLocation(clock.value));
     expect(onTime.any((r) => r.at.isAtSameMomentAs(tomorrow0010)), isFalse);
-  }, skip: true);
+    final saved = (await repo.getById(t.id))!;
+    expect(saved.isDoneOn(DateTime(2026, 11, 4)), isTrue);
+    expect(saved.isDoneOn(DateTime(2026, 11, 3)), isFalse);
+  });
 }
