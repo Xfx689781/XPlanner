@@ -23,7 +23,27 @@ import 'reminder_sync_service.dart';
 const actionDone = 'done';
 const actionSnooze = 'snooze';
 
-/// 处理「完成 / 稍后 10 分钟」。App 在前台（[main] 的点按回调）和后台（[notificationBackgroundHandler]）共用。
+/// 只把「完成 / 稍后 10 分钟」写进数据库，不排提醒。返回更新后的任务（任务已删除时为 null）。
+Future<Task?> recordNotificationAction({
+  required String actionId,
+  required int taskId,
+  required TaskRepository repository,
+  required Clock clock,
+}) async {
+  final now = clock.now();
+  final task = await repository.getById(taskId);
+  if (task == null) return null;
+  return switch (actionId) {
+    // 重复任务只完成今天；已经完成的不重复记
+    actionDone => task.isDoneOn(startOfDay(now)) ? task : await repository.setCompleted(taskId, now, now: now),
+    actionSnooze => await repository.setSnoozed(taskId, now.add(ReminderSyncService.snoozeDuration)),
+    _ => task,
+  };
+}
+
+/// 处理「完成 / 稍后 10 分钟」：写数据库并重排提醒。闹钟页和测试使用；
+/// 通知上的按钮在 Android 上总是由 [notificationBackgroundHandler] 处理（插件把不打开界面的按钮
+/// 一律交给后台引擎，不管 App 是否在前台）。
 /// 同步提醒时会取消这个任务的所有通知，正在响的闹钟也随之停下。
 Future<void> applyNotificationAction({
   required String actionId,
@@ -32,20 +52,12 @@ Future<void> applyNotificationAction({
   required ReminderSyncService sync,
   required Clock clock,
 }) async {
-  final now = clock.now();
-  final task = await repository.getById(taskId);
-  if (task == null) {
+  if (actionId != actionDone && actionId != actionSnooze) return;
+  final updated = await recordNotificationAction(actionId: actionId, taskId: taskId, repository: repository, clock: clock);
+  if (updated == null) {
     await sync.cancelTask(taskId);
-    return;
-  }
-  switch (actionId) {
-    case actionDone:
-      // 重复任务只完成今天；已经完成的不重复记
-      final updated = task.isDoneOn(startOfDay(now)) ? task : await repository.setCompleted(taskId, now, now: now);
-      await sync.syncTask(updated ?? task);
-    case actionSnooze:
-      final updated = await repository.setSnoozed(taskId, now.add(ReminderSyncService.snoozeDuration));
-      await sync.syncTask(updated ?? task);
+  } else {
+    await sync.syncTask(updated);
   }
 }
 
@@ -54,15 +66,20 @@ Future<void> applyNotificationAction({
 Future<void> notificationBackgroundHandler(NotificationResponse response) async {
   final taskId = parseTaskPayload(response.payload);
   final actionId = response.actionId;
-  if (taskId == null || actionId == null) return;
+  if (taskId == null || actionId == null || (actionId != actionDone && actionId != actionSnooze)) return;
 
   WidgetsFlutterBinding.ensureInitialized();
   DartPluginRegistrant.ensureInitialized();
   AppDatabase? db;
   try {
+    db = AppDatabase();
+    // 先把用户的操作写进数据库：接收器不会等我们，进程随时可能被回收。
+    // 写进去之后，即使后面没来得及重排，下次启动的全量重建也会按数据库补上
+    final repository = TaskRepository(db);
+    await recordNotificationAction(actionId: actionId, taskId: taskId, repository: repository, clock: const SystemClock());
+
     await initializeDateFormatting();
     await initLocalTimezone();
-    db = AppDatabase();
     // 按用户设置的语言生成通知文字（重排时用）
     final settings = await SettingsRepository(db).load();
     final dispatcher = PlatformDispatcher.instance;
@@ -78,14 +95,13 @@ Future<void> notificationBackgroundHandler(NotificationResponse response) async 
       doneLabel: l10n.notificationActionDone,
       snoozeLabel: l10n.notificationActionSnooze,
     );
-    final repository = TaskRepository(db);
-    await applyNotificationAction(
-      actionId: actionId,
-      taskId: taskId,
-      repository: repository,
-      sync: ReminderSyncService(scheduler: scheduler, repository: repository, clock: const SystemClock(), dates: () => dates),
-      clock: const SystemClock(),
-    );
+    final task = await repository.getById(taskId);
+    final sync = ReminderSyncService(scheduler: scheduler, repository: repository, clock: const SystemClock(), dates: () => dates);
+    if (task == null) {
+      await sync.cancelTask(taskId);
+    } else {
+      await sync.syncTask(task);
+    }
   } catch (e, s) {
     debugPrint('后台处理通知按钮失败：$e\n$s');
   } finally {

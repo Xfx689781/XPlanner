@@ -14,7 +14,7 @@ import '../../design_system/design_system.dart';
 import '../../l10n/locale_providers.dart';
 import 'task_labels.dart';
 
-/// 全屏闹钟页：锁屏时由全屏通知拉起，或 App 在前台时闹钟响起后显示。
+/// 全屏闹钟页：锁屏时由全屏通知拉起，或点闹钟横幅的正文进入。
 /// 任务方块 + 标题 + 时间，两个大按钮「完成」「稍后 10 分钟」。按完停止响铃。
 class AlarmPage extends ConsumerStatefulWidget {
   const AlarmPage({super.key, required this.request});
@@ -23,10 +23,12 @@ class AlarmPage extends ConsumerStatefulWidget {
 
   static Future<void> open(BuildContext context, AlarmRequest request) {
     return Navigator.of(context).push(
+      // 不用过渡动画：淡入淡出时下面的任务列表会在锁屏上方半透明露出来
       PageRouteBuilder<void>(
-        transitionDuration: Motion.standard,
+        opaque: true,
+        transitionDuration: Duration.zero,
+        reverseTransitionDuration: Duration.zero,
         pageBuilder: (_, _, _) => AlarmPage(request: request),
-        transitionsBuilder: (_, animation, _, child) => FadeTransition(opacity: animation, child: child),
       ),
     );
   }
@@ -43,14 +45,24 @@ class _AlarmPageState extends ConsumerState<AlarmPage> {
   void initState() {
     super.initState();
     _system = ref.read(systemSettingsProvider);
-    // 只在闹钟页显示期间允许出现在锁屏上方
-    _system.setShowOnLockScreen(true);
+    // 只在闹钟页显示期间允许出现在锁屏上方；多个闹钟页叠在一起时按引用计数，最后一个离开才关闭
+    if (_lockScreenRefs++ == 0) _system.setShowOnLockScreen(true);
   }
 
   @override
   void dispose() {
-    _system.setShowOnLockScreen(false);
+    if (--_lockScreenRefs == 0) _system.setShowOnLockScreen(false);
     super.dispose();
+  }
+
+  /// 返回键：停止响铃（取消这条通知），不改任务
+  Future<void> _dismiss() async {
+    await ref.read(reminderSchedulerProvider).cancel(widget.request.notificationId);
+    if (widget.request.fromLockScreen) {
+      await SystemNavigator.pop();
+    } else if (mounted) {
+      Navigator.of(context).pop();
+    }
   }
 
   Future<void> _act(String actionId) async {
@@ -85,44 +97,50 @@ class _AlarmPageState extends ConsumerState<AlarmPage> {
     final task = ref.watch(_taskProvider(widget.request.taskId)).value;
     final time = task?.reminderAt == null ? '' : dates.time(task!.reminderAt!);
 
-    return Scaffold(
-      body: SafeArea(
-        child: Semantics(
-          label: task == null ? null : l10n.alarmPageSemantics(task.title, time),
-          child: Padding(
-            padding: const EdgeInsets.all(Space.l),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const Spacer(),
-                if (task != null) ...[
-                  Center(
-                    child: TaskSquare(
-                      done: false,
-                      strokeWidth: strokeForPriority(task.priority),
-                      size: Sizes.alarmSquare,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) _dismiss();
+      },
+      child: Scaffold(
+        body: SafeArea(
+          child: Semantics(
+            label: task == null ? null : l10n.alarmPageSemantics(task.title, time),
+            child: Padding(
+              padding: const EdgeInsets.all(Space.l),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const Spacer(),
+                  if (task != null) ...[
+                    Center(
+                      child: TaskSquare(
+                        done: false,
+                        strokeWidth: strokeForPriority(task.priority),
+                        size: Sizes.alarmSquare,
+                      ),
                     ),
+                    const SizedBox(height: Space.l),
+                    Text(time, textAlign: TextAlign.center, style: context.text.title),
+                    const SizedBox(height: Space.s),
+                    Text(task.title, textAlign: TextAlign.center, style: context.text.body),
+                  ],
+                  const Spacer(),
+                  GeoButton(
+                    label: l10n.notificationActionDone,
+                    style: GeoButtonStyle.primary,
+                    large: true,
+                    onPressed: _busy ? null : () => _act(actionDone),
                   ),
-                  const SizedBox(height: Space.l),
-                  Text(time, textAlign: TextAlign.center, style: context.text.title),
-                  const SizedBox(height: Space.s),
-                  Text(task.title, textAlign: TextAlign.center, style: context.text.body),
+                  const SizedBox(height: Space.m),
+                  GeoButton(
+                    label: l10n.notificationActionSnooze,
+                    style: GeoButtonStyle.outline,
+                    large: true,
+                    onPressed: _busy ? null : () => _act(actionSnooze),
+                  ),
                 ],
-                const Spacer(),
-                GeoButton(
-                  label: l10n.notificationActionDone,
-                  style: GeoButtonStyle.primary,
-                  large: true,
-                  onPressed: _busy ? null : () => _act(actionDone),
-                ),
-                const SizedBox(height: Space.m),
-                GeoButton(
-                  label: l10n.notificationActionSnooze,
-                  style: GeoButtonStyle.outline,
-                  large: true,
-                  onPressed: _busy ? null : () => _act(actionSnooze),
-                ),
-              ],
+              ),
             ),
           ),
         ),
@@ -131,6 +149,9 @@ class _AlarmPageState extends ConsumerState<AlarmPage> {
   }
 }
 
-final _taskProvider = StreamProvider.family<Task?, int>(
+/// 同时打开的闹钟页数量（锁屏显示的引用计数）
+int _lockScreenRefs = 0;
+
+final _taskProvider = StreamProvider.autoDispose.family<Task?, int>(
   (ref, id) => ref.watch(taskRepositoryProvider).watchById(id),
 );

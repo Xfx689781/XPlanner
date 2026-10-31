@@ -66,6 +66,8 @@ class LocalNotificationScheduler implements ReminderScheduler {
       additionalFlags: _insistent,
       // 锁屏时拉起全屏闹钟页；没有 USE_FULL_SCREEN_INTENT 权限时系统自动降级为横幅（仍持续响）
       fullScreenIntent: true,
+      // 点横幅正文不取消通知：进入闹钟页后由按钮停止响铃（也可以直接划掉）
+      autoCancel: false,
       timeoutAfter: _alarmTimeout.inMilliseconds,
       actions: [
         AndroidNotificationAction(actionDone, _doneLabel, cancelNotification: true),
@@ -153,10 +155,10 @@ class LocalNotificationScheduler implements ReminderScheduler {
   @override
   Future<ScheduleMode> schedule(ReminderRequest r) async {
     final exact = await canScheduleExact() ?? true;
-    // 闹钟用 alarmClock（状态栏显示闹钟图标，最不容易被省电策略推迟）；同样需要精确闹钟权限
-    final exactMode = r.alarm ? AndroidScheduleMode.alarmClock : AndroidScheduleMode.exactAllowWhileIdle;
+    // 闹钟也用 exactAllowWhileIdle，不用 alarmClock：插件把 alarmClock 的"查看"入口指向触发广播，
+    // 用户在状态栏 / 时钟里点"下一个闹钟"会让它提前响
     try {
-      await _zoned(r, exact ? exactMode : AndroidScheduleMode.inexactAllowWhileIdle);
+      await _zoned(r, exact ? AndroidScheduleMode.exactAllowWhileIdle : AndroidScheduleMode.inexactAllowWhileIdle);
       return exact ? ScheduleMode.exact : ScheduleMode.inexact;
     } on PlatformException catch (e) {
       // 查询和调度之间权限被收回：降级重试一次

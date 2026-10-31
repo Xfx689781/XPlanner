@@ -101,7 +101,24 @@ void main() {
     await finish(tester);
   });
 
-  testWidgets('设置页显示全屏闹钟状态（测试环境无法检测 → 灰色"无法检测"，不显示开启按钮）', (tester) async {
+  testWidgets('返回键：停止响铃、关闭闹钟页，任务不变', (tester) async {
+    final t = await seed(tester);
+    final scheduler = FakeScheduler();
+    final id = notificationIdForReminder(t.id, 0, 0);
+    scheduler.showing.add(id);
+    await showAlarm(tester, scheduler, t, id);
+
+    await tester.binding.handlePopRoute();
+    await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 50)));
+    await tester.pumpAndSettle();
+    expect(scheduler.showing, isNot(contains(id)));
+    expect(find.byType(AlarmPage), findsNothing);
+    final after = await tester.db(() => repo.getById(t.id));
+    expect((after!.completedAt, after.snoozedUntil), (null, null));
+    await finish(tester);
+  });
+
+  testWidgets('设置页：无法检测全屏权限（测试环境 / iOS）时不显示全屏闹钟这一行；默认方式照常显示', (tester) async {
     tester.view.physicalSize = const Size(390, 1600);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
@@ -110,7 +127,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('提醒').first);
     await tester.pumpAndSettle();
-    expect(find.text('全屏闹钟'), findsOneWidget);
+    expect(find.text('全屏闹钟'), findsNothing);
     expect(find.text('新建提醒的默认方式'), findsOneWidget);
     await finish(tester);
   });

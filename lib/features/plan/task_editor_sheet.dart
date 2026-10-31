@@ -63,6 +63,9 @@ class _TaskEditorSheetState extends ConsumerState<TaskEditorSheet> {
 
   /// 锚点跟随任务时间：改任务时间后提醒跟着变
   bool _anchorFollowsDue = false;
+
+  /// 用户已经改过提醒（异步加载的提醒行不再覆盖）
+  bool _remindersTouched = false;
   List<ReminderSpec> _specs = const [];
   late RepeatRule _repeat;
   bool _saving = false;
@@ -100,7 +103,10 @@ class _TaskEditorSheetState extends ConsumerState<TaskEditorSheet> {
       // 旧数据可能没有提醒行：按准时处理
       _specs = const [ReminderSpec(0)];
       ref.read(taskRepositoryProvider).remindersFor(t!.id).then((specs) {
-        if (mounted && specs.isNotEmpty) setState(() => _specs = specs);
+        // 用户在加载完成前已经改过提醒：不覆盖
+        if (mounted && specs.isNotEmpty && !_remindersTouched) {
+          setState(() => _specs = specs);
+        }
       });
     }
     _title.addListener(() => setState(() {}));
@@ -151,14 +157,38 @@ class _TaskEditorSheetState extends ConsumerState<TaskEditorSheet> {
         setState(() {
           _dueDate = null;
           _dueTime = null;
+          _syncAnchorWithDue();
         });
       case _DueChoice.today:
-        setState(() => _dueDate = _today);
+        setState(() {
+          _dueDate = _today;
+          _syncAnchorWithDue();
+        });
       case _DueChoice.tomorrow:
-        setState(() => _dueDate = nextDay(_today));
+        setState(() {
+          _dueDate = nextDay(_today);
+          _syncAnchorWithDue();
+        });
       case _DueChoice.other:
         final picked = await _pickDate(_dueDate ?? _today);
-        if (picked != null) setState(() => _dueDate = startOfDay(picked));
+        if (picked != null) {
+          setState(() {
+            _dueDate = startOfDay(picked);
+            _syncAnchorWithDue();
+          });
+        }
+    }
+  }
+
+  /// 锚点跟随任务时间时：任务时间变了就同步；任务时间被清掉就停止跟随，
+  /// 保留最后一次的任务时间作为自选时间
+  void _syncAnchorWithDue() {
+    if (!_anchorFollowsDue) return;
+    final due = _dueDateTime;
+    if (due != null) {
+      _reminderAt = due;
+    } else {
+      _anchorFollowsDue = false;
     }
   }
 
@@ -170,6 +200,7 @@ class _TaskEditorSheetState extends ConsumerState<TaskEditorSheet> {
       setState(() {
         _dueDate ??= _today;
         _dueTime = picked;
+        _syncAnchorWithDue();
       });
     }
   }
@@ -182,9 +213,8 @@ class _TaskEditorSheetState extends ConsumerState<TaskEditorSheet> {
     return DateTime(d.year, d.month, d.day, t.hour, t.minute);
   }
 
-  /// 实际的提醒锚点
-  DateTime? get _anchor =>
-      _anchorFollowsDue ? (_dueDateTime ?? _reminderAt) : _reminderAt;
+  /// 实际的提醒锚点（跟随任务时间时由 [_syncAnchorWithDue] 保持一致）
+  DateTime? get _anchor => _reminderAt;
 
   /// 一个流程选完日期和时间：先日期、紧接着时间；任一步取消就什么都不改
   Future<DateTime?> _pickDateTime(DateTime initial) async {
@@ -211,6 +241,7 @@ class _TaskEditorSheetState extends ConsumerState<TaskEditorSheet> {
     final due = _dueDateTime;
     if (due != null) {
       setState(() {
+        _remindersTouched = true;
         _anchorFollowsDue = true;
         _reminderAt = due;
         _specs = _defaultSpecs(due);
@@ -224,6 +255,7 @@ class _TaskEditorSheetState extends ConsumerState<TaskEditorSheet> {
     final picked = await _pickDateTime(initial);
     if (picked == null) return;
     setState(() {
+      _remindersTouched = true;
       _anchorFollowsDue = false;
       _reminderAt = picked;
       _specs = _defaultSpecs(picked);
@@ -241,12 +273,14 @@ class _TaskEditorSheetState extends ConsumerState<TaskEditorSheet> {
     final picked = await _pickDateTime(current);
     if (picked == null) return;
     setState(() {
+      _remindersTouched = true;
       _reminderAt = picked;
       _anchorFollowsDue = picked == _dueDateTime;
     });
   }
 
   void _setOffsets(List<int> offsets) {
+    _remindersTouched = true;
     if (offsets.isEmpty) {
       // 最后一个也取消 = 去掉提醒
       setState(_removeReminder);
@@ -262,6 +296,7 @@ class _TaskEditorSheetState extends ConsumerState<TaskEditorSheet> {
   }
 
   void _setKind(int offset, ReminderKind kind) {
+    _remindersTouched = true;
     setState(() {
       _specs = [
         for (final s in _specs)
@@ -271,6 +306,7 @@ class _TaskEditorSheetState extends ConsumerState<TaskEditorSheet> {
   }
 
   void _setRepeat(RepeatRule r) {
+    _remindersTouched = true;
     setState(() {
       _repeat = r;
       // 去掉与重复周期冲突的提前量；全去掉时保留准时
@@ -287,6 +323,7 @@ class _TaskEditorSheetState extends ConsumerState<TaskEditorSheet> {
   }
 
   void _removeReminder() {
+    _remindersTouched = true;
     _reminderAt = null;
     _anchorFollowsDue = false;
     _specs = const [];
@@ -496,7 +533,10 @@ class _TaskEditorSheetState extends ConsumerState<TaskEditorSheet> {
                       glyph: GeoGlyph.close,
                       semanticLabel: l10n.taskEditorClearTime,
                       color: colors.muted,
-                      onPressed: () => setState(() => _dueTime = null),
+                      onPressed: () => setState(() {
+                        _dueTime = null;
+                        _syncAnchorWithDue();
+                      }),
                     ),
                 ],
               ),

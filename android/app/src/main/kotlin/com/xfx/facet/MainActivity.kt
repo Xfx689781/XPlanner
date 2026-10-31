@@ -13,6 +13,37 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
 class MainActivity : FlutterActivity() {
+    override fun onCreate(savedInstanceState: android.os.Bundle?) {
+        showOnLockScreenIfAlarm(intent)
+        super.onCreate(savedInstanceState)
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        showOnLockScreenIfAlarm(intent)
+        super.onNewIntent(intent)
+    }
+
+    /// 全屏闹钟（flutter_local_notifications 的 SELECT_NOTIFICATION，payload 以 alarm: 开头）拉起时，
+    /// 要在 Activity resume 之前设置，屏幕才会被点亮；离开闹钟页时由 Dart 侧关闭
+    private fun showOnLockScreenIfAlarm(intent: Intent?) {
+        if (intent?.action != "SELECT_NOTIFICATION") return
+        if (intent.getStringExtra("payload")?.startsWith("alarm:") != true) return
+        setLockScreenFlags(true)
+    }
+
+    private fun setLockScreenFlags(show: Boolean) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+            setShowWhenLocked(show)
+            setTurnScreenOn(show)
+        } else {
+            @Suppress("DEPRECATION")
+            val flags = WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
+                WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
+            @Suppress("DEPRECATION")
+            if (show) window.addFlags(flags) else window.clearFlags(flags)
+        }
+    }
+
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "facet/system_settings")
@@ -47,17 +78,7 @@ class MainActivity : FlutterActivity() {
                     // 闹钟页：临时允许显示在锁屏上方并点亮屏幕；离开闹钟页时关掉，
                     // 不让整个 App 都能在锁屏上打开
                     "setShowOnLockScreen" -> {
-                        val show = call.argument<Boolean>("show") == true
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-                            setShowWhenLocked(show)
-                            setTurnScreenOn(show)
-                        } else {
-                            @Suppress("DEPRECATION")
-                            val flags = WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
-                                WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
-                            @Suppress("DEPRECATION")
-                            if (show) window.addFlags(flags) else window.clearFlags(flags)
-                        }
+                        setLockScreenFlags(call.argument<Boolean>("show") == true)
                         result.success(true)
                     }
                     else -> result.notImplemented()

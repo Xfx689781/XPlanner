@@ -54,6 +54,25 @@ void main() {
       expect(reminderNotificationTitle(zh(), t, const ReminderSpec(1440), today: today), '1 天后：交房租（明天 14:00）');
       expect(reminderNotificationTitle(en(), t, const ReminderSpec(60), today: today), 'In 1 hour: 交房租 (14:00)');
     });
+
+    test('标题里的日期按触发那天算，与排程那天无关；跨零点也写"明天"', () {
+      final t = task(reminderAt: DateTime(2026, 11, 3, 14)).copyWith(title: '交房租');
+      // 一周前排程：触发在 11-02，对那天来说锚点是"明天"
+      expect(reminderNotificationTitle(zh(), t, const ReminderSpec(1440), today: DateTime(2026, 10, 27)), '1 天后：交房租（明天 14:00）');
+      // 今晚 23:55 提醒明早 00:10
+      final night = task(reminderAt: DateTime(2026, 11, 4, 0, 10)).copyWith(title: '交房租');
+      expect(reminderNotificationTitle(zh(), night, const ReminderSpec(15), today: DateTime(2026, 11, 3)), '15 分钟后：交房租（明天 00:10）');
+      final daily = night.copyWith(reminderRepeat: RepeatRule.daily);
+      expect(reminderNotificationTitle(zh(), daily, const ReminderSpec(15), today: DateTime(2026, 11, 3)), '15 分钟后：交房租（明天 00:10）');
+    });
+
+    test('每周重复提前 ≥1 天：系统每周重复同一标题，只写星期几', () {
+      // 2026-11-03 是周二
+      final t = task(reminderAt: DateTime(2026, 11, 3, 14), repeat: RepeatRule.weekly).copyWith(title: '交房租');
+      final today = DateTime(2026, 11, 2);
+      expect(reminderNotificationTitle(zh(), t, const ReminderSpec(1440), today: today), '1 天后：交房租（周二 14:00）');
+      expect(reminderNotificationTitle(en(), t, const ReminderSpec(2880), today: today), 'In 2 days: 交房租 (Tue 14:00)');
+    });
   });
 
   group('ReminderSpec', () {

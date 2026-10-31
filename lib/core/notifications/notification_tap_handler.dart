@@ -32,7 +32,7 @@ class PendingAlarm extends Notifier<AlarmRequest?> {
 final pendingAlarmProvider = NotifierProvider<PendingAlarm, AlarmRequest?>(PendingAlarm.new);
 
 /// 通知点按的分流：
-/// - 点了「完成 / 稍后」按钮：直接处理（App 在前台时插件走这里，不在前台时走后台 isolate）
+/// - 点了「完成 / 稍后」按钮：直接处理（Android 上这类按钮实际由后台引擎处理，这里是 iOS 和兜底）
 /// - 闹钟通知还在响（全屏 intent 拉起 App）：显示闹钟页
 /// - 其他：打开任务
 Future<void> handleNotificationTap(ProviderContainer container, NotificationTap tap, {bool coldStart = false}) async {
@@ -50,9 +50,15 @@ Future<void> handleNotificationTap(ProviderContainer container, NotificationTap 
     return;
   }
   final notificationId = tap.notificationId;
-  if (isAlarmPayload(tap.payload) &&
-      notificationId != null &&
-      await container.read(reminderSchedulerProvider).isShowing(notificationId)) {
+  var ringing = false;
+  if (isAlarmPayload(tap.payload) && notificationId != null) {
+    try {
+      ringing = await container.read(reminderSchedulerProvider).isShowing(notificationId);
+    } catch (e) {
+      debugPrint('查询通知是否仍在显示失败：$e'); // 例如 Android 6.0 以下：按普通点按打开任务
+    }
+  }
+  if (ringing && notificationId != null) {
     container.read(pendingAlarmProvider.notifier).open(
       AlarmRequest(taskId: taskId, notificationId: notificationId, fromLockScreen: coldStart),
     );

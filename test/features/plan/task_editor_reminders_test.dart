@@ -140,6 +140,29 @@ void main() {
     await finish(tester);
   });
 
+  testWidgets('清掉任务时间：提醒保留在原来的时间（不再跟随）；之后改日期不影响提醒', (tester) async {
+    phone(tester);
+    final t = await tester.db(() => repo.create(
+          TaskDraft(
+            title: '看牙',
+            dueAt: DateTime(2026, 11, 3, 14),
+            dueHasTime: true,
+            reminderAt: DateTime(2026, 11, 3, 14),
+            reminders: const [ReminderSpec(15)],
+          ),
+          now: clock.value,
+        ));
+    await openTask(tester, '看牙');
+    await tapVisible(tester, find.bySemanticsLabel('清除时间'));
+    expect(find.text('任务时间'), findsNothing);
+    await tapVisible(tester, find.bySemanticsLabel('今天').last);
+    await save(tester);
+    final saved = await tester.db(() => repo.getById(t.id));
+    expect(saved!.dueHasTime, isFalse);
+    expect(saved.reminderAt, DateTime(2026, 11, 3, 14));
+    await finish(tester);
+  });
+
   testWidgets('每天重复：提前 ≥1 天的选项置灰，已选的被去掉', (tester) async {
     phone(tester);
     await tester.db(() => repo.create(

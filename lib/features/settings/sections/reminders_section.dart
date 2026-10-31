@@ -79,15 +79,16 @@ class RemindersSection extends ConsumerWidget {
             action: l10n.commonTurnOn,
             onAction: scheduler.requestExactAlarmPermission,
           ),
-          StatusRow(
-            label: l10n.settingsFullScreen,
-            ok: status.fullScreenAllowed,
-            okText: l10n.settingsFullScreenOn,
-            badText: l10n.settingsFullScreenOff,
-            unknownText: l10n.settingsCannotDetect,
-            action: l10n.commonTurnOn,
-            onAction: scheduler.requestFullScreenPermission,
-          ),
+          if (status.fullScreenAllowed != null)
+            StatusRow(
+              label: l10n.settingsFullScreen,
+              ok: status.fullScreenAllowed,
+              okText: l10n.settingsFullScreenOn,
+              badText: l10n.settingsFullScreenOff,
+              unknownText: l10n.settingsCannotDetect,
+              action: l10n.commonTurnOn,
+              onAction: scheduler.requestFullScreenPermission,
+            ),
           StatusRow(
             label: l10n.settingsBattery,
             ok: status.batteryUnrestricted,

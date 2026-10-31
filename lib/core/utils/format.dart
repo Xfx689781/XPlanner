@@ -36,6 +36,9 @@ class AppDateFormat {
     return f.format(d);
   }
 
+  /// 周一 / Mon（星期几的简称）
+  String weekday(DateTime d) => DateFormat.E(intlLocale).format(d);
+
   /// 今天 / 明天 / 昨天，其余同 [date]
   String relative(DateTime d, DateTime today) => switch (relativeDayOffset(d, today)) {
     0 => l10n.dateToday,
