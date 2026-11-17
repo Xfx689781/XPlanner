@@ -1,68 +1,68 @@
 <p align="center">
-  <img src="ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-1024x1024@1x.png" width="128" alt="XPlanner 图标">
+  <img src="ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-1024x1024@1x.png" width="128" alt="XPlanner icon">
 </p>
 
 <h1 align="center">XPlanner</h1>
 
-<p align="center">几何风格的计划 / 日志 App：用方块、圆和线，把每一天变成看得见的形状。</p>
+<p align="center">A geometric planner and log app: squares, circles and lines that turn each day into a shape you can see.</p>
 
 <p align="center">
-  <a href="https://github.com/Xfx689781/XPlanner/releases/latest"><b>⬇ 下载最新版本（Android APK）</b></a>
+  <a href="https://github.com/Xfx689781/XPlanner/releases/latest"><b>⬇ Download the latest version (Android APK)</b></a>
 </p>
 
 ---
 
-## 下载与安装（Android）
+## Download and install (Android)
 
-1. 用手机浏览器打开 **[Releases 最新版本](https://github.com/Xfx689781/XPlanner/releases/latest)**
-2. 在 **Assets** 里下载适合你手机的 APK：
+1. On your phone, open the **[latest release](https://github.com/Xfx689781/XPlanner/releases/latest)**
+2. Under **Assets**, download the APK that matches your phone:
 
-   | 文件 | 适用 |
+   | File | For |
    | --- | --- |
-   | `app-arm64-v8a-release.apk` | **绝大多数手机选这个**（近几年的三星、小米、华为、Pixel 等） |
-   | `app-armeabi-v7a-release.apk` | 很旧的 32 位手机 |
-   | `app-x86_64-release.apk` | 电脑上的 Android 模拟器 |
+   | `app-arm64-v8a-release.apk` | **Most phones: pick this one** (any recent Samsung, Pixel, Xiaomi, etc.) |
+   | `app-armeabi-v7a-release.apk` | Very old 32-bit phones |
+   | `app-x86_64-release.apk` | Android emulators on a computer |
 
-3. 打开下载好的文件，第一次会提示「允许此来源安装应用」，允许后返回点 **安装**
-4. 如果 Play 保护机制提示风险，点 **仍然安装**（因为不是从 Play 商店下载的，属于正常提示）
+3. Open the downloaded file. The first time, Android asks you to **allow installs from this source**. Allow it, go back and tap **Install**
+4. If Play Protect shows a warning, tap **Install anyway**. This is normal for apps installed outside the Play Store
 
-- 系统要求：Android 7.0 及以上
-- 升级：直接下载新版本覆盖安装，数据会保留
+- Requires Android 7.0 or later
+- To update, install the new APK over the old one. Your data is kept
 
-### 安装后建议（让提醒准时响）
+### After installing (so reminders arrive on time)
 
-- 第一次打开时允许 **通知** 权限
-- 在 App 的 **设置 → 提醒** 里按提示开启「闹钟和提醒」（精确闹钟）和全屏提醒
-- 三星等手机：系统设置 → 应用程序 → XPlanner → 电池 → 选 **不受限制**，否则省电模式可能拦截提醒
+- Allow **notifications** when the app first asks
+- In the app, go to **Settings → Reminders** and turn on **Alarms & reminders** (exact alarms) and full-screen reminders as prompted
+- On Samsung and similar phones: system Settings → Apps → XPlanner → Battery → **Unrestricted**. Otherwise battery saving may block reminders
 
-## 功能
+## Features
 
-- **今天**：顶部一个大圆，按今天任务的完成比例逐渐填满；下面是今天的任务和日志
-- **任务**：标题、备注、日期时间、三档优先级。方块空心 = 未完成，实心 = 完成，描边越粗优先级越高
-- **提醒**：到点弹出通知，支持不重复 / 每天 / 每周，一个任务可设多个提前提醒；可以设成闹钟式全屏提醒，在通知上直接点「完成」或「稍后 10 分钟」；手机重启后依然有效
-- **快速日志**：一句话 + 自动时间戳，按天分组
-- 浅色 / 深色主题，简体中文 / 繁體中文 / English
+- **Today**: a large circle at the top fills up as you complete today's tasks; below it are today's tasks and log entries
+- **Tasks**: title, notes, date and time, three priority levels. Hollow square = open, filled square = done, thicker outline = higher priority
+- **Reminders**: notifications at the set time, repeating never / daily / weekly, with several advance reminders per task. Reminders can ring like an alarm in full screen, and you can tap **Done** or **Snooze 10 min** right on the notification. Reminders still work after the phone restarts
+- **Quick log**: one line with an automatic timestamp, grouped by day
+- Light and dark themes; English, Simplified Chinese and Traditional Chinese
 
-## 隐私
+## Privacy
 
-所有数据只保存在你的手机本地，不上传、不联网，没有账号、广告或统计。
+All data stays on your phone. Nothing is uploaded and the app never goes online. There are no accounts, ads or analytics.
 
-## 从源码构建
+## Build from source
 
-需要 [Flutter](https://docs.flutter.dev/get-started/install)（3.47 及以上）。
+Requires [Flutter](https://docs.flutter.dev/get-started/install) 3.47 or later.
 
 ```bash
 flutter pub get
-flutter run -d windows                    # 在 Windows 上运行
+flutter run -d windows                    # run on Windows
 flutter build apk --release --split-per-abi
 ```
 
-release 构建需要你自己的签名文件：按 `android/app/build.gradle.kts` 里的说明创建 `android/key.properties`（不要提交到 git）。
+Release builds need your own signing key: create `android/key.properties` as described in `android/app/build.gradle.kts` (never commit it to git).
 
-## 平台
+## Platforms
 
-| 平台 | 状态 |
+| Platform | Status |
 | --- | --- |
-| Android | ✅ 可用 |
-| Windows | 可以从源码运行，安装包暂未发布 |
-| iOS | 计划中 |
+| Android | ✅ Available |
+| Windows | Runs from source; no installer published yet |
+| iOS | Planned |
