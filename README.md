@@ -1,4 +1,4 @@
-# facet
+# XPlanner
 
 A new Flutter project.
 
